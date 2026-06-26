@@ -11,11 +11,22 @@
 
     <!-- Header Navigation -->
     <header>
-        <a href="#" class="logo">Watch<span>Mart</span></a>
+        <a href="#" class="logo" onclick="setRole('customer')">Watch<span>Mart</span></a>
+        
+        <!-- Role Switcher Panel inside Header -->
+        <div class="role-switcher-container">
+            <label for="role-selector">สลับบทบาท:</label>
+            <select id="role-selector" onchange="switchRole(this.value)">
+                <option value="customer">👤 ลูกค้า (Customer)</option>
+                <option value="staff">🧑‍💼 พนักงาน (Staff)</option>
+                <option value="manager">👑 ผู้จัดการ (Manager)</option>
+            </select>
+        </div>
+
         <nav>
             <ul>
-                <li><a href="#" class="active">หน้าหลัก</a></li>
-                <li><a href="#products">นาฬิกาของเรา</a></li>
+                <li><a href="#" class="active" id="nav-home" onclick="setRole('customer')">หน้าหลัก</a></li>
+                <li><a href="#products" id="nav-products">นาฬิกาของเรา</a></li>
                 <li><a href="markdown.html" target="_blank">เอกสารวิเคราะห์ระบบ</a></li>
             </ul>
         </nav>
@@ -27,155 +38,259 @@
         </div>
     </header>
 
-    <!-- Hero Section -->
-    <section class="hero">
-        <div class="hero-content">
-            <p class="hero-subtitle">Premium Chronometers</p>
-            <h1 class="hero-title">ศิลปะแห่งเวลา<br>สะท้อนตัวตนของคุณ <span>WatchMart</span></h1>
-            <p class="hero-description">สัมผัสประสบการณ์แห่งความเที่ยงตรงด้วยนาฬิกาพรีเมียมและนาฬิกาหรูที่โดดเด่นทั้งความงดงามทางวิศวกรรมและการออกแบบเหนือกาลเวลา</p>
-            <a href="#products" class="cta-btn">เลือกชมสินค้า</a>
-        </div>
-        <div class="hero-image-container">
-            <div class="hero-watch-glow"></div>
-            <!-- Main Hero Watch SVG Graphic -->
-            <svg class="hero-watch-svg" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
-                <!-- Watch Strap -->
-                <rect x="85" y="10" width="30" height="180" rx="5" fill="#3a2e2b" stroke="#251a17" stroke-width="1.5" />
-                <path d="M 85,30 L 115,30 M 85,170 L 115,170" stroke="#c5a880" stroke-width="1" stroke-dasharray="2,2"/>
-                <!-- Watch Case -->
-                <circle cx="100" cy="100" r="48" fill="#1e1e1e" stroke="#c5a880" stroke-width="4.5" />
-                <circle cx="100" cy="100" r="44" fill="url(#watch-face-grad)" />
-                <circle cx="100" cy="100" r="40" fill="none" stroke="rgba(197, 168, 128, 0.2)" stroke-width="1"/>
-                <!-- Hour Markers -->
-                <line x1="100" y1="58" x2="100" y2="64" stroke="#c5a880" stroke-width="2.5" />
-                <line x1="100" y1="142" x2="100" y2="136" stroke="#c5a880" stroke-width="2" />
-                <line x1="58" y1="100" x2="64" y2="100" stroke="#c5a880" stroke-width="2" />
-                <line x1="142" y1="100" x2="136" y2="100" stroke="#c5a880" stroke-width="2" />
-                <!-- Center point -->
-                <circle cx="100" cy="100" r="4" fill="#c5a880" />
-                <!-- Hands -->
-                <line x1="100" y1="100" x2="100" y2="72" stroke="#f5f5f7" stroke-width="2" stroke-linecap="round" transform="rotate(45 100 100)" />
-                <line x1="100" y1="100" x2="125" y2="100" stroke="#f5f5f7" stroke-width="1.5" stroke-linecap="round" transform="rotate(130 100 100)" />
-                <line x1="100" y1="100" x2="90" y2="130" stroke="#d32f2f" stroke-width="0.8" stroke-linecap="round" transform="rotate(320 100 100)" />
-                <!-- Crown button -->
-                <rect x="148" y="93" width="5" height="14" rx="2" fill="#c5a880" />
-                <!-- Gradients -->
-                <defs>
-                    <radialGradient id="watch-face-grad" cx="50%" cy="50%" r="50%">
-                        <stop offset="0%" stop-color="#1b263b" />
-                        <stop offset="100%" stop-color="#0b0c10" />
-                    </radialGradient>
-                </defs>
-            </svg>
-        </div>
-    </section>
+    <!-- ==================== CUSTOMER VIEW CONTAINER ==================== -->
+    <div id="customer-view">
+        <!-- Hero Section -->
+        <section class="hero">
+            <div class="hero-content">
+                <p class="hero-subtitle">Premium Chronometers</p>
+                <h1 class="hero-title">ศิลปะแห่งเวลา<br>สะท้อนตัวตนของคุณ <span>WatchMart</span></h1>
+                <p class="hero-description">สัมผัสประสบการณ์แห่งความเที่ยงตรงด้วยนาฬิกาพรีเมียมและนาฬิกาหรูที่โดดเด่นทั้งความงดงามทางวิศวกรรมและการออกแบบเหนือกาลเวลา</p>
+                <a href="#products" class="cta-btn">เลือกชมสินค้า</a>
+            </div>
+            <div class="hero-image-container">
+                <div class="hero-watch-glow"></div>
+                <!-- Main Hero Watch SVG Graphic -->
+                <svg class="hero-watch-svg" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+                    <!-- Watch Strap -->
+                    <rect x="85" y="10" width="30" height="180" rx="5" fill="#3a2e2b" stroke="#251a17" stroke-width="1.5" />
+                    <path d="M 85,30 L 115,30 M 85,170 L 115,170" stroke="#c5a880" stroke-width="1" stroke-dasharray="2,2"/>
+                    <!-- Watch Case -->
+                    <circle cx="100" cy="100" r="48" fill="#1e1e1e" stroke="#c5a880" stroke-width="4.5" />
+                    <circle cx="100" cy="100" r="44" fill="url(#watch-face-grad)" />
+                    <circle cx="100" cy="100" r="40" fill="none" stroke="rgba(197, 168, 128, 0.2)" stroke-width="1"/>
+                    <!-- Hour Markers -->
+                    <line x1="100" y1="58" x2="100" y2="64" stroke="#c5a880" stroke-width="2.5" />
+                    <line x1="100" y1="142" x2="100" y2="136" stroke="#c5a880" stroke-width="2" />
+                    <line x1="58" y1="100" x2="64" y2="100" stroke="#c5a880" stroke-width="2" />
+                    <line x1="142" y1="100" x2="136" y2="100" stroke="#c5a880" stroke-width="2" />
+                    <!-- Center point -->
+                    <circle cx="100" cy="100" r="4" fill="#c5a880" />
+                    <!-- Hands -->
+                    <line x1="100" y1="100" x2="100" y2="72" stroke="#f5f5f7" stroke-width="2" stroke-linecap="round" transform="rotate(45 100 100)" />
+                    <line x1="100" y1="100" x2="125" y2="100" stroke="#f5f5f7" stroke-width="1.5" stroke-linecap="round" transform="rotate(130 100 100)" />
+                    <line x1="100" y1="100" x2="90" y2="130" stroke="#d32f2f" stroke-width="0.8" stroke-linecap="round" transform="rotate(320 100 100)" />
+                    <!-- Crown button -->
+                    <rect x="148" y="93" width="5" height="14" rx="2" fill="#c5a880" />
+                    <!-- Gradients -->
+                    <defs>
+                        <radialGradient id="watch-face-grad" cx="50%" cy="50%" r="50%">
+                            <stop offset="0%" stop-color="#1b263b" />
+                            <stop offset="100%" stop-color="#0b0c10" />
+                        </radialGradient>
+                    </defs>
+                </svg>
+            </div>
+        </section>
 
-    <!-- Products Catalog Section -->
-    <section class="products-section" id="products">
-        <div class="section-header">
-            <h2 class="section-title">คอลเลกชันสุดพิเศษของเรา</h2>
-            <p class="section-desc">สัมผัสดีไซน์ที่หรูหราจากชิ้นงานศิลปะบนข้อมือที่โดดเด่นไม่ซ้ำใคร</p>
-        </div>
-
-        <div class="product-filters">
-            <button class="filter-btn active" data-category="all">ทั้งหมด</button>
-            <button class="filter-btn" data-category="classic">Classic</button>
-            <button class="filter-btn" data-category="sport">Sport</button>
-            <button class="filter-btn" data-category="elegant">Elegant</button>
-        </div>
-
-        <div class="products-grid" id="products-list">
-            <!-- Product Item 1: Classic -->
-            <div class="product-card" data-category="classic">
-                <div class="product-img-holder">
-                    <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
-                        <rect x="85" y="10" width="30" height="180" rx="3" fill="#4e342e" />
-                        <circle cx="100" cy="100" r="45" fill="#121212" stroke="#c5a880" stroke-width="3" />
-                        <circle cx="100" cy="100" r="38" fill="#1a1a1a" />
-                        <!-- Hands -->
-                        <line x1="100" y1="100" x2="100" y2="76" stroke="#c5a880" stroke-width="2" transform="rotate(20 100 100)" />
-                        <line x1="100" y1="100" x2="120" y2="100" stroke="#c5a880" stroke-width="1.5" transform="rotate(100 100 100)" />
-                    </svg>
-                </div>
-                <div class="product-info">
-                    <p class="product-brand">Heritage</p>
-                    <h3 class="product-name">Chronos Classic 40</h3>
-                    <div class="product-footer">
-                        <span class="product-price">฿ 15,900</span>
-                        <button class="add-cart-btn" data-id="1" data-name="Chronos Classic 40" data-price="15900">＋</button>
-                    </div>
-                </div>
+        <!-- Products Catalog Section -->
+        <section class="products-section" id="products">
+            <div class="section-header">
+                <h2 class="section-title">คอลเลกชันสุดพิเศษของเรา</h2>
+                <p class="section-desc">สัมผัสดีไซน์ที่หรูหราจากชิ้นงานศิลปะบนข้อมือที่โดดเด่นไม่ซ้ำใคร</p>
             </div>
 
-            <!-- Product Item 2: Sport -->
-            <div class="product-card" data-category="sport">
-                <div class="product-img-holder">
-                    <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
-                        <rect x="85" y="10" width="30" height="180" rx="3" fill="#263238" />
-                        <circle cx="100" cy="100" r="45" fill="#212121" stroke="#d32f2f" stroke-width="3.5" />
-                        <circle cx="100" cy="100" r="38" fill="#0d0d0d" />
-                        <rect x="98" y="66" width="4" height="6" fill="#d32f2f"/>
-                        <!-- Hands -->
-                        <line x1="100" y1="100" x2="100" y2="70" stroke="#f5f5f7" stroke-width="2" transform="rotate(70 100 100)" />
-                        <line x1="100" y1="100" x2="125" y2="100" stroke="#f5f5f7" stroke-width="1.5" transform="rotate(160 100 100)" />
-                    </svg>
-                </div>
-                <div class="product-info">
-                    <p class="product-brand">Veloce</p>
-                    <h3 class="product-name">Veloce Sport Chronograph</h3>
-                    <div class="product-footer">
-                        <span class="product-price">฿ 24,500</span>
-                        <button class="add-cart-btn" data-id="2" data-name="Veloce Sport Chronograph" data-price="24500">＋</button>
-                    </div>
-                </div>
+            <div class="product-filters">
+                <button class="filter-btn active" data-category="all" onclick="filterProducts('all', this)">ทั้งหมด</button>
+                <button class="filter-btn" data-category="classic" onclick="filterProducts('classic', this)">Classic</button>
+                <button class="filter-btn" data-category="sport" onclick="filterProducts('sport', this)">Sport</button>
+                <button class="filter-btn" data-category="elegant" onclick="filterProducts('elegant', this)">Elegant</button>
             </div>
 
-            <!-- Product Item 3: Elegant -->
-            <div class="product-card" data-category="elegant">
-                <div class="product-img-holder">
-                    <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
-                        <rect x="85" y="10" width="30" height="180" rx="3" fill="#1c1d21" />
-                        <!-- Rose gold look -->
-                        <circle cx="100" cy="100" r="45" fill="#121212" stroke="#e0a96d" stroke-width="3" />
-                        <circle cx="100" cy="100" r="40" fill="#fcfcfc" />
-                        <!-- Hands -->
-                        <line x1="100" y1="100" x2="100" y2="75" stroke="#121212" stroke-width="2" transform="rotate(340 100 100)" />
-                        <line x1="100" y1="100" x2="118" y2="100" stroke="#121212" stroke-width="1.5" transform="rotate(80 100 100)" />
-                    </svg>
-                </div>
-                <div class="product-info">
-                    <p class="product-brand">Grandeur</p>
-                    <h3 class="product-name">Grandeur Rose Gold</h3>
-                    <div class="product-footer">
-                        <span class="product-price">฿ 89,000</span>
-                        <button class="add-cart-btn" data-id="3" data-name="Grandeur Rose Gold" data-price="89000">＋</button>
-                    </div>
-                </div>
-            </div>
+            <!-- Dynamic Product Grid -->
+            <div class="products-grid" id="products-list"></div>
+        </section>
 
-            <!-- Product Item 4: Elegant -->
-            <div class="product-card" data-category="elegant">
-                <div class="product-img-holder">
-                    <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
-                        <rect x="85" y="10" width="30" height="180" rx="3" fill="#2d3748" />
-                        <circle cx="100" cy="100" r="45" fill="#1a202c" stroke="#c5a880" stroke-width="2" />
-                        <circle cx="100" cy="100" r="40" fill="#2d3748" />
-                        <!-- Hands -->
-                        <line x1="100" y1="100" x2="100" y2="72" stroke="#c5a880" stroke-width="2" transform="rotate(15 100 100)" />
-                        <line x1="100" y1="100" x2="120" y2="100" stroke="#c5a880" stroke-width="1.5" transform="rotate(110 100 100)" />
-                    </svg>
-                </div>
-                <div class="product-info">
-                    <p class="product-brand">Stella</p>
-                    <h3 class="product-name">Stella Midnight Blue</h3>
-                    <div class="product-footer">
-                        <span class="product-price">฿ 32,000</span>
-                        <button class="add-cart-btn" data-id="4" data-name="Stella Midnight Blue" data-price="32000">＋</button>
-                    </div>
-                </div>
+        <!-- Customer Order History Section -->
+        <section class="customer-orders-section" id="customer-orders-area">
+            <div class="section-header" style="text-align: left; margin-bottom: 2rem;">
+                <h2 class="section-title" style="font-size: 1.8rem;">📦 ประวัติการสั่งซื้อของคุณ (My Orders)</h2>
+                <p class="section-desc">ติดตามออเดอร์ หรือกดยกเลิกสินค้าของท่านได้ที่นี่</p>
+            </div>
+            <div id="customer-orders-list">
+                <p style="color: var(--text-muted);">ยังไม่มีประวัติการสั่งซื้อสินค้า</p>
+            </div>
+        </section>
+    </div>
+
+    <!-- ==================== STAFF VIEW CONTAINER ==================== -->
+    <div id="staff-view" class="dashboard-section hidden">
+        <div class="dashboard-header">
+            <div class="dashboard-title">🧑‍💼 แผงควบคุมพนักงาน <span>(Staff Portal)</span></div>
+            <span class="badge badge-paid">พนักงานออนไลน์</span>
+        </div>
+        
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-label">ออเดอร์รอดำเนินการ</div>
+                <div class="stat-value" id="staff-pending-count">0</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">ออเดอร์ส่งแล้ว</div>
+                <div class="stat-value" id="staff-shipped-count">0</div>
             </div>
         </div>
-    </section>
+
+        <div class="form-card">
+            <div class="form-title">📋 รายการสั่งซื้อของลูกค้าทั้งหมด (Order Tracking)</div>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>รหัสออเดอร์</th>
+                            <th>รายการสินค้า</th>
+                            <th>ราคารวม</th>
+                            <th>สถานะออเดอร์</th>
+                            <th>การดำเนินการ</th>
+                        </tr>
+                    </thead>
+                    <tbody id="staff-orders-table">
+                        <tr>
+                            <td colspan="5" style="text-align: center; color: var(--text-muted);">ไม่มีรายการคำสั่งซื้อใดๆ ในระบบ</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==================== MANAGER VIEW CONTAINER ==================== -->
+    <div id="manager-view" class="dashboard-section hidden">
+        <div class="dashboard-header">
+            <div class="dashboard-title">👑 แผงบริหารจัดการ <span>(Manager Dashboard)</span></div>
+            <span class="badge badge-pending">โหมดผู้จัดการ</span>
+        </div>
+
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-label">ยอดขายสะสมรวม</div>
+                <div class="stat-value" id="mgr-total-sales">฿ 0</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">จำนวนคำสั่งซื้อทั้งหมด</div>
+                <div class="stat-value" id="mgr-total-orders">0 รายการ</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">รายการสินค้าที่มีในสต็อก</div>
+                <div class="stat-value" id="mgr-product-types">0 รุ่น</div>
+            </div>
+        </div>
+
+        <!-- CRUD Product Form -->
+        <div class="form-card">
+            <div class="form-title" id="form-action-title">➕ เพิ่มสินค้าใหม่ลงในระบบ (Create Product)</div>
+            <form id="product-form" onsubmit="handleProductSubmit(event)">
+                <input type="hidden" id="edit-product-id">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="prod-name">ชื่อรุ่นนาฬิกา</label>
+                        <input type="text" id="prod-name" class="form-control" placeholder="เช่น Chronos Elite 50" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="prod-brand">แบรนด์</label>
+                        <input type="text" id="prod-brand" class="form-control" placeholder="เช่น Heritage / Rolex" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="prod-category">หมวดหมู่</label>
+                        <select id="prod-category" class="form-control">
+                            <option value="classic">Classic</option>
+                            <option value="sport">Sport</option>
+                            <option value="elegant">Elegant</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="prod-price">ราคา (บาท)</label>
+                        <input type="number" id="prod-price" class="form-control" placeholder="เช่น 25000" min="0" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="prod-stock">สต็อกสินค้า</label>
+                        <input type="number" id="prod-stock" class="form-control" placeholder="เช่น 10" min="0" required>
+                    </div>
+                </div>
+                <div style="display: flex; gap: 1rem;">
+                    <button type="submit" class="btn btn-primary" id="btn-submit-form">บันทึกข้อมูลสินค้า</button>
+                    <button type="button" class="btn btn-secondary" onclick="resetProductForm()">ล้างค่า</button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Inventory List (Read, Update, Delete Table) -->
+        <div class="form-card">
+            <div class="form-title">📦 จัดการคลังและราคาสินค้า (Inventory Management)</div>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>รูปสินค้า</th>
+                            <th>แบรนด์/รุ่น</th>
+                            <th>หมวดหมู่</th>
+                            <th>ราคา</th>
+                            <th>สต็อก</th>
+                            <th>จัดการ</th>
+                        </tr>
+                    </thead>
+                    <tbody id="manager-inventory-table">
+                        <!-- Loaded dynamically -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Manager Order Overview -->
+        <div class="form-card">
+            <div class="form-title">📊 รายการสรุปและวิเคราะห์ใบสั่งซื้อ</div>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>รหัสใบสั่งซื้อ</th>
+                            <th>มูลค่าออเดอร์</th>
+                            <th>สถานะการชำระเงิน</th>
+                            <th>บันทึกช่วยจำ</th>
+                        </tr>
+                    </thead>
+                    <tbody id="manager-orders-table">
+                        <!-- Loaded dynamically -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==================== CHECKOUT MODAL UI ==================== -->
+    <div class="cart-overlay" id="checkout-overlay" onclick="closeCheckoutModal()"></div>
+    <div class="checkout-modal" id="checkout-modal">
+        <div class="checkout-modal-header">
+            <h2 class="checkout-modal-title">กรอกข้อมูลสั่งซื้อสินค้า</h2>
+            <button class="checkout-modal-close" onclick="closeCheckoutModal()">&times;</button>
+        </div>
+        <form id="checkout-form" onsubmit="processCheckout(event)">
+            <div class="form-group" style="margin-bottom: 1.2rem;">
+                <label for="cust-email">อีเมลสำหรับรับหลักฐานยืนยันสั่งซื้อ</label>
+                <input type="email" id="cust-email" class="form-control" placeholder="customer@email.com" required>
+            </div>
+            <div class="form-group" style="margin-bottom: 1.2rem;">
+                <label for="cust-address">ที่อยู่สำหรับจัดส่งนาฬิกา</label>
+                <textarea id="cust-address" class="form-control" rows="3" placeholder="ระบุบ้านเลขที่ ถนน แขวง เขต จังหวัด..." required></textarea>
+            </div>
+            <div class="form-group" style="margin-bottom: 1.5rem;">
+                <label for="cust-payment">ช่องทางการชำระเงิน</label>
+                <select id="cust-payment" class="form-control">
+                    <option value="bank_transfer">🏦 โอนเงินผ่านธนาคาร (Bank Transfer)</option>
+                    <option value="credit_card">💳 บัตรเครดิต/เดบิต (Credit/Debit Card)</option>
+                    <option value="promptpay">📱 สแกน QR พร้อมเพย์ (PromptPay)</option>
+                </select>
+            </div>
+            <div style="border-top: 1px solid var(--glass-border); padding-top: 1.5rem; margin-top: 1.5rem; display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                <span style="font-weight: 600;">ยอดเงินรวมที่ต้องชำระ:</span>
+                <span id="checkout-total-price" style="font-size: 1.4rem; color: var(--accent-gold); font-weight: 800;">฿ 0</span>
+            </div>
+            <div class="btn-group" style="justify-content: flex-end;">
+                <button type="button" class="btn btn-secondary" onclick="closeCheckoutModal()">ยกเลิก</button>
+                <button type="submit" class="btn btn-primary" style="padding: 0.8rem 2rem;">ยืนยันคำสั่งซื้อ ⚡</button>
+            </div>
+        </form>
+    </div>
 
     <!-- Cart Sidebar Panel -->
     <div class="cart-overlay" id="cart-overlay"></div>
@@ -203,6 +318,19 @@
         <span id="notification-message">เพิ่มสินค้าลงในตะกร้าสำเร็จ</span>
     </div>
 
+    <!-- System Log Output Dashboard Area -->
+    <section style="max-width: 1200px; margin: 2rem auto; padding: 0 5%;">
+        <div class="system-logger">
+            <div class="system-logger-title">
+                <span>⚡ การทำงานหลังบ้าน & ระบบแจ้งเตือน (System Logs & LINE Notify Simulation)</span>
+                <span style="color: #64748b;">API Console</span>
+            </div>
+            <div id="system-logs-container">
+                [SYSTEM]: เริ่มต้นเปิดใช้งานแพลตฟอร์มระบบการค้า WatchMart E-commerce Suite สำเร็จ
+            </div>
+        </div>
+    </section>
+
     <!-- Footer -->
     <footer>
         <p>&copy; 2026 WatchMart Store. สงวนลิขสิทธิ์ทั้งหมดตามวิชา CSI204</p>
@@ -211,23 +339,158 @@
 
     <!-- App Script -->
     <script>
+        // Default Watch Collection (Stored to localStorage if not exists)
+        const initialProducts = [
+            {
+                id: "1",
+                name: "Chronos Classic 40",
+                brand: "Heritage",
+                category: "classic",
+                price: 15900,
+                stock: 15,
+                color: "#4e342e",
+                strokeColor: "#c5a880"
+            },
+            {
+                id: "2",
+                name: "Veloce Sport Chronograph",
+                brand: "Veloce",
+                category: "sport",
+                price: 24500,
+                stock: 8,
+                color: "#263238",
+                strokeColor: "#d32f2f"
+            },
+            {
+                id: "3",
+                name: "Grandeur Rose Gold",
+                brand: "Grandeur",
+                category: "elegant",
+                price: 89000,
+                stock: 4,
+                color: "#1c1d21",
+                strokeColor: "#e0a96d",
+                isGoldFace: true
+            },
+            {
+                id: "4",
+                name: "Stella Midnight Blue",
+                brand: "Stella",
+                category: "elegant",
+                price: 32000,
+                stock: 12,
+                color: "#2d3748",
+                strokeColor: "#c5a880"
+            }
+        ];
+
+        // Database Keys in LocalStorage
+        const DB_PRODUCTS_KEY = "watchmart_db_products";
+        const DB_ORDERS_KEY = "watchmart_db_orders";
+
+        // State Variables
+        let products = [];
+        let orders = [];
+        let cart = [];
+        let currentRole = "customer";
+
         // DOM Elements
         const cartToggleBtn = document.getElementById('cart-toggle-btn');
         const cartCloseBtn = document.getElementById('cart-close-btn');
         const cartSidebar = document.getElementById('cart-sidebar');
         const cartOverlay = document.getElementById('cart-overlay');
-        const productsGrid = document.getElementById('products-list');
         const cartItemsList = document.getElementById('cart-items-list');
         const cartCounter = document.getElementById('cart-counter');
         const cartTotalPrice = document.getElementById('cart-total-price');
         const checkoutBtn = document.getElementById('checkout-btn');
         const notification = document.getElementById('notification');
         const notificationMsg = document.getElementById('notification-message');
-        const filterBtns = document.querySelectorAll('.filter-btn');
+        const checkoutModal = document.getElementById('checkout-modal');
+        const checkoutOverlay = document.getElementById('checkout-overlay');
+        const systemLogs = document.getElementById('system-logs-container');
 
-        let cart = [];
+        // Initial Data Load
+        window.addEventListener('DOMContentLoaded', () => {
+            // Load products from localStorage or set defaults
+            if (!localStorage.getItem(DB_PRODUCTS_KEY)) {
+                localStorage.setItem(DB_PRODUCTS_KEY, JSON.stringify(initialProducts));
+            }
+            products = JSON.parse(localStorage.getItem(DB_PRODUCTS_KEY));
 
-        // Toggle Cart Sidebar
+            // Load orders or set empty array
+            if (!localStorage.getItem(DB_ORDERS_KEY)) {
+                localStorage.setItem(DB_ORDERS_KEY, JSON.stringify([]));
+            }
+            orders = JSON.parse(localStorage.getItem(DB_ORDERS_KEY));
+
+            // Render Views
+            renderProducts();
+            renderCustomerOrders();
+            renderStaffDashboard();
+            renderManagerDashboard();
+
+            // Setup Cart Sidebar Event
+            cartToggleBtn.addEventListener('click', openCart);
+            cartCloseBtn.addEventListener('click', closeCart);
+            cartOverlay.addEventListener('click', closeCart);
+            
+            checkoutBtn.addEventListener('click', () => {
+                if (cart.length === 0) {
+                    showNotification('กรุณาเลือกซื้อสินค้าใส่ตะกร้าก่อนสั่งซื้อ!', false);
+                    return;
+                }
+                closeCart();
+                openCheckoutModal();
+            });
+
+            logSystem("ระบบโหลดข้อมูลสินค้าและประวัติการสั่งซื้อเข้าหน่วยความจำชั่วคราวเรียบร้อยแล้ว");
+        });
+
+        // System Logging Simulation
+        function logSystem(message) {
+            const time = new Date().toLocaleTimeString();
+            const logEntry = `<div>[${time}] ${message}</div>`;
+            systemLogs.innerHTML += logEntry;
+            systemLogs.scrollTop = systemLogs.scrollHeight;
+        }
+
+        // Toggle Views based on Role
+        function switchRole(role) {
+            currentRole = role;
+            
+            // Hide all views
+            document.getElementById('customer-view').classList.add('hidden');
+            document.getElementById('staff-view').classList.add('hidden');
+            document.getElementById('manager-view').classList.add('hidden');
+
+            // Show active view
+            if (role === 'customer') {
+                document.getElementById('customer-view').classList.remove('hidden');
+                document.getElementById('nav-home').style.display = 'block';
+                document.getElementById('nav-products').style.display = 'block';
+                document.getElementById('nav-home').classList.add('active');
+            } else if (role === 'staff') {
+                document.getElementById('staff-view').classList.remove('hidden');
+                document.getElementById('nav-home').style.display = 'none';
+                document.getElementById('nav-products').style.display = 'none';
+                renderStaffDashboard();
+            } else if (role === 'manager') {
+                document.getElementById('manager-view').classList.remove('hidden');
+                document.getElementById('nav-home').style.display = 'none';
+                document.getElementById('nav-products').style.display = 'none';
+                renderManagerDashboard();
+            }
+            
+            logSystem(`ผู้ใช้ทำการเปลี่ยนสลับบทบาทหน้าจอเป็น: ${role.toUpperCase()}`);
+        }
+
+        // Helper to force role switcher (e.g. clicking logo)
+        function setRole(role) {
+            document.getElementById('role-selector').value = role;
+            switchRole(role);
+        }
+
+        // Cart Drawer Control
         function openCart() {
             cartSidebar.classList.add('open');
             cartOverlay.classList.add('open');
@@ -238,45 +501,92 @@
             cartOverlay.classList.remove('open');
         }
 
-        cartToggleBtn.addEventListener('click', openCart);
-        cartCloseBtn.addEventListener('click', closeCart);
-        cartOverlay.addEventListener('click', closeCart);
+        // Checkout Modal Control
+        function openCheckoutModal() {
+            const totalPrice = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+            document.getElementById('checkout-total-price').innerText = `฿ ${totalPrice.toLocaleString()}`;
+            checkoutModal.classList.add('open');
+            checkoutOverlay.classList.add('open');
+        }
 
-        // Filter Logic
-        filterBtns.forEach(btn => {
-            btn.addEventListener('click', () => {
-                // Toggle Active Button
-                filterBtns.forEach(b => b.classList.remove('active'));
-                btn.classList.add('active');
+        function closeCheckoutModal() {
+            checkoutModal.classList.remove('open');
+            checkoutOverlay.classList.remove('open');
+        }
 
-                const category = btn.getAttribute('data-category');
-                const cards = productsGrid.querySelectorAll('.product-card');
+        // Render products catalog dynamically
+        function renderProducts(categoryFilter = 'all') {
+            const listContainer = document.getElementById('products-list');
+            listContainer.innerHTML = '';
 
-                cards.forEach(card => {
-                    if (category === 'all' || card.getAttribute('data-category') === category) {
-                        card.style.display = 'flex';
-                    } else {
-                        card.style.display = 'none';
-                    }
-                });
+            const filteredProducts = products.filter(p => categoryFilter === 'all' || p.category === categoryFilter);
+
+            if (filteredProducts.length === 0) {
+                listContainer.innerHTML = `<p style="grid-column: 1/-1; text-align: center; color: var(--text-muted); padding: 3rem;">ขออภัย ยังไม่มีสินค้าในหมวดหมู่นี้</p>`;
+                return;
+            }
+
+            filteredProducts.forEach(prod => {
+                const card = document.createElement('div');
+                card.className = 'product-card';
+                
+                // Construct Watch SVG Graphic dynamically
+                let innerDial = prod.isGoldFace 
+                    ? `<circle cx="100" cy="100" r="40" fill="#fcfcfc" />`
+                    : `<circle cx="100" cy="100" r="38" fill="#1a1a1a" />`;
+
+                let watchSVG = `
+                    <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+                        <rect x="85" y="10" width="30" height="180" rx="3" fill="${prod.color || '#2d3748'}" />
+                        <circle cx="100" cy="100" r="45" fill="#121212" stroke="${prod.strokeColor || '#c5a880'}" stroke-width="3" />
+                        ${innerDial}
+                        <line x1="100" y1="100" x2="100" y2="76" stroke="${prod.isGoldFace ? '#121212' : '#c5a880'}" stroke-width="2" transform="rotate(30 100 100)" />
+                        <line x1="100" y1="100" x2="120" y2="100" stroke="${prod.isGoldFace ? '#121212' : '#c5a880'}" stroke-width="1.5" transform="rotate(110 100 100)" />
+                    </svg>
+                `;
+
+                card.innerHTML = `
+                    <div class="product-img-holder">
+                        ${watchSVG}
+                    </div>
+                    <div class="product-info">
+                        <p class="product-brand">${prod.brand}</p>
+                        <h3 class="product-name">${prod.name}</h3>
+                        <div class="product-footer">
+                            <span class="product-price">฿ ${prod.price.toLocaleString()}</span>
+                            <button class="add-cart-btn" onclick="addToCart('${prod.id}', '${prod.name}', ${prod.price})" aria-label="Add to cart">＋</button>
+                        </div>
+                    </div>
+                `;
+                listContainer.appendChild(card);
             });
-        });
+        }
 
-        // Add to Cart Logic
-        document.querySelectorAll('.add-cart-btn').forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                const id = btn.getAttribute('data-id');
-                const name = btn.getAttribute('data-name');
-                const price = parseFloat(btn.getAttribute('data-price'));
+        // Filter product catalog tags
+        function filterProducts(category, btnElement) {
+            // Toggle active filter button style
+            document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
+            btnElement.classList.add('active');
+            renderProducts(category);
+        }
 
-                addToCart(id, name, price);
-            });
-        });
-
+        // Add to Cart Action
         function addToCart(id, name, price) {
-            const existingItem = cart.find(item => item.id === id);
+            const product = products.find(p => p.id === id);
+            
+            // Check Stock Limit
+            if (product && product.stock <= 0) {
+                showNotification('ขออภัย! นาฬิการุ่นนี้สินค้าหมดชั่วคราว', false);
+                return;
+            }
 
+            const existingItem = cart.find(item => item.id === id);
             if (existingItem) {
+                // Check if adding exceeds available stock
+                if (existingItem.quantity >= product.stock) {
+                    showNotification(`คุณซื้อสินค้าเกินจำนวนที่มีในคลัง (สูงสุด: ${product.stock} เรือน)`, false);
+                    return;
+                }
                 existingItem.quantity += 1;
             } else {
                 cart.push({ id, name, price, quantity: 1 });
@@ -284,23 +594,25 @@
 
             updateCartUI();
             showNotification(`เพิ่ม "${name}" ลงในตะกร้าสำเร็จ`);
+            logSystem(`[CART]: เพิ่มสินค้าลงในตะกร้าชั่วคราว - ${name}`);
         }
 
         function removeFromCart(id) {
+            const item = cart.find(i => i.id === id);
             cart = cart.filter(item => item.id !== id);
             updateCartUI();
+            if (item) {
+                logSystem(`[CART]: ลบสินค้าออกจากตะกร้าชั่วคราว - ${item.name}`);
+            }
         }
 
         function updateCartUI() {
-            // Count total quantity
             const totalCount = cart.reduce((sum, item) => sum + item.quantity, 0);
             cartCounter.innerText = totalCount;
 
-            // Total price
             const totalPrice = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
             cartTotalPrice.innerText = `฿ ${totalPrice.toLocaleString()}`;
 
-            // Render list items
             if (cart.length === 0) {
                 cartItemsList.innerHTML = `<p style="text-align: center; color: var(--text-muted); margin-top: 3rem;">ยังไม่มีสินค้าในตะกร้า</p>`;
                 return;
@@ -318,6 +630,7 @@
             `).join('');
         }
 
+        // Notification System UI Control
         function showNotification(msg, isSuccess = true) {
             notificationMsg.innerText = msg;
             notification.style.backgroundColor = isSuccess ? '#2e7d32' : '#c62828';
@@ -327,22 +640,334 @@
             }, 3000);
         }
 
-        // Checkout simulation
-        checkoutBtn.addEventListener('click', () => {
-            if (cart.length === 0) {
-                showNotification('ตะกร้าสินค้าว่างเปล่า ไม่สามารถส่งยอดสั่งซื้อได้!', false);
+        // Submit & Process Order Checkout Form
+        function processCheckout(event) {
+            event.preventDefault();
+
+            const email = document.getElementById('cust-email').value;
+            const address = document.getElementById('cust-address').value;
+            const paymentMethod = document.getElementById('cust-payment').value;
+            const totalPrice = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+
+            // Deduct Stocks
+            products.forEach(p => {
+                const cartItem = cart.find(c => c.id === p.id);
+                if (cartItem) {
+                    p.stock = Math.max(0, p.stock - cartItem.quantity);
+                }
+            });
+            localStorage.setItem(DB_PRODUCTS_KEY, JSON.stringify(products));
+
+            // Create New Order
+            const newOrder = {
+                id: "ORD-" + Math.floor(100000 + Math.random() * 900000),
+                items: [...cart],
+                total: totalPrice,
+                email: email,
+                address: address,
+                payment: paymentMethod,
+                status: "paid", // Auto confirmed upon payment simulation
+                date: new Date().toLocaleString()
+            };
+
+            orders.push(newOrder);
+            localStorage.setItem(DB_ORDERS_KEY, JSON.stringify(orders));
+
+            // System Trigger Notification Logic Simulation
+            logSystem(`[DATABASE]: บันทึกประวัติใบสั่งซื้อลง PostgreSQL สำเร็จ (ID: ${newOrder.id})`);
+            logSystem(`[API Trigger]: ยิงคำสั่ง POST ไปยัง LINE Notify API เรียบร้อย -> "มีคำสั่งซื้อใหม่ ยอดเงิน ฿${totalPrice.toLocaleString()}"`);
+            logSystem(`[Email Service]: ส่งรายละเอียดหลักฐานการสั่งซื้อไปยังกล่องจดหมาย: ${email} สำเร็จ`);
+
+            // Clear Cart and Close
+            cart = [];
+            updateCartUI();
+            closeCheckoutModal();
+            
+            // Reload Views
+            renderProducts();
+            renderCustomerOrders();
+            
+            showNotification(`สั่งซื้อสินค้าสำเร็จ! ระบบทำการอัปเดตและแจ้งเตือนเรียบร้อย`);
+            
+            document.getElementById('checkout-form').reset();
+        }
+
+        // Render Customer Order History
+        function renderCustomerOrders() {
+            const container = document.getElementById('customer-orders-list');
+            if (orders.length === 0) {
+                container.innerHTML = `<p style="color: var(--text-muted);">ยังไม่มีประวัติการสั่งซื้อสินค้า</p>`;
                 return;
             }
 
-            // Slide 10: payment process simulation
-            const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-            showNotification(`ส่งยอดสั่งซื้อ ฿${total.toLocaleString()} ไปยังระบบ และส่งการแจ้งเตือน LINE Notify เรียบร้อย!`);
+            container.innerHTML = orders.map(ord => {
+                const itemsDesc = ord.items.map(i => `${i.name} (x${i.quantity})`).join(', ');
+                let actionButton = '';
+                
+                if (ord.status === 'paid') {
+                    actionButton = `<button class="btn btn-danger" onclick="cancelOrder('${ord.id}')">ยกเลิกคำสั่งซื้อ</button>`;
+                } else {
+                    actionButton = `<button class="btn btn-secondary" disabled>ไม่สามารถจัดการได้</button>`;
+                }
+
+                let statusBadge = '';
+                if (ord.status === 'paid') statusBadge = '<span class="badge badge-paid">ชำระเงินสำเร็จ</span>';
+                else if (ord.status === 'shipped') statusBadge = '<span class="badge badge-shipped">จัดส่งแล้ว</span>';
+                else if (ord.status === 'cancelled') statusBadge = '<span class="badge badge-cancelled">ยกเลิกแล้ว</span>';
+
+                return `
+                    <div class="order-history-card">
+                        <div class="order-history-info">
+                            <h4>รหัสสั่งซื้อ: ${ord.id} (${ord.date})</h4>
+                            <p><strong>สินค้า:</strong> ${itemsDesc}</p>
+                            <p><strong>ยอดชำระ:</strong> ฿ ${ord.total.toLocaleString()} (${ord.payment === 'bank_transfer' ? 'โอนเงินธนาคาร' : ord.payment === 'promptpay' ? 'พร้อมเพย์' : 'บัตรเครดิต'})</p>
+                            <p style="margin-top:0.4rem;"><strong>สถานะ:</strong> ${statusBadge}</p>
+                        </div>
+                        <div class="btn-group">
+                            ${actionButton}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Customer cancels their order
+        function cancelOrder(orderId) {
+            const confirmCancel = confirm(`คุณต้องการยกเลิกคำสั่งซื้อรหัส ${orderId} ใช่หรือไม่?`);
+            if (!confirmCancel) return;
+
+            const ordIndex = orders.findIndex(o => o.id === orderId);
+            if (ordIndex !== -1) {
+                orders[ordIndex].status = 'cancelled';
+                
+                // Return Stocks back
+                const cancelledOrder = orders[ordIndex];
+                cancelledOrder.items.forEach(item => {
+                    const prod = products.find(p => p.id === item.id);
+                    if (prod) {
+                        prod.stock += item.quantity;
+                    }
+                });
+
+                localStorage.setItem(DB_ORDERS_KEY, JSON.stringify(orders));
+                localStorage.setItem(DB_PRODUCTS_KEY, JSON.stringify(products));
+
+                logSystem(`[ORDER]: ลูกค้ายกเลิกคำสั่งซื้อ ${orderId} สินค้าถูกส่งกลับเข้าสต็อก`);
+                logSystem(`[LINE Notify API]: แจ้งเตือนข้อความเตือนไปแจ้ง Manager -> "คำสั่งซื้อ ${orderId} ถูกยกเลิกโดยผู้ใช้"`);
+
+                renderProducts();
+                renderCustomerOrders();
+                showNotification(`ทำการยกเลิกออเดอร์ ${orderId} เรียบร้อยแล้ว`);
+            }
+        }
+
+        // Render Staff Dashboard (Orders View & Shipping updates)
+        function renderStaffDashboard() {
+            // Count status
+            const pendingOrders = orders.filter(o => o.status === 'paid');
+            const shippedOrders = orders.filter(o => o.status === 'shipped');
+
+            document.getElementById('staff-pending-count').innerText = pendingOrders.length;
+            document.getElementById('staff-shipped-count').innerText = shippedOrders.length;
+
+            const tbody = document.getElementById('staff-orders-table');
+            if (orders.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="5" style="text-align: center; color: var(--text-muted);">ไม่มีรายการคำสั่งซื้อใดๆ ในระบบ</td></tr>`;
+                return;
+            }
+
+            tbody.innerHTML = orders.map(ord => {
+                const itemsDesc = ord.items.map(i => `${i.name} (x${i.quantity})`).join('<br>');
+                
+                let statusBadge = '';
+                if (ord.status === 'paid') statusBadge = '<span class="badge badge-paid">เตรียมสินค้า</span>';
+                else if (ord.status === 'shipped') statusBadge = '<span class="badge badge-shipped">จัดส่งเรียบร้อย</span>';
+                else if (ord.status === 'cancelled') statusBadge = '<span class="badge badge-cancelled">ยกเลิกแล้ว</span>';
+
+                let actionButton = '';
+                if (ord.status === 'paid') {
+                    actionButton = `<button class="btn btn-success" onclick="shipOrder('${ord.id}')">ส่งสินค้าพัสดุ 🚚</button>`;
+                } else {
+                    actionButton = `<span style="color: var(--text-muted); font-size:0.85rem;">เสร็จสิ้น</span>`;
+                }
+
+                return `
+                    <tr>
+                        <td><strong>${ord.id}</strong></td>
+                        <td>${itemsDesc}</td>
+                        <td><strong>฿ ${ord.total.toLocaleString()}</strong></td>
+                        <td>${statusBadge}</td>
+                        <td>${actionButton}</td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        // Staff updates order to 'shipped'
+        function shipOrder(orderId) {
+            const ordIndex = orders.findIndex(o => o.id === orderId);
+            if (ordIndex !== -1) {
+                orders[ordIndex].status = 'shipped';
+                localStorage.setItem(DB_ORDERS_KEY, JSON.stringify(orders));
+                
+                logSystem(`[SHIPPING]: พนักงานเตรียมพัสดุและนำจ่ายส่งสถานะจัดส่งสำเร็จ (ออเดอร์: ${orderId})`);
+                logSystem(`[Email Service]: แจ้งเตือนเลขพัสดุจำลองส่งตรงหาอีเมลลูกค้า: ${orders[ordIndex].email}`);
+
+                renderStaffDashboard();
+                showNotification(`จัดส่งพัสดุสำหรับออเดอร์ ${orderId} สำเร็จ`);
+            }
+        }
+
+        // Render Manager Statistics & Product CRUD List
+        function renderManagerDashboard() {
+            // Stats Calculations
+            const totalSales = orders.filter(o => o.status !== 'cancelled').reduce((sum, o) => sum + o.total, 0);
+            const totalOrderCount = orders.length;
+            const uniqueProductTypesCount = products.length;
+
+            document.getElementById('mgr-total-sales').innerText = `฿ ${totalSales.toLocaleString()}`;
+            document.getElementById('mgr-total-orders').innerText = `${totalOrderCount} รายการ`;
+            document.getElementById('mgr-product-types').innerText = `${uniqueProductTypesCount} รุ่น`;
+
+            // Render CRUD Products Inventory Table
+            const invBody = document.getElementById('manager-inventory-table');
+            if (products.length === 0) {
+                invBody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: var(--text-muted);">ไม่มีรายการนาฬิกาในสต็อก</td></tr>`;
+            } else {
+                invBody.innerHTML = products.map(prod => `
+                    <tr>
+                        <td style="width: 70px; text-align: center; font-size: 1.8rem;">⌚</td>
+                        <td>
+                            <strong>${prod.name}</strong><br>
+                            <span style="color: var(--text-muted); font-size: 0.8rem;">แบรนด์: ${prod.brand}</span>
+                        </td>
+                        <td><span class="badge" style="background: rgba(197,168,128,0.1); color: var(--accent-gold);">${prod.category.toUpperCase()}</span></td>
+                        <td><strong>฿ ${prod.price.toLocaleString()}</strong></td>
+                        <td>
+                            <span style="font-weight: 700; color: ${prod.stock <= 3 ? '#ff6b6b' : '#f5f5f7'}">
+                                ${prod.stock} เรือน
+                            </span>
+                            ${prod.stock <= 3 ? '<br><small style="color:#ff6b6b;">⚠️ ใกล้หมดคลัง</small>' : ''}
+                        </td>
+                        <td>
+                            <div class="btn-group">
+                                <button class="btn btn-secondary" style="padding: 0.3rem 0.6rem; font-size: 0.8rem;" onclick="startEditProduct('${prod.id}')">แก้ไข</button>
+                                <button class="btn btn-danger" style="padding: 0.3rem 0.6rem; font-size: 0.8rem;" onclick="deleteProduct('${prod.id}')">ลบ</button>
+                            </div>
+                        </td>
+                    </tr>
+                `).join('');
+            }
+
+            // Render Orders summary in Manager tab
+            const ordBody = document.getElementById('manager-orders-table');
+            if (orders.length === 0) {
+                ordBody.innerHTML = `<tr><td colspan="4" style="text-align: center; color: var(--text-muted);">ไม่มีประวัติสั่งซื้อ</td></tr>`;
+            } else {
+                ordBody.innerHTML = orders.map(ord => `
+                    <tr>
+                        <td><strong>${ord.id}</strong></td>
+                        <td>฿ ${ord.total.toLocaleString()}</td>
+                        <td>
+                            <span class="badge ${ord.status === 'paid' ? 'badge-paid' : ord.status === 'shipped' ? 'badge-shipped' : 'badge-cancelled'}">
+                                ${ord.status === 'paid' ? 'เตรียมจ่าย' : ord.status === 'shipped' ? 'ชำระและส่งแล้ว' : 'ยกเลิกคำขอ'}
+                            </span>
+                        </td>
+                        <td><small style="color: var(--text-muted); font-family: monospace;">ช่องทาง: ${ord.payment.toUpperCase()}</small></td>
+                    </tr>
+                `).join('');
+            }
+        }
+
+        // Reset CRUD Product Form
+        function resetProductForm() {
+            document.getElementById('product-form').reset();
+            document.getElementById('edit-product-id').value = '';
+            document.getElementById('form-action-title').innerText = '➕ เพิ่มสินค้าใหม่ลงในระบบ (Create Product)';
+            document.getElementById('btn-submit-form').innerText = 'บันทึกข้อมูลสินค้า';
+        }
+
+        // Handle Add & Edit Product Submit
+        function handleProductSubmit(e) {
+            e.preventDefault();
+
+            const editId = document.getElementById('edit-product-id').value;
+            const name = document.getElementById('prod-name').value;
+            const brand = document.getElementById('prod-brand').value;
+            const category = document.getElementById('prod-category').value;
+            const price = parseFloat(document.getElementById('prod-price').value);
+            const stock = parseInt(document.getElementById('prod-stock').value);
+
+            if (editId) {
+                // Mode: Edit Product
+                const prodIndex = products.findIndex(p => p.id === editId);
+                if (prodIndex !== -1) {
+                    products[prodIndex].name = name;
+                    products[prodIndex].brand = brand;
+                    products[prodIndex].category = category;
+                    products[prodIndex].price = price;
+                    products[prodIndex].stock = stock;
+                    logSystem(`[INVENTORY]: ผู้จัดการทำการอัปเดตข้อมูลนาฬิกา: ${name} (ID: ${editId})`);
+                }
+            } else {
+                // Mode: Add New Product
+                const newProduct = {
+                    id: "PROD-" + Date.now().toString().slice(-6),
+                    name: name,
+                    brand: brand,
+                    category: category,
+                    price: price,
+                    stock: stock,
+                    color: "#2d3748",
+                    strokeColor: "#c5a880"
+                };
+                products.push(newProduct);
+                logSystem(`[INVENTORY]: ผู้จัดการเพิ่มนาฬิการุ่นใหม่เข้าคลังสินค้า: ${name} (รหัส: ${newProduct.id})`);
+            }
+
+            localStorage.setItem(DB_PRODUCTS_KEY, JSON.stringify(products));
             
-            // Empty cart
-            cart = [];
-            updateCartUI();
-            setTimeout(closeCart, 1000);
-        });
+            // Refresh
+            renderProducts();
+            renderManagerDashboard();
+            resetProductForm();
+            showNotification(editId ? 'อัปเดตข้อมูลนาฬิกาเรียบร้อย!' : 'เพิ่มนาฬิการุ่นใหม่เข้าระบบสำเร็จ!');
+        }
+
+        // Trigger editing product mode
+        function startEditProduct(id) {
+            const product = products.find(p => p.id === id);
+            if (product) {
+                document.getElementById('edit-product-id').value = product.id;
+                document.getElementById('prod-name').value = product.name;
+                document.getElementById('prod-brand').value = product.brand;
+                document.getElementById('prod-category').value = product.category;
+                document.getElementById('prod-price').value = product.price;
+                document.getElementById('prod-stock').value = product.stock;
+
+                document.getElementById('form-action-title').innerText = `✏️ แก้ไขข้อมูลนาฬิกา (Edit: ${product.name})`;
+                document.getElementById('btn-submit-form').innerText = 'อัปเดตข้อมูลสินค้า';
+                
+                // Scroll to Form
+                document.getElementById('product-form').scrollIntoView({ behavior: 'smooth' });
+            }
+        }
+
+        // Delete Product
+        function deleteProduct(id) {
+            const product = products.find(p => p.id === id);
+            const confirmDelete = confirm(`คุณต้องการลบนาฬิการุ่น "${product ? product.name : id}" ออกจากสต็อกคลังสินค้าใช่หรือไม่?`);
+            if (!confirmDelete) return;
+
+            products = products.filter(p => p.id !== id);
+            localStorage.setItem(DB_PRODUCTS_KEY, JSON.stringify(products));
+
+            logSystem(`[INVENTORY]: ผู้จัดการลบสินค้าออกจากระบบ (รหัสสินค้า: ${id})`);
+            
+            renderProducts();
+            renderManagerDashboard();
+            showNotification('ลบข้อมูลนาฬิกาออกจากระบบสำเร็จ', false);
+        }
     </script>
 </body>
 </html>
