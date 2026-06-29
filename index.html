@@ -90,6 +90,11 @@
                 <p class="section-desc">สัมผัสดีไซน์ที่หรูหราจากชิ้นงานศิลปะบนข้อมือที่โดดเด่นไม่ซ้ำใคร</p>
             </div>
 
+            <!-- Search Bar -->
+            <div class="search-bar-container">
+                <input type="text" id="product-search-input" placeholder="🔍 ค้นหานาฬิกา (เช่น แบรนด์ หรือชื่อรุ่น)..." oninput="handleSearch()">
+            </div>
+
             <div class="product-filters">
                 <button class="filter-btn active" data-category="all" onclick="filterProducts('all', this)">ทั้งหมด</button>
                 <button class="filter-btn" data-category="classic" onclick="filterProducts('classic', this)">Classic</button>
@@ -173,6 +178,14 @@
             <div class="stat-card">
                 <div class="stat-label">รายการสินค้าที่มีในสต็อก</div>
                 <div class="stat-value" id="mgr-product-types">0 รุ่น</div>
+            </div>
+        </div>
+
+        <!-- Sales Chart Section -->
+        <div class="form-card">
+            <div class="form-title">📈 สถิติสัดส่วนยอดขายตามหมวดหมู่ (Sales by Category Chart)</div>
+            <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 250px; margin: 1rem 0;">
+                <canvas id="salesChart" width="400" height="200" style="max-width: 100%; height: auto; border-radius: 8px; background: rgba(31, 40, 51, 0.6); border: 1px solid var(--glass-border); padding: 1rem;"></canvas>
             </div>
         </div>
 
@@ -275,12 +288,73 @@
             </div>
             <div class="form-group" style="margin-bottom: 1.5rem;">
                 <label for="cust-payment">ช่องทางการชำระเงิน</label>
-                <select id="cust-payment" class="form-control">
+                <select id="cust-payment" class="form-control" onchange="togglePaymentGateway(this.value)">
                     <option value="bank_transfer">🏦 โอนเงินผ่านธนาคาร (Bank Transfer)</option>
                     <option value="credit_card">💳 บัตรเครดิต/เดบิต (Credit/Debit Card)</option>
                     <option value="promptpay">📱 สแกน QR พร้อมเพย์ (PromptPay)</option>
                 </select>
             </div>
+
+            <!-- Mock Payment Details Container -->
+            <div id="payment-gateway-container" style="margin-bottom: 1.5rem; display: block; border: 1px dashed var(--accent-gold); padding: 1rem; border-radius: 6px; background: rgba(197, 168, 128, 0.05);">
+                <div id="promptpay-payment" style="display: none; text-align: center;">
+                    <p style="margin-bottom: 0.5rem; font-weight: 600;">📱 สแกน QR Code พร้อมเพย์เพื่อชำระเงิน</p>
+                    <div style="background: white; padding: 0.5rem; display: inline-block; border-radius: 6px; margin-bottom: 0.5rem;">
+                        <svg width="120" height="120" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                            <rect width="100" height="100" fill="white" />
+                            <rect x="10" y="10" width="25" height="25" fill="#003d6b" />
+                            <rect x="15" y="15" width="15" height="15" fill="white" />
+                            <rect x="18" y="18" width="9" height="9" fill="#003d6b" />
+                            <rect x="65" y="10" width="25" height="25" fill="#003d6b" />
+                            <rect x="70" y="15" width="15" height="15" fill="white" />
+                            <rect x="73" y="18" width="9" height="9" fill="#003d6b" />
+                            <rect x="10" y="65" width="25" height="25" fill="#003d6b" />
+                            <rect x="15" y="70" width="15" height="15" fill="white" />
+                            <rect x="18" y="73" width="9" height="9" fill="#003d6b" />
+                            <rect x="45" y="45" width="10" height="10" fill="#003d6b" />
+                            <rect x="55" y="65" width="15" height="10" fill="#003d6b" />
+                            <rect x="75" y="75" width="15" height="15" fill="#003d6b" />
+                            <rect x="50" y="20" width="5" height="15" fill="#003d6b" />
+                            <rect x="40" y="75" width="10" height="10" fill="#003d6b" />
+                        </svg>
+                    </div>
+                    <p style="font-size: 0.85rem; color: var(--text-muted);">เลขบัญชี PromptPay: 08x-xxx-xxxx</p>
+                </div>
+                
+                <div id="bank-payment" style="display: block; text-align: center;">
+                    <p style="margin-bottom: 0.5rem; font-weight: 600;">🏦 บัญชีธนาคารสำหรับโอนเงิน</p>
+                    <p style="color: var(--accent-gold); font-weight: bold; font-size: 1.1rem; margin-bottom: 0.2rem;">ธนาคารกสิกรไทย (KBANK)</p>
+                    <p style="font-family: monospace; font-size: 1.1rem; margin-bottom: 0.2rem;">123-4-56789-0</p>
+                    <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 0.5rem;">ชื่อบัญชี: บจก. วอทช์มาร์ท ประเทศไทย</p>
+                </div>
+
+                <div id="credit-payment" style="display: none;">
+                    <div class="form-group" style="margin-bottom: 0.8rem;">
+                        <label style="font-size: 0.85rem; color: var(--text-muted);">เลขบัตรเครดิต</label>
+                        <input type="text" class="form-control" placeholder="xxxx-xxxx-xxxx-xxxx" maxlength="19">
+                    </div>
+                    <div style="display: flex; gap: 0.5rem;">
+                        <div class="form-group" style="flex: 1;">
+                            <label style="font-size: 0.85rem; color: var(--text-muted);">วันหมดอายุ (MM/YY)</label>
+                            <input type="text" class="form-control" placeholder="MM/YY" maxlength="5">
+                        </div>
+                        <div class="form-group" style="flex: 1;">
+                            <label style="font-size: 0.85rem; color: var(--text-muted);">CVV</label>
+                            <input type="password" class="form-control" placeholder="***" maxlength="3">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Slip Upload -->
+                <div id="slip-upload-group" style="margin-top: 1rem; border-top: 1px solid var(--glass-border); padding-top: 0.8rem;">
+                    <label for="cust-slip" style="font-size: 0.85rem; display: block; margin-bottom: 0.4rem; color: var(--accent-gold);">📸 แนบสลิปหลักฐานการโอนเงิน</label>
+                    <input type="file" id="cust-slip" class="form-control" accept="image/*" onchange="previewSlip(event)">
+                    <div id="slip-preview-container" style="display: none; margin-top: 0.5rem; text-align: center;">
+                        <img id="slip-preview" src="" alt="Slip Preview" style="max-height: 100px; border-radius: 4px; border: 1px solid var(--accent-gold);">
+                    </div>
+                </div>
+            </div>
+
             <div style="border-top: 1px solid var(--glass-border); padding-top: 1.5rem; margin-top: 1.5rem; display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
                 <span style="font-weight: 600;">ยอดเงินรวมที่ต้องชำระ:</span>
                 <span id="checkout-total-price" style="font-size: 1.4rem; color: var(--accent-gold); font-weight: 800;">฿ 0</span>
@@ -393,6 +467,8 @@
         let orders = [];
         let cart = [];
         let currentRole = "customer";
+        let activeCategory = "all";
+        let uploadedSlipData = null;
 
         // DOM Elements
         const cartToggleBtn = document.getElementById('cart-toggle-btn');
@@ -515,14 +591,19 @@
         }
 
         // Render products catalog dynamically
-        function renderProducts(categoryFilter = 'all') {
+        function renderProducts() {
             const listContainer = document.getElementById('products-list');
             listContainer.innerHTML = '';
 
-            const filteredProducts = products.filter(p => categoryFilter === 'all' || p.category === categoryFilter);
+            const searchQuery = document.getElementById('product-search-input')?.value.toLowerCase() || '';
+            const filteredProducts = products.filter(p => {
+                const matchesCategory = activeCategory === 'all' || p.category === activeCategory;
+                const matchesSearch = p.name.toLowerCase().includes(searchQuery) || p.brand.toLowerCase().includes(searchQuery);
+                return matchesCategory && matchesSearch;
+            });
 
             if (filteredProducts.length === 0) {
-                listContainer.innerHTML = `<p style="grid-column: 1/-1; text-align: center; color: var(--text-muted); padding: 3rem;">ขออภัย ยังไม่มีสินค้าในหมวดหมู่นี้</p>`;
+                listContainer.innerHTML = `<p style="grid-column: 1/-1; text-align: center; color: var(--text-muted); padding: 3rem;">ขออภัย ยังไม่มีสินค้าที่ตรงตามเงื่อนไขนี้</p>`;
                 return;
             }
 
@@ -567,7 +648,13 @@
             // Toggle active filter button style
             document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
             btnElement.classList.add('active');
-            renderProducts(category);
+            activeCategory = category;
+            renderProducts();
+        }
+
+        // Handle text search input
+        function handleSearch() {
+            renderProducts();
         }
 
         // Add to Cart Action
@@ -606,6 +693,29 @@
             }
         }
 
+        function adjustCartQuantity(id, delta) {
+            const item = cart.find(i => i.id === id);
+            if (!item) return;
+
+            const product = products.find(p => p.id === id);
+            
+            if (delta > 0) {
+                if (product && item.quantity >= product.stock) {
+                    showNotification(`คุณซื้อสินค้าเกินจำนวนที่มีในคลัง (สูงสุด: ${product.stock} เรือน)`, false);
+                    return;
+                }
+                item.quantity += 1;
+            } else {
+                item.quantity -= 1;
+                if (item.quantity <= 0) {
+                    removeFromCart(id);
+                    return;
+                }
+            }
+            updateCartUI();
+            logSystem(`[CART]: ปรับจำนวนสินค้าในตะกร้า - ${item.name} (เป็น ${item.quantity} ชิ้น)`);
+        }
+
         function updateCartUI() {
             const totalCount = cart.reduce((sum, item) => sum + item.quantity, 0);
             cartCounter.innerText = totalCount;
@@ -622,10 +732,15 @@
                 <div class="cart-item">
                     <div class="cart-item-img">⌚</div>
                     <div class="cart-item-details">
-                        <div class="cart-item-name">${item.name} (x${item.quantity})</div>
+                        <div class="cart-item-name">${item.name}</div>
                         <div class="cart-item-price">฿ ${(item.price * item.quantity).toLocaleString()}</div>
+                        <div class="cart-qty-control">
+                            <button class="qty-btn" onclick="adjustCartQuantity('${item.id}', -1)">-</button>
+                            <span class="qty-val">${item.quantity}</span>
+                            <button class="qty-btn" onclick="adjustCartQuantity('${item.id}', 1)">+</button>
+                        </div>
                     </div>
-                    <button class="cart-item-remove" onclick="removeFromCart('${item.id}')">&times;</button>
+                    <button class="cart-item-remove" onclick="removeFromCart('${item.id}')" aria-label="Remove item">&times;</button>
                 </div>
             `).join('');
         }
@@ -638,6 +753,36 @@
             setTimeout(() => {
                 notification.classList.remove('show');
             }, 3000);
+        }
+
+        // Toggle Payment Details UI in Checkout Modal
+        function togglePaymentGateway(method) {
+            document.getElementById('promptpay-payment').style.display = method === 'promptpay' ? 'block' : 'none';
+            document.getElementById('bank-payment').style.display = method === 'bank_transfer' ? 'block' : 'none';
+            document.getElementById('credit-payment').style.display = method === 'credit_card' ? 'block' : 'none';
+            document.getElementById('slip-upload-group').style.display = method === 'credit_card' ? 'none' : 'block';
+        }
+
+        // Preview Uploaded Receipt Slip
+        function previewSlip(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    uploadedSlipData = e.target.result;
+                    const previewImg = document.getElementById('slip-preview');
+                    previewImg.src = e.target.result;
+                    document.getElementById('slip-preview-container').style.display = 'block';
+                    logSystem(`[SYSTEM]: อัปโหลดรูปภาพสลิปหลักฐานโอนเงินเข้าระบบสำเร็จ`);
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        // Open Slip in new window
+        function viewSlip(slipData) {
+            const newWindow = window.open();
+            newWindow.document.write(`<img src="${slipData}" style="max-width:100%; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.15);">`);
         }
 
         // Submit & Process Order Checkout Form
@@ -667,7 +812,8 @@
                 address: address,
                 payment: paymentMethod,
                 status: "paid", // Auto confirmed upon payment simulation
-                date: new Date().toLocaleString()
+                date: new Date().toLocaleString(),
+                slip: paymentMethod !== 'credit_card' ? uploadedSlipData : null
             };
 
             orders.push(newOrder);
@@ -675,13 +821,21 @@
 
             // System Trigger Notification Logic Simulation
             logSystem(`[DATABASE]: บันทึกประวัติใบสั่งซื้อลง PostgreSQL สำเร็จ (ID: ${newOrder.id})`);
+            if (newOrder.slip) {
+                logSystem(`[STORAGE]: จัดเก็บไฟล์สลิปหลักฐานใน AWS S3 bucket จำลองสำเร็จ`);
+            }
             logSystem(`[API Trigger]: ยิงคำสั่ง POST ไปยัง LINE Notify API เรียบร้อย -> "มีคำสั่งซื้อใหม่ ยอดเงิน ฿${totalPrice.toLocaleString()}"`);
             logSystem(`[Email Service]: ส่งรายละเอียดหลักฐานการสั่งซื้อไปยังกล่องจดหมาย: ${email} สำเร็จ`);
 
             // Clear Cart and Close
             cart = [];
+            uploadedSlipData = null;
             updateCartUI();
             closeCheckoutModal();
+            
+            // Reset slip preview
+            const previewContainer = document.getElementById('slip-preview-container');
+            if (previewContainer) previewContainer.style.display = 'none';
             
             // Reload Views
             renderProducts();
@@ -864,19 +1018,116 @@
             if (orders.length === 0) {
                 ordBody.innerHTML = `<tr><td colspan="4" style="text-align: center; color: var(--text-muted);">ไม่มีประวัติสั่งซื้อ</td></tr>`;
             } else {
-                ordBody.innerHTML = orders.map(ord => `
-                    <tr>
-                        <td><strong>${ord.id}</strong></td>
-                        <td>฿ ${ord.total.toLocaleString()}</td>
-                        <td>
-                            <span class="badge ${ord.status === 'paid' ? 'badge-paid' : ord.status === 'shipped' ? 'badge-shipped' : 'badge-cancelled'}">
-                                ${ord.status === 'paid' ? 'เตรียมจ่าย' : ord.status === 'shipped' ? 'ชำระและส่งแล้ว' : 'ยกเลิกคำขอ'}
-                            </span>
-                        </td>
-                        <td><small style="color: var(--text-muted); font-family: monospace;">ช่องทาง: ${ord.payment.toUpperCase()}</small></td>
-                    </tr>
-                `).join('');
+                ordBody.innerHTML = orders.map(ord => {
+                    let slipButton = '';
+                    if (ord.slip) {
+                        slipButton = `<br><button class="btn btn-secondary" style="padding: 0.15rem 0.4rem; font-size: 0.75rem; margin-top: 0.3rem;" onclick="viewSlip('${ord.slip}')">📄 ดูสลิปโอนเงิน</button>`;
+                    }
+                    return `
+                        <tr>
+                            <td><strong>${ord.id}</strong></td>
+                            <td>฿ ${ord.total.toLocaleString()}</td>
+                            <td>
+                                <span class="badge ${ord.status === 'paid' ? 'badge-paid' : ord.status === 'shipped' ? 'badge-shipped' : 'badge-cancelled'}">
+                                    ${ord.status === 'paid' ? 'เตรียมจ่าย' : ord.status === 'shipped' ? 'ชำระและส่งแล้ว' : 'ยกเลิกคำขอ'}
+                                </span>
+                            </td>
+                            <td>
+                                <small style="color: var(--text-muted); font-family: monospace;">ช่องทาง: ${ord.payment.toUpperCase()}</small>
+                                ${slipButton}
+                            </td>
+                        </tr>
+                    `;
+                }).join('');
             }
+
+            // Render Chart
+            renderSalesChart();
+        }
+
+        // Draw Canvas Chart for Category wise sales
+        function renderSalesChart() {
+            const canvas = document.getElementById('salesChart');
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+            
+            // Clear canvas
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // Calculate sales per category
+            const categories = { classic: 0, sport: 0, elegant: 0 };
+            orders.filter(o => o.status !== 'cancelled').forEach(ord => {
+                ord.items.forEach(item => {
+                    const prod = products.find(p => p.id === item.id);
+                    const cat = prod ? prod.category : 'classic';
+                    if (categories[cat] !== undefined) {
+                        categories[cat] += item.price * item.quantity;
+                    }
+                });
+            });
+
+            const data = [
+                { name: 'Classic', value: categories.classic, color: '#c5a880' },
+                { name: 'Sport', value: categories.sport, color: '#ff6b6b' },
+                { name: 'Elegant', value: categories.elegant, color: '#4dabf7' }
+            ];
+
+            const maxValue = Math.max(...data.map(d => d.value), 10000);
+            
+            const padding = 40;
+            const chartWidth = canvas.width - padding * 2;
+            const chartHeight = canvas.height - padding * 2;
+            const barWidth = 60;
+            const gap = 40;
+            const startX = padding + (chartWidth - (barWidth * data.length + gap * (data.length - 1))) / 2;
+
+            // Draw Y Axis and Grid Lines
+            ctx.strokeStyle = 'rgba(134, 134, 139, 0.2)';
+            ctx.lineWidth = 1;
+            ctx.fillStyle = '#86868b';
+            ctx.font = '10px Outfit';
+            ctx.textAlign = 'right';
+            ctx.textBaseline = 'middle';
+            
+            for (let i = 0; i <= 4; i++) {
+                const y = padding + chartHeight - (chartHeight / 4) * i;
+                const gridVal = (maxValue / 4) * i;
+                ctx.beginPath();
+                ctx.moveTo(padding, y);
+                ctx.lineTo(canvas.width - padding, y);
+                ctx.stroke();
+                ctx.fillText(`฿${Math.round(gridVal).toLocaleString()}`, padding - 5, y);
+            }
+
+            // Draw Bars
+            data.forEach((d, idx) => {
+                const x = startX + idx * (barWidth + gap);
+                const barHeight = d.value > 0 ? (d.value / maxValue) * chartHeight : 5;
+                const y = padding + chartHeight - barHeight;
+
+                // Draw Bar
+                ctx.fillStyle = d.color;
+                ctx.beginPath();
+                if (ctx.roundRect) {
+                    ctx.roundRect(x, y, barWidth, barHeight, [4, 4, 0, 0]);
+                } else {
+                    ctx.rect(x, y, barWidth, barHeight);
+                }
+                ctx.fill();
+
+                // Draw label below bar
+                ctx.fillStyle = '#f5f5f7';
+                ctx.font = '12px Outfit';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'top';
+                ctx.fillText(d.name, x + barWidth / 2, padding + chartHeight + 5);
+
+                // Draw value text inside/above bar
+                ctx.fillStyle = '#f5f5f7';
+                ctx.font = 'bold 10px Outfit';
+                ctx.textAlign = 'center';
+                ctx.fillText(`฿${Math.round(d.value).toLocaleString()}`, x + barWidth / 2, y - 15);
+            });
         }
 
         // Reset CRUD Product Form
