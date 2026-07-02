@@ -466,4 +466,76 @@ graph TB
 4. **ระบบรับชำระเงิน (QR Code Payment API)**
    - ดำเนินการชำระเงินโดยใช้ **QR Code** ที่ดึงข้อมูลผ่าน API จากธนาคารใดธนาคารหนึ่ง โดยใช้ระบบการรับบริจาค/ชำระเงิน **Easy Donate** เพื่อความปลอดภัยและยืนยันยอดเงินอัตโนมัติ
 
+### 7.3 แผนภาพความสัมพันธ์ฐานข้อมูล (Database ER Diagram)
+
+แผนภาพความสัมพันธ์ระหว่างตารางฐานข้อมูลหลักในระบบ (SQL Database) และส่วนของข้อมูลที่ถูกส่งไปจัดเก็บลงในพื้นที่เก็บข้อมูล (Storage Data) เพื่อให้เห็นประเภทของข้อมูลและความเชื่อมโยง:
+
+```mermaid
+erDiagram
+    USER {
+        int id PK "รหัสผู้ใช้หลัก"
+        string username "ชื่อผู้ใช้"
+        string email UK "อีเมลผู้ใช้งาน"
+        string password_hash "รหัสผ่านที่เข้ารหัส"
+        datetime created_at "วันที่สมัครสมาชิก"
+    }
+
+    SELLER {
+        int id PK "รหัสผู้ขาย"
+        int user_id FK "รหัสผู้ใช้"
+        string email UK "อีเมลยืนยันตน"
+        string national_id UK "เลขบัตรประชาชน (ยืนยันตนเฉพาะผู้ขาย)"
+        string verify_status "สถานะการตรวจสอบ (Verified/Pending/Failed)"
+        datetime verified_at "วันที่ผ่านการอนุมัติ"
+    }
+
+    BLACKLIST {
+        int id PK "รหัสแบล็คลิสต์"
+        string email UK "อีเมลที่ถูกแบล็คลิสต์"
+        string national_id UK "เลขบัตรประชาชนที่ถูกแบล็คลิสต์"
+        string reason "เหตุผลในการแบล็คลิสต์"
+        datetime created_at "วันที่บันทึกประวัติ"
+    }
+
+    WATCH {
+        int id PK "รหัสนาฬิกา"
+        string brand "แบรนด์"
+        string model "รุ่น"
+        decimal price "ราคา"
+        string price_banding "ช่วงราคา (Price Banding)"
+        string status "สถานะ (พร้อมขาย/รอตรวจสอบ/ขายแล้ว)"
+    }
+
+    SUPPORT {
+        int id PK "รหัสเจ้าหน้าที่"
+        string name "ชื่อเจ้าหน้าที่"
+        string email "อีเมลเจ้าหน้าที่"
+        string role "บทบาท (Staff/Manager)"
+    }
+
+    PAYMENT {
+        int id PK "รหัสการจ่ายเงิน"
+        int order_id FK "รหัสใบสั่งซื้อ"
+        decimal amount "ยอดเงินชำระ"
+        string qr_code_url "ลิงก์รูปภาพ QR Code (Easy Donate)"
+        string transaction_ref "รหัสอ้างอิงธนาคาร (Bank API)"
+        string status "สถานะการชำระเงิน (Success/Pending/Failed)"
+    }
+
+    STORAGE_DATA {
+        int id PK "รหัสข้อมูลทรัพยากร"
+        string file_name "ชื่อไฟล์"
+        string file_path "ที่อยู่จัดเก็บไฟล์"
+        string file_type "ประเภทไฟล์ (Picture/Document/Log)"
+        int size_bytes "ขนาดของไฟล์ (Bytes)"
+    }
+
+    %% ความสัมพันธ์
+    USER ||--o| SELLER : "ลงทะเบียนเป็น"
+    SELLER ||--o| BLACKLIST : "ตรวจสอบกับ"
+    USER ||--o| PAYMENT : "ชำระเงิน"
+    WATCH ||--o| STORAGE_DATA : "เก็บไฟล์รูปภาพ/เอกสาร (Picture)"
+```
+
+
 
