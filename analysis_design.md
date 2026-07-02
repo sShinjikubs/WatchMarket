@@ -392,3 +392,78 @@ stateDiagram-v2
 3. **Checkout UI (หน้าต่างยืนยันสั่งซื้อ)**:
    * ฟอร์มกรอกที่อยู่จัดส่ง และตัวเลือกการชำระเงิน (โอนเงิน, บัตรเครดิต, พร้อมเพย์) พร้อมปุ่มชำระเงินที่เด่นชัด
 
+---
+
+## 7. โครงสร้างระบบและการไหลของข้อมูลใหม่ (New System Structure & Data Flow Design)
+
+เพื่อให้สอดคล้องกับความต้องการเพิ่มเติมเกี่ยวกับสถาปัตยกรรมและกระบวนการทำงานของระบบในการจัดการสินค้า ความปลอดภัย และการชำระเงิน แผนภาพด้านล่างอธิบายถึงความสัมพันธ์และการแลกเปลี่ยนข้อมูลดังนี้:
+
+### 7.1 แผนภาพการไหลของข้อมูลและสถาปัตยกรรม (System Structure & Data Flow)
+
+```mermaid
+graph TB
+    subgraph Actors ["👥 บทบาทในระบบ (Actors & Roles)"]
+        User["👤 User (ผู้ซื้อ)"]
+        Customer["🛍️ Customer (ผู้ขาย)"]
+        Admin["👑 Admin (ผู้ดูแลระบบ)"]
+        Manager["👔 Manager (ผู้จัดการ)"]
+        Staff["💬 Staff (ผู้ช่วยซัพพอร์ต)"]
+    end
+
+    subgraph Security ["🔒 ความปลอดภัยและการตรวจสอบ"]
+        Blacklist["🔍 Blacklist Verification<br>(Email + บัตรประชาชน)"]
+    end
+
+    subgraph Operations ["⚙️ กิจกรรมและการดำเนินงาน"]
+        Purchase["🤝 กระบวนการซื้อ-ขายสินค้า"]
+        AdminFlow["🛠️ Admin Task<br>- ตรวจสอบช่องทางสินค้า<br>- ตรวจสินค้า<br>- คิดราคา<br>- นำเข้าสินค้า"]
+        ManagerFlow["📊 Manager Task<br>- สอบสินค้า<br>- ตรวจสินค้า<br>- สอบราคา"]
+        StaffFlow["💬 Staff Task<br>- ตอบแชทสอบถามต่างๆ"]
+    end
+
+    subgraph Interfaces ["🔌 บริการชำระเงิน & การเชื่อมต่อภายนอก"]
+        PaymentAPI["💳 QR Code Easy Donate API<br>(Bank Gateway)"]
+    end
+
+    subgraph Database_Storage ["💾 ส่วนจัดเก็บข้อมูลและทรัพยากร (Database & Storage)"]
+        SQL_DB[("🗄️ SQL Database<br>(นาฬิกา, ผู้ใช้, ผู้ขาย, Support)")]
+        Storage_Data[("📦 Storage Data<br>(ข้อมูล, รูปภาพสินค้า, Price Banding)")]
+    end
+
+    %% Relationships and Flows
+    User -->|สั่งซื้อสินค้าจาก| Customer
+    Customer -->|ลงทะเบียนผู้ขาย (ต้องระบุ บัตรประชาชน + Email)| Blacklist
+    Blacklist -->|ตรวจสอบข้อมูลยืนยันตัวตน| SQL_DB
+
+    %% Purchase & Payment Flow
+    User & Customer --> Purchase
+    Purchase -->|เรียกชำระเงินสแกน QR Code| PaymentAPI
+    PaymentAPI -->|บันทึกธุรกรรม| SQL_DB
+
+    %% Admin & Manager & Staff Actions
+    Admin --> AdminFlow
+    Manager --> ManagerFlow
+    Staff --> StaffFlow
+
+    %% DB & Storage Links
+    AdminFlow & ManagerFlow & StaffFlow -->|จัดการและเก็บข้อมูล| SQL_DB
+    AdminFlow & ManagerFlow & StaffFlow -->|จัดเก็บทรัพยากร/ไฟล์| Storage_Data
+```
+
+### 7.2 รายละเอียดการทำงานของระบบใหม่ (System Requirements Specification)
+
+1. **บทบาทการดำเนินงานของผู้ใช้งาน (Actors & Operations)**
+   - **User (ผู้ซื้อ)**: ทำหน้าที่สั่งซื้อสินค้าโดยตรงจากผู้ที่เป็นผู้ขาย (**Customer**)
+   - **Customer (ผู้ขาย)**: สมาชิกที่มีความประสงค์จะลงขายสินค้า (นาฬิกา) ในแพลตฟอร์ม
+   - **Admin (ผู้ดูแลระบบ)**: รับผิดชอบในการตรวจสอบช่องทางสินค้า, ทำการตรวจสอบสินค้า (Inspection), คำนวณคิดราคากลาง และดำเนินการนำเข้าสินค้าเข้าระบบสต็อก
+   - **Manager (ผู้จัดการ)**: ดูแลการทำงานของระบบในเรื่องการสอบถาม/ตรวจสอบข้อมูลสินค้า (สอบสินค้า), ตรวจสินค้า และดำเนินการสอบราคาสินค้าเพื่อความเหมาะสม
+   - **Staff (เจ้าหน้าที่ช่วยเหลือ)**: ทำหน้าที่หลักในการตอบแชท ให้บริการสอบถาม และสนับสนุนผู้ใช้งานในเรื่องต่าง ๆ
+2. **ระบบฐานข้อมูลและพื้นที่จัดเก็บข้อมูล (Database & Storage)**
+   - **SQL Database**: จัดเก็บข้อมูลโครงสร้างหลัก ได้แก่ ข้อมูลนาฬิกา (Watch), ข้อมูลผู้ใช้งานทั่วไป (User), ข้อมูลผู้ขาย (Seller/Customer) และข้อมูลประวัติการทำงานของซัพพอร์ต (Support)
+   - **Storage (Data Store)**: ทำหน้าที่จัดเก็บข้อมูลรูปภาพสินค้า (Picture), โครงสร้างระดับราคา (Price Banding) และไฟล์ข้อมูล (Data) อื่น ๆ ทั้งหมดของระบบ
+3. **ระบบตรวจสอบความปลอดภัย (Blacklist & Identity Verification)**
+   - ระบบเพิ่มความปลอดภัยขั้นสูงในการลงทะเบียนเป็นผู้ขาย โดยผู้ที่เป็น **ผู้ขาย (Seller)** เท่านั้นที่จะต้องยื่นเอกสาร **บัตรประชาชน** และ **Email** เพื่อตรวจสอบความถูกต้องผ่านระบบ Blacklist ก่อนที่จะได้รับอนุญาตให้ลงขายสินค้าได้
+4. **ระบบรับชำระเงิน (QR Code Payment API)**
+   - ดำเนินการชำระเงินโดยใช้ **QR Code** ที่ดึงข้อมูลผ่าน API จากธนาคารใดธนาคารหนึ่ง โดยใช้ระบบการรับบริจาค/ชำระเงิน **Easy Donate** เพื่อความปลอดภัยและยืนยันยอดเงินอัตโนมัติ
+
+
