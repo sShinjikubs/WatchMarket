@@ -9,14 +9,50 @@
 </head>
 <body>
 
+    <!-- ==================== LANDING LOGIN PORTAL VIEW ==================== -->
+    <div id="login-portal-view" class="login-portal-container">
+        <div class="login-portal-card">
+            <div class="login-portal-logo">
+                <h1>Watch<span>Mart</span></h1>
+                <div class="login-portal-subtitle">Digital Commerce Suite</div>
+            </div>
+            
+            <div style="margin-bottom: 1.5rem;">
+                <label style="font-size: 0.85rem; color: var(--text-muted); font-weight: 600; text-transform: uppercase; letter-spacing: 1px;">Choose Your Role</label>
+                <div class="login-role-select" style="margin-top: 0.5rem;">
+                    <button type="button" class="login-role-btn active" onclick="setLoginRole('user', this)">Buyer</button>
+                    <button type="button" class="login-role-btn" onclick="setLoginRole('customer', this)">Seller</button>
+                    <button type="button" class="login-role-btn" onclick="setLoginRole('admin', this)">Admin</button>
+                    <button type="button" class="login-role-btn" onclick="setLoginRole('manager', this)">Manager</button>
+                    <button type="button" class="login-role-btn" onclick="setLoginRole('staff', this)">Staff</button>
+                </div>
+            </div>
+            
+            <form id="login-form-main" onsubmit="processLogin(event)">
+                <input type="hidden" id="login-selected-role" value="user">
+                
+                <div class="form-group" style="margin-bottom: 1.2rem;" id="login-username-group">
+                    <label style="color: var(--text-light); font-size: 0.85rem; display: block; margin-bottom: 0.4rem;">Username</label>
+                    <input type="text" id="login-username" class="form-control" placeholder="Enter username..." value="buyer" required>
+                </div>
+                
+                <div class="form-group" style="margin-bottom: 2rem;" id="login-password-group">
+                    <label style="color: var(--text-light); font-size: 0.85rem; display: block; margin-bottom: 0.4rem;">Password</label>
+                    <input type="password" id="login-password" class="form-control" placeholder="Enter password..." value="123456" required>
+                </div>
+                
+                <button type="submit" class="btn btn-primary" style="width: 100%; padding: 0.9rem; text-transform: uppercase; font-weight: 800; letter-spacing: 1px; font-size: 0.95rem;">Enter Platform 🔑</button>
+            </form>
+        </div>
+    </div>
+
     <!-- Header Navigation -->
-    <header>
+    <header class="hidden" id="main-header">
         <a href="#" class="logo" onclick="setRole('user')">Watch<span>Mart</span></a>
         
-        <!-- Sign In & Profile Controls -->
+        <!-- Profile Controls -->
         <div class="header-auth-controls" style="display: flex; gap: 1rem; align-items: center;">
-            <button class="btn btn-primary" id="login-trigger-btn" onclick="openLoginModal()" style="font-size: 0.85rem; padding: 0.4rem 1.2rem; text-transform: uppercase; letter-spacing: 1px;">Sign In</button>
-            <div id="user-profile-header" class="hidden">
+            <div id="user-profile-header">
                 <span id="header-user-badge" class="badge">Guest</span>
                 <button class="btn btn-secondary" onclick="handleLogout()" style="padding: 0.4rem 0.8rem; font-size: 0.8rem; text-transform: uppercase;">Sign Out</button>
             </div>
@@ -599,42 +635,6 @@
         </form>
     </div>
 
-    <!-- ==================== SIGN IN MODAL UI ==================== -->
-    <div class="login-overlay" id="login-overlay" onclick="closeLoginModal()"></div>
-    <div class="login-modal" id="login-modal">
-        <div class="login-modal-header">
-            <h2 class="login-modal-title">Sign In to Platform</h2>
-            <button class="login-modal-close" onclick="closeLoginModal()">&times;</button>
-        </div>
-        <div style="margin-bottom: 1rem;">
-            <label style="font-size: 0.85rem; color: var(--text-muted); font-weight: 600; text-transform: uppercase;">Select Your Role</label>
-            <div class="login-role-select" style="margin-top: 0.5rem;">
-                <button type="button" class="login-role-btn active" onclick="setLoginRole('user', this)">Buyer (User)</button>
-                <button type="button" class="login-role-btn" onclick="setLoginRole('customer', this)">Seller (Customer)</button>
-                <button type="button" class="login-role-btn" onclick="setLoginRole('admin', this)">Admin</button>
-                <button type="button" class="login-role-btn" onclick="setLoginRole('manager', this)">Manager</button>
-                <button type="button" class="login-role-btn" onclick="setLoginRole('staff', this)">Staff</button>
-            </div>
-        </div>
-        <form id="login-form" onsubmit="processLogin(event)">
-            <input type="hidden" id="login-selected-role" value="user">
-            
-            <div class="form-group" style="margin-bottom: 1rem;" id="login-username-group">
-                <label for="login-username">Username</label>
-                <input type="text" id="login-username" class="form-control" placeholder="Enter username..." value="buyer">
-            </div>
-            
-            <div class="form-group" style="margin-bottom: 1.5rem;" id="login-password-group">
-                <label for="login-password">Password</label>
-                <input type="password" id="login-password" class="form-control" placeholder="Enter password..." value="123456">
-            </div>
-            
-            <div class="btn-group" style="justify-content: flex-end;">
-                <button type="button" class="btn btn-secondary" onclick="closeLoginModal()">Cancel</button>
-                <button type="submit" class="btn btn-primary" style="padding: 0.6rem 1.5rem;">Sign In 🔑</button>
-            </div>
-        </form>
-    </div>
 
     <!-- Cart Sidebar Panel -->
     <div class="cart-overlay" id="cart-overlay"></div>
@@ -663,7 +663,7 @@
     </div>
 
     <!-- System Log Output Dashboard Area -->
-    <section style="max-width: 1200px; margin: 2rem auto; padding: 0 5%;">
+    <section id="system-logger-area" class="hidden" style="max-width: 1200px; margin: 2rem auto; padding: 0 5%;">
         <div class="system-logger">
             <div class="system-logger-title">
                 <span>⚡ Backend Operations & External Integrations (System Logs & LINE Notify Simulation)</span>
@@ -676,7 +676,7 @@
     </section>
 
     <!-- Footer -->
-    <footer>
+    <footer id="main-footer" class="hidden">
         <p>&copy; 2026 WatchMart Store. All rights reserved. CSI204 Coursework.</p>
         <p>Designed & Engineered for Premium E-Commerce Experience.</p>
     </footer>
@@ -841,6 +841,32 @@
 
         // Toggle Views based on Role
         function switchRole(role) {
+            const loginPortal = document.getElementById('login-portal-view');
+            const header = document.getElementById('main-header');
+            const footer = document.getElementById('main-footer');
+            const logger = document.getElementById('system-logger-area');
+
+            if (!loggedInUser) {
+                if (loginPortal) loginPortal.classList.remove('hidden');
+                if (header) header.classList.add('hidden');
+                if (footer) footer.classList.add('hidden');
+                if (logger) logger.classList.add('hidden');
+
+                // Hide all views
+                document.getElementById('customer-view').classList.add('hidden');
+                document.getElementById('seller-view').classList.add('hidden');
+                document.getElementById('admin-view').classList.add('hidden');
+                document.getElementById('staff-view').classList.add('hidden');
+                document.getElementById('manager-view').classList.add('hidden');
+                
+                return;
+            }
+
+            if (loginPortal) loginPortal.classList.add('hidden');
+            if (header) header.classList.remove('hidden');
+            if (footer) footer.classList.remove('hidden');
+            if (logger) logger.classList.remove('hidden');
+
             currentRole = role;
             
             // Hide all views
@@ -1917,12 +1943,10 @@
 
         // ==================== AUTHENTICATION & LOGIN DIALOG SYSTEM ====================
         function updateHeaderAuthUI() {
-            const loginBtn = document.getElementById('login-trigger-btn');
             const profileHeader = document.getElementById('user-profile-header');
             const badge = document.getElementById('header-user-badge');
 
             if (loggedInUser) {
-                if (loginBtn) loginBtn.classList.add('hidden');
                 if (profileHeader) profileHeader.classList.remove('hidden');
                 
                 let roleLabel = '';
@@ -1934,23 +1958,8 @@
 
                 if (badge) badge.innerText = roleLabel;
             } else {
-                if (loginBtn) loginBtn.classList.remove('hidden');
                 if (profileHeader) profileHeader.classList.add('hidden');
             }
-        }
-
-        function openLoginModal() {
-            const overlay = document.getElementById('login-overlay');
-            const modal = document.getElementById('login-modal');
-            if (overlay) overlay.classList.add('open');
-            if (modal) modal.classList.add('open');
-        }
-
-        function closeLoginModal() {
-            const overlay = document.getElementById('login-overlay');
-            const modal = document.getElementById('login-modal');
-            if (overlay) overlay.classList.remove('open');
-            if (modal) modal.classList.remove('open');
         }
 
         function setLoginRole(role, btnElement) {
@@ -2007,7 +2016,6 @@
                 logSystem(`[AUTH]: User logged in successfully as ${role.toUpperCase()} (${user})`);
                 showNotification(`Signed in as ${role.toUpperCase()} successfully!`);
                 
-                closeLoginModal();
                 switchRole(role);
             } else {
                 showNotification('Invalid credentials! Please try again.', false);
