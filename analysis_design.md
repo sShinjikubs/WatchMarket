@@ -456,7 +456,7 @@ graph TB
 
     %% Relationships and Flows
     User -->|สั่งซื้อสินค้าจาก| Customer
-    Customer -->|ลงทะเบียนผู้ขาย (ต้องระบุ บัตรประชาชน + Email)| Blacklist
+    Customer -->|ลงทะเบียนผู้ขายด้วยบัตรประชาชนและอีเมล| Blacklist
     Blacklist -->|ตรวจสอบข้อมูลยืนยันตัวตน| SQL_DB
 
     %% Purchase & Payment Flow

@@ -223,6 +223,21 @@
     </div>
 
     <script>
+        // Check for admin access control
+        const loggedInUser = JSON.parse(localStorage.getItem('watchmart_logged_in_user')) || null;
+        if (!loggedInUser || loggedInUser.role !== 'admin') {
+            document.body.innerHTML = `
+                <div style="display: flex; justify-content: center; align-items: center; height: 100vh; background-color: #0f172a; color: #f8fafc; font-family: 'Outfit', sans-serif; padding: 2rem; text-align: center; width: 100%;">
+                    <div style="max-width: 500px; border: 1px solid #c5a880; padding: 3rem; border-radius: 12px; background-color: #1e293b; box-shadow: 0 10px 30px rgba(0,0,0,0.5); width: 100%;">
+                        <h1 style="color: #c5a880; font-size: 2rem; margin-bottom: 1.5rem; text-transform: uppercase; letter-spacing: 2px;">Access Denied</h1>
+                        <p style="color: #94a3b8; font-size: 1.05rem; margin-bottom: 2rem; line-height: 1.6;">This documentation page is confidential and restricted to the System Administrator only. Please sign in as Admin to gain access.</p>
+                        <a href="index.html" style="display: inline-block; background-color: #c5a880; color: #0b0f19; font-weight: 700; text-decoration: none; padding: 0.8rem 2rem; border-radius: 6px; transition: all 0.3s ease; text-transform: uppercase; letter-spacing: 1px;">Back to Storefront</a>
+                    </div>
+                </div>
+            `;
+            throw new Error("Access Denied: Only Admin can access documentation.");
+        }
+
         // Configure marked.js to render custom codes (specifically mermaid code blocks)
         marked.setOptions({
             gfm: true,

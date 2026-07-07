@@ -26,7 +26,7 @@
             <ul>
                 <li><a href="#" class="active" id="nav-home" onclick="setRole('user')">Home</a></li>
                 <li><a href="#products" id="nav-products">Collections</a></li>
-                <li><a href="markdown.html" target="_blank">System Docs</a></li>
+                <li id="nav-docs-li" class="hidden"><a href="markdown.html" target="_blank">System Docs</a></li>
             </ul>
         </nav>
         <div class="header-actions">
@@ -880,6 +880,16 @@
             
             // Update Auth UI in header
             updateHeaderAuthUI();
+
+            // Toggle System Docs visibility (only Admin can see it)
+            const docsLi = document.getElementById('nav-docs-li');
+            if (docsLi) {
+                if (role === 'admin') {
+                    docsLi.classList.remove('hidden');
+                } else {
+                    docsLi.classList.add('hidden');
+                }
+            }
 
             logSystem(`System role switched to: ${role.toUpperCase()}`);
         }
