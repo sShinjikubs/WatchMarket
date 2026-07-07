@@ -1,5 +1,9 @@
 @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap');
 
+.hidden {
+    display: none !important;
+}
+
 :root {
     --bg-primary: #0b0c10;
     --bg-secondary: #1f2833;
