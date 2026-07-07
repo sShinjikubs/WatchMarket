@@ -1426,6 +1426,121 @@ tr:hover td {
     margin-top: 0.5rem;
 }
 
+/* Profile Dropdown Styles */
+.user-profile-dropdown-container {
+    position: relative;
+    display: inline-block;
+}
+
+.profile-avatar-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: var(--transition-smooth);
+}
+
+.profile-avatar-btn:hover {
+    transform: scale(1.05);
+}
+
+.profile-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--accent-gold) 0%, #a38965 100%);
+    color: var(--bg-primary);
+    font-weight: 800;
+    font-size: 1.1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid var(--accent-gold);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+    text-transform: uppercase;
+}
+
+.profile-dropdown {
+    position: absolute;
+    top: 50px;
+    right: 0;
+    width: 210px;
+    background: var(--bg-secondary);
+    border: 1px solid var(--accent-gold);
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+    padding: 1.2rem 1rem;
+    display: none;
+    z-index: 1050;
+    animation: slideDownFade 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.profile-dropdown.open {
+    display: block;
+}
+
+@keyframes slideDownFade {
+    from {
+        opacity: 0;
+        transform: translateY(-8px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.profile-dropdown-header {
+    margin-bottom: 0.5rem;
+}
+
+.profile-username {
+    font-weight: 700;
+    font-size: 1.05rem;
+    color: var(--text-light);
+    margin-bottom: 0.4rem;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+    text-transform: capitalize;
+}
+
+.profile-dropdown-divider {
+    height: 1px;
+    background: var(--glass-border);
+    margin: 0.8rem 0;
+}
+
+.profile-dropdown-item {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    padding: 0.6rem 0.8rem;
+    border-radius: 6px;
+    cursor: pointer;
+    text-align: left;
+    transition: var(--transition-smooth);
+}
+
+.profile-dropdown-item:hover {
+    background: rgba(255, 255, 255, 0.05);
+    color: var(--text-light);
+}
+
+.profile-dropdown-item.signout-btn:hover {
+    background: rgba(239, 83, 80, 0.15);
+    color: #ef5350;
+}
+
+
 
 
 

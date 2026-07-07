@@ -50,11 +50,22 @@
     <header class="hidden" id="main-header">
         <a href="#" class="logo" onclick="setRole('user')">Watch<span>Mart</span></a>
         
-        <!-- Profile Controls -->
+        <!-- Profile Controls (Dropdown) -->
         <div class="header-auth-controls" style="display: flex; gap: 1rem; align-items: center;">
-            <div id="user-profile-header">
-                <span id="header-user-badge" class="badge">Guest</span>
-                <button class="btn btn-secondary" onclick="handleLogout()" style="padding: 0.4rem 0.8rem; font-size: 0.8rem; text-transform: uppercase;">Sign Out</button>
+            <div class="user-profile-dropdown-container hidden" id="user-profile-header">
+                <button class="profile-avatar-btn" onclick="toggleProfileDropdown(event)" aria-label="User Profile">
+                    <div class="profile-avatar" id="header-avatar-initial">U</div>
+                </button>
+                <div class="profile-dropdown" id="profile-dropdown-menu">
+                    <div class="profile-dropdown-header">
+                        <div id="header-user-name" class="profile-username">Guest</div>
+                        <span id="header-user-badge" class="badge">Buyer</span>
+                    </div>
+                    <div class="profile-dropdown-divider"></div>
+                    <button class="profile-dropdown-item signout-btn" onclick="handleLogout()">
+                        🚪 Sign Out
+                    </button>
+                </div>
             </div>
         </div>
 
@@ -1945,9 +1956,19 @@
         function updateHeaderAuthUI() {
             const profileHeader = document.getElementById('user-profile-header');
             const badge = document.getElementById('header-user-badge');
+            const usernameEl = document.getElementById('header-user-name');
+            const avatarEl = document.getElementById('header-avatar-initial');
 
             if (loggedInUser) {
                 if (profileHeader) profileHeader.classList.remove('hidden');
+                
+                // Set username
+                if (usernameEl) usernameEl.innerText = loggedInUser.username;
+                
+                // Set avatar initial
+                if (avatarEl) {
+                    avatarEl.innerText = loggedInUser.username.charAt(0).toUpperCase();
+                }
                 
                 let roleLabel = '';
                 if (loggedInUser.role === 'user') roleLabel = '👤 Buyer';
@@ -1961,6 +1982,20 @@
                 if (profileHeader) profileHeader.classList.add('hidden');
             }
         }
+
+        function toggleProfileDropdown(event) {
+            event.stopPropagation();
+            const dropdown = document.getElementById('profile-dropdown-menu');
+            if (dropdown) dropdown.classList.toggle('open');
+        }
+
+        // Close dropdown when clicking anywhere outside
+        window.addEventListener('click', () => {
+            const dropdown = document.getElementById('profile-dropdown-menu');
+            if (dropdown && dropdown.classList.contains('open')) {
+                dropdown.classList.remove('open');
+            }
+        });
 
         function setLoginRole(role, btnElement) {
             document.querySelectorAll('.login-role-btn').forEach(btn => btn.classList.remove('active'));
