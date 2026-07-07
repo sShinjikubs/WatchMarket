@@ -35,69 +35,81 @@
 
 ```mermaid
 graph TB
-    subgraph Client_Layer ["📱 Client Layer (Frontend)"]
-        A["💻 Web Browser (HTML/CSS/JS)"]
-        B["📱 Mobile Browser / Responsive UI"]
+    subgraph Client_Layer ["📱 Client Layer (Frontend UI)"]
+        A1["💻 Buyer Portal (User UI)"]
+        A2["🛍️ Seller Portal (Customer UI)"]
+        A3["👑 Admin Dashboard (Inspection)"]
+        A4["👔 Manager Panel (Audit & Analytics)"]
+        A5["💬 Staff Chat Interface (Live Support)"]
     end
 
-    subgraph Gateway_Layer ["🔒 API Gateway & Orchestration"]
-        C["🌐 CDN (Content Delivery Network)"]
-        D["🔑 API Gateway (Routing / Authentication)"]
+    subgraph Gateway_Layer ["🔒 Gateway & Authentication"]
+        CDN["🌐 CDN (Content Delivery Network)"]
+        GW["🔑 API Gateway & Auth Manager (JWT / Roles)"]
     end
 
-    subgraph Backend_Layer ["⚙️ Backend Architecture (Microservices)"]
-        E["👤 User Service (Node.js/Express)"]
-        F["📦 Product Service (Node.js/Express)"]
-        G["🛒 Order Service (Node.js/Express)"]
-        H["💳 Payment Service (Node.js/Express)"]
+    subgraph Backend_Layer ["⚙️ Backend Microservices"]
+        AuthSvc["👤 Authentication Service"]
+        VerifySvc["🛡️ Seller Verification & Blacklist check"]
+        InspectSvc["🔎 Watch Inspection & Catalog Service"]
+        AuditSvc["📊 Price Compliance & Audit Service"]
+        ChatSvc["💬 Live Support Chat Service"]
+        PaySvc["💳 Easy Donate QR Payment Service"]
     end
 
     subgraph Data_Layer ["💾 Database & Storage Layer"]
-        I["🗄️ Primary DB (PostgreSQL)"]
-        J["⚡ Cache Server (Redis)"]
-        K["🖼️ Asset Storage (Cloudinary / S3)"]
+        SQL_DB[("🗄️ Primary SQL DB<br>(Users, Sellers, Watches, Logs)")]
+        Redis_DB[("⚡ Redis Cache<br>(Blacklist, Product Catalog)")]
+        Storage[("📦 File Storage<br>(Receipt Slips, Watch Themes)")]
     end
 
     subgraph External_Services ["🌐 External Integration APIs"]
-        L["💬 LINE Notify API"]
-        M["💳 Payment Gateway (Omise / 2C2P)"]
-        N["📧 Email Service (SendGrid)"]
+        LineAPI["💬 LINE Notify API"]
+        BankAPI["📱 Easy Donate QR Bank Gateway"]
+        BlacklistAPI["🔍 External Blacklist Provider"]
     end
 
     %% Client to Gateway Connections
-    A & B --> C
-    C --> D
+    A1 & A2 & A3 & A4 & A5 --> CDN
+    CDN --> GW
 
     %% Gateway to Microservices Connections
-    D --> E
-    D --> F
-    D --> G
-    D --> H
+    GW --> AuthSvc
+    GW --> VerifySvc
+    GW --> InspectSvc
+    GW --> AuditSvc
+    GW --> ChatSvc
+    GW --> PaySvc
 
     %% Services to Databases
-    E --> I
-    F --> I
-    F --> J
-    G --> I
-    H --> M
+    AuthSvc --> SQL_DB
+    VerifySvc --> SQL_DB
+    VerifySvc --> Redis_DB
+    InspectSvc --> SQL_DB
+    InspectSvc --> Storage
+    AuditSvc --> SQL_DB
+    ChatSvc --> SQL_DB
+    PaySvc --> SQL_DB
+    PaySvc --> Storage
 
     %% External APIs Trigger
-    G --> L
-    G --> N
-    H --> L
+    VerifySvc --> BlacklistAPI
+    PaySvc --> BankAPI
+    PaySvc --> LineAPI
+    InspectSvc --> LineAPI
 
     %% Style Customization
-    classDef client fill:#e3f2fd,stroke:#1565c0,stroke-width:2px;
-    classDef gateway fill:#ede7f6,stroke:#5e35b1,stroke-width:2px;
-    classDef backend fill:#e8f5e9,stroke:#2e7d32,stroke-width:2px;
-    classDef data fill:#fff3e0,stroke:#ef6c00,stroke-width:2px;
-    classDef external fill:#ffebee,stroke:#c62828,stroke-width:2px;
+    classDef client fill:#0f172a,stroke:#c5a880,stroke-width:2px,color:#fff;
+    classDef gateway fill:#1e1b4b,stroke:#818cf8,stroke-width:2px,color:#fff;
+    classDef backend fill:#064e3b,stroke:#34d399,stroke-width:2px,color:#fff;
+    classDef data fill:#78350f,stroke:#fbbf24,stroke-width:2px,color:#fff;
+    classDef external fill:#7f1d1d,stroke:#f87171,stroke-width:2px,color:#fff;
 
-    class A,B client;
-    class C,D gateway;
-    class E,F,G,H backend;
-    class I,J,K data;
-    class L,M,N external;
+    class A1,A2,A3,A4,A5 client;
+    class CDN,GW gateway;
+    class AuthSvc,VerifySvc,InspectSvc,AuditSvc,ChatSvc,PaySvc backend;
+    class SQL_DB,Redis_DB,Storage data;
+    class LineAPI,BankAPI,BlacklistAPI external;
 ```
 
 ---
@@ -298,38 +310,50 @@ classDiagram
 ```mermaid
 sequenceDiagram
     autonumber
-    actor Customer as 👤 ลูกค้า (Customer)
+    actor Customer as 👤 Buyer (User)
     participant UI as 💻 Frontend (Web App)
     participant OrderSvc as 🛒 Order Service
     participant PaySvc as 💳 Payment Service
+    participant BankAPI as 📱 Easy Donate API
     participant DB as 🗄️ Database
 
-    Customer->>UI: กดปุ่ม "สั่งซื้อสินค้าเลย" (Checkout)
-    UI->>OrderSvc: สร้างรายการสั่งซื้อ POST /api/orders (Cart details)
+    Customer->>UI: Click "Checkout Now"
+    UI->>OrderSvc: Create order POST /api/orders (Cart details)
     activate OrderSvc
-    OrderSvc->>DB: บันทึกข้อมูลใบสั่งซื้อ (Insert Order & OrderItems)
+    OrderSvc->>DB: Save order details (Insert Order & OrderItems)
     activate DB
-    DB-->>OrderSvc: คืนค่า order_id กลับมา
+    DB-->>OrderSvc: Return order_id
     deactivate DB
-    OrderSvc-->>UI: ตอบรับใบสั่งซื้อ (Order Created, status: Pending)
+    OrderSvc-->>UI: Order Created (Status: Pending)
     deactivate OrderSvc
 
-    UI->>PaySvc: เรียกบริการชำระเงิน POST /api/payments (Amount, Method)
+    UI->>PaySvc: Initiate payment POST /api/payments (Amount, PromptPay QR)
     activate PaySvc
-    PaySvc->>PaySvc: ประมวลผลผ่าน Payment Gateway (Omise/2C2P)
-    PaySvc->>DB: อัปเดตสถานะชำระเงินสำเร็จ
-    activate DB
-    DB-->>PaySvc: อัปเดตเสร็จสิ้น
-    deactivate DB
-    PaySvc-->>UI: การชำระเงินสำเร็จ (Payment Success)
+    PaySvc->>BankAPI: Request PromptPay QR Code (Easy Donate API)
+    activate BankAPI
+    BankAPI-->>PaySvc: Return QR code URL & transaction_ref
+    deactivate BankAPI
+    PaySvc-->>UI: Render QR Code to Customer
     deactivate PaySvc
 
-    UI->>OrderSvc: อัปเดตสถานะออเดอร์เป็น 'Paid'
+    Customer->>BankAPI: Scan and transfer via Mobile Banking app
+    activate BankAPI
+    BankAPI->>PaySvc: Webhook callback / Verification notification
+    deactivate BankAPI
+    activate PaySvc
+    PaySvc->>DB: Update Payment transaction status to 'Success'
+    activate DB
+    DB-->>PaySvc: Update complete
+    deactivate DB
+    PaySvc-->>UI: Payment success callback
+    deactivate PaySvc
+
+    UI->>OrderSvc: Update order status to 'Paid'
     activate OrderSvc
-    OrderSvc->>DB: บันทึกอัปเดต Order Status = 'Paid'
-    OrderSvc-->>UI: แสดงผลหน้าจอเสร็จสิ้น (Order Confirmed)
+    OrderSvc->>DB: Update Order Status = 'Paid'
+    OrderSvc-->>UI: Show order confirmation screen
     deactivate OrderSvc
-    UI-->>Customer: แสดงเลขใบสั่งซื้อและหน้ารายการสำเร็จ
+    UI-->>Customer: Display receipt & payment success
 ```
 
 ### 5.4 Activity Diagram (แผนภาพกิจกรรมการสั่งซื้อสินค้า)
