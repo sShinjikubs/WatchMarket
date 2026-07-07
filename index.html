@@ -11,21 +11,23 @@
 
     <!-- Header Navigation -->
     <header>
-        <a href="#" class="logo" onclick="setRole('customer')">Watch<span>Mart</span></a>
+        <a href="#" class="logo" onclick="setRole('user')">Watch<span>Mart</span></a>
         
         <!-- Role Switcher Panel inside Header -->
         <div class="role-switcher-container">
             <label for="role-selector">สลับบทบาท:</label>
             <select id="role-selector" onchange="switchRole(this.value)">
-                <option value="customer">👤 ลูกค้า (Customer)</option>
-                <option value="staff">🧑‍💼 พนักงาน (Staff)</option>
-                <option value="manager">👑 ผู้จัดการ (Manager)</option>
+                <option value="user">👤 ผู้ซื้อ (User)</option>
+                <option value="customer">🛍️ ผู้ขาย (Customer / Seller)</option>
+                <option value="admin">👑 ผู้ดูแลระบบ (Admin)</option>
+                <option value="manager">👔 ผู้จัดการ (Manager)</option>
+                <option value="staff">💬 พนักงานช่วยเหลือ (Staff)</option>
             </select>
         </div>
 
         <nav>
             <ul>
-                <li><a href="#" class="active" id="nav-home" onclick="setRole('customer')">หน้าหลัก</a></li>
+                <li><a href="#" class="active" id="nav-home" onclick="setRole('user')">หน้าหลัก</a></li>
                 <li><a href="#products" id="nav-products">นาฬิกาของเรา</a></li>
                 <li><a href="markdown.html" target="_blank">เอกสารวิเคราะห์ระบบ</a></li>
             </ul>
@@ -118,6 +120,179 @@
         </section>
     </div>
 
+    <!-- ==================== SELLER (CUSTOMER / SELLER) VIEW CONTAINER ==================== -->
+    <div id="seller-view" class="dashboard-section hidden">
+        <div class="dashboard-header">
+            <div class="dashboard-title">🛍️ พอร์ทัลผู้ขาย <span>(Seller Portal)</span></div>
+            <span class="badge badge-paid">โหมดผู้ขายสินค้า</span>
+        </div>
+
+        <!-- Registration Step -->
+        <div id="seller-registration-card" class="form-card">
+            <div class="form-title">📝 สมัครลงทะเบียนเป็นผู้ขาย (Seller Identity Verification)</div>
+            <div class="alert-banner info">
+                <span>ℹ️</span> เพื่อความปลอดภัยในการซื้อขายนาฬิกาพรีเมียม ผู้ขายทุกรายต้องแสดงตัวตนเพื่อคัดกรองกับระบบแบล็คลิสต์
+            </div>
+            <form id="seller-reg-form" onsubmit="handleSellerRegister(event)">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="seller-name">ชื่อ-นามสกุลจริง</label>
+                        <input type="text" id="seller-name" class="form-control" placeholder="เช่น นายสมบูรณ์ ดีงาม" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="seller-email">อีเมลยืนยันตน</label>
+                        <input type="email" id="seller-email" class="form-control" placeholder="seller@email.com" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="seller-national-id">เลขบัตรประชาชน (13 หลัก)</label>
+                        <input type="text" id="seller-national-id" class="form-control" placeholder="x-xxxx-xxxxx-xx-x" maxlength="17" required>
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary">ส่งข้อมูลยืนยันตัวตน 🔒</button>
+            </form>
+        </div>
+
+        <!-- Blocked Status Banner (Hidden by default) -->
+        <div id="seller-blocked-banner" class="alert-banner danger hidden">
+            <span>⚠️</span> <strong>ตรวจพบแบล็คลิสต์!</strong> บัญชีผู้ใช้นี้หรือเลขบัตรประชาชนนี้อยู่ในระบบบัญชีดำ (Blacklist) ไม่ได้รับอนุญาตให้ลงทะเบียนขายสินค้าได้
+        </div>
+
+        <!-- Seller Actions Dashboard (Hidden until registered) -->
+        <div id="seller-dashboard" class="hidden">
+            <div class="alert-banner success" style="margin-bottom: 2rem;">
+                <span>✅</span> ยืนยันตัวตนกับระบบแบล็คลิสต์เรียบร้อยแล้ว! สถานะของคุณ: <strong>ผู้ขายที่ได้รับการอนุมัติ (Verified Seller)</strong>
+            </div>
+
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-label">นาฬิกาที่เสนอขายทั้งหมด</div>
+                    <div class="stat-value" id="seller-total-proposed">0</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">รอนำเข้า/รอตรวจสอบ</div>
+                    <div class="stat-value" id="seller-pending-count">0</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">อนุมัติลงขายแล้ว</div>
+                    <div class="stat-value" id="seller-imported-count">0</div>
+                </div>
+            </div>
+
+            <!-- Submit Watch Form -->
+            <div class="form-card">
+                <div class="form-title">⌚ เสนอขายนาฬิกาเข้าระบบตรวจสอบ (Submit Watch for Inspection)</div>
+                <form id="seller-watch-form" onsubmit="handleWatchSubmit(event)">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="sw-brand">แบรนด์นาฬิกา</label>
+                            <input type="text" id="sw-brand" class="form-control" placeholder="เช่น Rolex / Omega / Seiko" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="sw-model">ชื่อรุ่น</label>
+                            <input type="text" id="sw-model" class="form-control" placeholder="เช่น Submariner Date" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="sw-price">ราคาเสนอขาย (บาท)</label>
+                            <input type="number" id="sw-price" class="form-control" placeholder="เช่น 350000" min="0" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="sw-banding">ระดับราคาเป้าหมาย (Price Banding)</label>
+                            <select id="sw-banding" class="form-control">
+                                <option value="classic">Standard (ต่ำกว่า 25,000 บาท)</option>
+                                <option value="sport">Premium (25,000 - 100,000 บาท)</option>
+                                <option value="elegant">Super-Luxury (100,000 บาทขึ้นไป)</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="sw-dial-color">สีปุ่มหน้าปัดจำลอง (Dial Theme)</label>
+                            <select id="sw-dial-color" class="form-control">
+                                <option value="#1a1a1a">Black Dial</option>
+                                <option value="#fcfcfc">Silver/Gold Dial</option>
+                                <option value="#2d3748">Navy Dial</option>
+                                <option value="#263238">Dark Slate Dial</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="sw-desc">คำอธิบายสภาพสินค้า</label>
+                            <input type="text" id="sw-desc" class="form-control" placeholder="เช่น สภาพดีมาก กล่องใบครบถ้วนปี 2024" required>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary">ส่งตรวจสอบสภาพเรือน 📤</button>
+                </form>
+            </div>
+
+            <!-- List of seller's submitted watches -->
+            <div class="form-card">
+                <div class="form-title">📋 สถานะรายการนาฬิกาที่คุณเสนอขาย (My Submitted Watches)</div>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>แบรนด์/รุ่น</th>
+                                <th>ราคาเสนอขาย</th>
+                                <th>ระดับราคา</th>
+                                <th>ผลการตรวจสอบ</th>
+                                <th>สถานะนำเข้า</th>
+                            </tr>
+                        </thead>
+                        <tbody id="seller-watches-table">
+                            <tr>
+                                <td colspan="5" style="text-align: center; color: var(--text-muted);">ยังไม่มีการเสนอขายสินค้าในระบบ</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==================== ADMIN (ผู้ดูแลระบบ) VIEW CONTAINER ==================== -->
+    <div id="admin-view" class="dashboard-section hidden">
+        <div class="dashboard-header">
+            <div class="dashboard-title">👑 พอร์ทัลผู้ดูแลระบบ <span>(Admin Control Panel)</span></div>
+            <span class="badge badge-pending">โหมดผู้ดูแลระบบ</span>
+        </div>
+
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-label">สินค้าส่งรอตรวจสอบ</div>
+                <div class="stat-value" id="admin-pending-ins-count">0</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">ผ่านการตรวจสภาพแล้ว</div>
+                <div class="stat-value" id="admin-passed-count">0</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">นำเข้าเข้าระบบสต็อกรวม</div>
+                <div class="stat-value" id="admin-imported-total">0</div>
+            </div>
+        </div>
+
+        <!-- Admin Inspection Table -->
+        <div class="form-card">
+            <div class="form-title">🛠️ รายการสินค้าของลูกค้าผู้ขายรอการคัดกรองและนำเข้า (Inspection Queue)</div>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ผู้ขาย</th>
+                            <th>สินค้าแบรนด์/รุ่น</th>
+                            <th>ราคาเสนอขาย</th>
+                            <th>ระดับราคาเสนอ</th>
+                            <th>ขั้นตอนตรวจสอบ</th>
+                            <th>การดำเนินการ</th>
+                        </tr>
+                    </thead>
+                    <tbody id="admin-inspection-table">
+                        <tr>
+                            <td colspan="6" style="text-align: center; color: var(--text-muted);">ไม่มีรายการรอดำเนินการในระบบคิว</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
     <!-- ==================== STAFF VIEW CONTAINER ==================== -->
     <div id="staff-view" class="dashboard-section hidden">
         <div class="dashboard-header">
@@ -155,6 +330,32 @@
                         </tr>
                     </tbody>
                 </table>
+            </div>
+        </div>
+
+        <!-- Chat Support Simulation -->
+        <div class="form-card">
+            <div class="form-title">💬 กล่องข้อความช่วยเหลือลูกค้าและผู้ขาย (Customer Support Live Chat Box)</div>
+            <div class="chat-box">
+                <div class="chat-header">
+                    <span>แผงควบคุมแชท (Support ID: STF-99)</span>
+                    <span id="chat-client-status" style="font-size: 0.8rem; font-weight: normal; color: #4ade80;">● ลูกค้าออนไลน์ (กำลังพิมพ์...)</span>
+                </div>
+                <div class="chat-messages" id="chat-messages-container">
+                    <div class="chat-msg customer"><strong>[ผู้ซื้อ - นายมานะ]:</strong> สวัสดีครับ สั่งซื้อนาฬิกา Rolex ไปแล้ว อยากตรวจสอบสลิปโอนเงินว่ามีปัญหาอะไรไหมครับ?</div>
+                </div>
+                <div class="chat-footer-controls">
+                    <div class="chat-quick-replies">
+                        <button type="button" class="quick-reply-btn" onclick="sendChatReply('สวัสดีครับ เจ้าหน้าที่ยินดีให้บริการครับ กำลังตรวจสอบสลิปการโอนเงินให้นะครับ')">👋 ทักทายต้อนรับ</button>
+                        <button type="button" class="quick-reply-btn" onclick="sendChatReply('สลิปโอนเงินของคุณได้รับการยืนยันความถูกต้องผ่านระบบ Easy Donate API เรียบร้อยแล้วครับ')">💵 ยืนยันสลิปผ่าน API</button>
+                        <button type="button" class="quick-reply-btn" onclick="sendChatReply('ขณะนี้สินค้าของท่านได้รับการตรวจสอบและนำเข้าสู่ระบบเรียบร้อยแล้ว')">⌚ แจ้งสถานะสินค้า</button>
+                        <button type="button" class="quick-reply-btn" onclick="sendChatReply('ขออภัยด้วยครับ เนื่องจากบัตรประชาชนของท่านติดระบบ Blacklist จึงไม่สามารถทำรายการได้')">🚫 แจ้งเหตุผล Blacklist</button>
+                    </div>
+                    <div class="chat-input-group">
+                        <input type="text" id="chat-staff-input" class="form-control" style="flex: 1;" placeholder="พิมพ์ข้อความตอบกลับที่นี่..." onkeydown="if(event.key === 'Enter') handleSendChat()">
+                        <button type="button" class="btn btn-primary" onclick="handleSendChat()">ส่งข้อความ ➡️</button>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -263,6 +464,41 @@
                         </tr>
                     </thead>
                     <tbody id="manager-orders-table">
+                        <!-- Loaded dynamically -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- สอบสินค้า (Audit Product History) -->
+        <div class="form-card">
+            <div class="form-title">🔍 ตรวจสอบประวัติสินค้าและประวัติผู้นำเข้า (Audit Product History)</div>
+            <div class="audit-search-container">
+                <input type="text" id="audit-search-input" class="form-control" style="flex: 1;" placeholder="กรอกชื่อแบรนด์/รุ่น หรือ ID สินค้า เพื่อค้นหาประวัติ..." oninput="handleAuditSearch()">
+            </div>
+            <div class="audit-grid" id="audit-history-list">
+                <!-- Loaded dynamically -->
+            </div>
+        </div>
+
+        <!-- สอบราคา (Audit Price) -->
+        <div class="form-card">
+            <div class="form-title">⚖️ ตรวจสอบราคากลางและความถูกต้อง (Price & Banding Compliance Audit)</div>
+            <div class="alert-banner info">
+                <span>ℹ️</span> แผงควบคุมระบบคัดกรองสินค้าที่ราคาเสนอขายเบี่ยงเบนจากช่วงราคากลางที่ตั้งไว้ (Banding Rules)
+            </div>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>สินค้า</th>
+                            <th>ราคาขายปัจจุบัน</th>
+                            <th>ระดับราคา (Banding)</th>
+                            <th>ช่วงราคาที่อนุญาต</th>
+                            <th>สถานะการประเมิน</th>
+                        </tr>
+                    </thead>
+                    <tbody id="manager-price-compliance-table">
                         <!-- Loaded dynamically -->
                     </tbody>
                 </table>
@@ -461,12 +697,24 @@
         // Database Keys in LocalStorage
         const DB_PRODUCTS_KEY = "watchmart_db_products";
         const DB_ORDERS_KEY = "watchmart_db_orders";
+        const DB_PENDING_WATCHES_KEY = "watchmart_db_pending_watches";
+        const DB_SELLER_REG_KEY = "watchmart_db_seller_registered";
+        const DB_BLACKLIST_KEY = "watchmart_db_blacklist";
+
+        // Initial Blacklist Data
+        const initialBlacklist = [
+            { email: "bad@mail.com", nationalId: "1-1111-11111-11-1", reason: "มีประวัติฉ้อโกงบัตรประชาชน" },
+            { email: "fraud@watch.com", nationalId: "2-2222-22222-22-2", reason: "มีประวัติส่งนาฬิกาปลอมเลียนแบบ" }
+        ];
 
         // State Variables
         let products = [];
         let orders = [];
+        let pendingWatches = [];
+        let blacklist = [];
+        let isSellerRegistered = false;
         let cart = [];
-        let currentRole = "customer";
+        let currentRole = "user"; // Changed default role to user
         let activeCategory = "all";
         let uploadedSlipData = null;
 
@@ -498,6 +746,25 @@
                 localStorage.setItem(DB_ORDERS_KEY, JSON.stringify([]));
             }
             orders = JSON.parse(localStorage.getItem(DB_ORDERS_KEY));
+
+            // Load pending watches
+            if (!localStorage.getItem(DB_PENDING_WATCHES_KEY)) {
+                localStorage.setItem(DB_PENDING_WATCHES_KEY, JSON.stringify([]));
+            }
+            pendingWatches = JSON.parse(localStorage.getItem(DB_PENDING_WATCHES_KEY));
+
+            // Load seller registration state
+            isSellerRegistered = JSON.parse(localStorage.getItem(DB_SELLER_REG_KEY)) || false;
+
+            // Load blacklist
+            if (!localStorage.getItem(DB_BLACKLIST_KEY)) {
+                localStorage.setItem(DB_BLACKLIST_KEY, JSON.stringify(initialBlacklist));
+            }
+            blacklist = JSON.parse(localStorage.getItem(DB_BLACKLIST_KEY));
+
+            // Set role drop down selector to default role
+            document.getElementById('role-selector').value = currentRole;
+            switchRole(currentRole);
 
             // Render Views
             renderProducts();
@@ -536,15 +803,27 @@
             
             // Hide all views
             document.getElementById('customer-view').classList.add('hidden');
+            document.getElementById('seller-view').classList.add('hidden');
+            document.getElementById('admin-view').classList.add('hidden');
             document.getElementById('staff-view').classList.add('hidden');
             document.getElementById('manager-view').classList.add('hidden');
 
             // Show active view
-            if (role === 'customer') {
+            if (role === 'user') {
                 document.getElementById('customer-view').classList.remove('hidden');
                 document.getElementById('nav-home').style.display = 'block';
                 document.getElementById('nav-products').style.display = 'block';
                 document.getElementById('nav-home').classList.add('active');
+            } else if (role === 'customer') {
+                document.getElementById('seller-view').classList.remove('hidden');
+                document.getElementById('nav-home').style.display = 'block';
+                document.getElementById('nav-products').style.display = 'none';
+                renderSellerPortal();
+            } else if (role === 'admin') {
+                document.getElementById('admin-view').classList.remove('hidden');
+                document.getElementById('nav-home').style.display = 'none';
+                document.getElementById('nav-products').style.display = 'none';
+                renderAdminPortal();
             } else if (role === 'staff') {
                 document.getElementById('staff-view').classList.remove('hidden');
                 document.getElementById('nav-home').style.display = 'none';
@@ -821,7 +1100,10 @@
 
             // System Trigger Notification Logic Simulation
             logSystem(`[DATABASE]: บันทึกประวัติใบสั่งซื้อลง PostgreSQL สำเร็จ (ID: ${newOrder.id})`);
-            if (newOrder.slip) {
+            if (paymentMethod === 'promptpay') {
+                logSystem(`[API Trigger]: เรียกใช้ Easy Donate API (Bank Gateway) จำลอง เพื่อออก QR Code และตรวจรับยอดชำระสำเร็จ`);
+            }
+            if (newOrder.slip && paymentMethod !== 'promptpay') {
                 logSystem(`[STORAGE]: จัดเก็บไฟล์สลิปหลักฐานใน AWS S3 bucket จำลองสำเร็จ`);
             }
             logSystem(`[API Trigger]: ยิงคำสั่ง POST ไปยัง LINE Notify API เรียบร้อย -> "มีคำสั่งซื้อใหม่ ยอดเงิน ฿${totalPrice.toLocaleString()}"`);
@@ -1041,6 +1323,10 @@
                 }).join('');
             }
 
+            // Price compliance list & Audit list
+            renderPriceCompliance();
+            handleAuditSearch();
+
             // Render Chart
             renderSalesChart();
         }
@@ -1218,6 +1504,361 @@
             renderProducts();
             renderManagerDashboard();
             showNotification('ลบข้อมูลนาฬิกาออกจากระบบสำเร็จ', false);
+        }
+
+        // ==================== SELLER (CUSTOMER / SELLER) PORTAL LOGIC ====================
+        function renderSellerPortal() {
+            if (isSellerRegistered) {
+                document.getElementById('seller-registration-card').classList.add('hidden');
+                document.getElementById('seller-blocked-banner').classList.add('hidden');
+                document.getElementById('seller-dashboard').classList.remove('hidden');
+                renderSellerWatches();
+            } else {
+                document.getElementById('seller-registration-card').classList.remove('hidden');
+                document.getElementById('seller-dashboard').classList.add('hidden');
+            }
+        }
+
+        function handleSellerRegister(e) {
+            e.preventDefault();
+            const name = document.getElementById('seller-name').value.trim();
+            const email = document.getElementById('seller-email').value.trim();
+            const nationalId = document.getElementById('seller-national-id').value.trim();
+
+            // Verification against Blacklist
+            const isBlacklisted = blacklist.some(b => b.email.toLowerCase() === email.toLowerCase() || b.nationalId === nationalId);
+
+            if (isBlacklisted) {
+                document.getElementById('seller-blocked-banner').classList.remove('hidden');
+                logSystem(`[SECURITY]: การสมัครลงทะเบียนผู้ขายปฏิเสธ เนื่องจากข้อมูลติดบัญชีดำ (Blacklist Verification Failed - Email: ${email})`);
+                showNotification('ขออภัย ข้อมูลของท่านอยู่ในบัญชีดำแบล็คลิสต์!', false);
+            } else {
+                document.getElementById('seller-blocked-banner').classList.add('hidden');
+                isSellerRegistered = true;
+                localStorage.setItem(DB_SELLER_REG_KEY, JSON.stringify(true));
+                logSystem(`[SECURITY]: สมัครลงทะเบียนผู้ขายสำเร็จ ผ่านการคัดกรองประวัติแบล็คลิสต์ (ผู้ขาย: ${name}, Email: ${email})`);
+                showNotification('ยืนยันตัวตนสำเร็จและเป็นผู้ขายได้รับการอนุมัติ!');
+                renderSellerPortal();
+            }
+        }
+
+        function handleWatchSubmit(e) {
+            e.preventDefault();
+            const brand = document.getElementById('sw-brand').value;
+            const model = document.getElementById('sw-model').value;
+            const price = parseFloat(document.getElementById('sw-price').value);
+            const proposedBanding = document.getElementById('sw-banding').value;
+            const dialColor = document.getElementById('sw-dial-color').value;
+            const description = document.getElementById('sw-desc').value;
+            
+            const sellerName = document.getElementById('seller-name').value || "ผู้ขายยืนยันตัวตน";
+            const sellerEmail = document.getElementById('seller-email').value || "seller@email.com";
+
+            const newWatch = {
+                id: "WSH-" + Math.floor(100000 + Math.random() * 900000),
+                brand: brand,
+                model: model,
+                price: price,
+                proposedBanding: proposedBanding,
+                dialColor: dialColor,
+                description: description,
+                sellerName: sellerName,
+                sellerEmail: sellerEmail,
+                inspectionStatus: "pending", // pending, passed, failed
+                importStatus: "pending", // pending, imported
+                date: new Date().toLocaleString()
+            };
+
+            pendingWatches.push(newWatch);
+            localStorage.setItem(DB_PENDING_WATCHES_KEY, JSON.stringify(pendingWatches));
+
+            logSystem(`[STORAGE]: จัดเก็บไฟล์รูปภาพสินค้าจำลองใน Storage Data สำเร็จ (นาฬิกา: ${brand} ${model})`);
+            logSystem(`[API Trigger]: ยิงการแจ้งเตือนขอตรวจสอบนาฬิกาไปหาผู้ดูแลระบบ (Admin Notification: New Watch Pending Inspection)`);
+            
+            document.getElementById('seller-watch-form').reset();
+            renderSellerPortal();
+            showNotification('ส่งเสนอขายนาฬิกาและรอการตรวจสอบสภาพสำเร็จ');
+        }
+
+        function renderSellerWatches() {
+            const tableBody = document.getElementById('seller-watches-table');
+            
+            // Counters
+            const totalProposed = pendingWatches.length;
+            const pendingCount = pendingWatches.filter(w => w.importStatus === 'pending').length;
+            const importedCount = pendingWatches.filter(w => w.importStatus === 'imported').length;
+
+            document.getElementById('seller-total-proposed').innerText = totalProposed;
+            document.getElementById('seller-pending-count').innerText = pendingCount;
+            document.getElementById('seller-imported-count').innerText = importedCount;
+
+            if (pendingWatches.length === 0) {
+                tableBody.innerHTML = `<tr><td colspan="5" style="text-align: center; color: var(--text-muted);">ยังไม่มีการเสนอขายสินค้าในระบบ</td></tr>`;
+                return;
+            }
+
+            tableBody.innerHTML = pendingWatches.map(w => {
+                let inspectBadge = '';
+                if (w.inspectionStatus === 'pending') inspectBadge = '<span class="badge badge-watch-pending">รอตรวจสอบสภาพ</span>';
+                else if (w.inspectionStatus === 'passed') inspectBadge = '<span class="badge badge-watch-passed">ผ่านเกณฑ์</span>';
+                else if (w.inspectionStatus === 'failed') inspectBadge = '<span class="badge badge-watch-failed">ตกเกณฑ์</span>';
+
+                let importBadge = '';
+                if (w.importStatus === 'pending') importBadge = '<span class="badge badge-watch-pending">รอนำเข้าสต็อก</span>';
+                else if (w.importStatus === 'imported') importBadge = '<span class="badge badge-watch-imported">นำเข้าแล้วพร้อมขาย</span>';
+
+                return `
+                    <tr>
+                        <td><strong>${w.brand}</strong> ${w.model}</td>
+                        <td>฿ ${w.price.toLocaleString()}</td>
+                        <td><span class="badge" style="background: rgba(197,168,128,0.1); color: var(--accent-gold);">${w.proposedBanding.toUpperCase()}</span></td>
+                        <td>${inspectBadge}</td>
+                        <td>${importBadge}</td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        // ==================== ADMIN (ผู้ดูแลระบบ) PORTAL LOGIC ====================
+        function renderAdminPortal() {
+            const tableBody = document.getElementById('admin-inspection-table');
+
+            // Counters
+            const pendingInsCount = pendingWatches.filter(w => w.inspectionStatus === 'pending').length;
+            const passedCount = pendingWatches.filter(w => w.inspectionStatus === 'passed').length;
+            const importedTotal = pendingWatches.filter(w => w.importStatus === 'imported').length;
+
+            document.getElementById('admin-pending-ins-count').innerText = pendingInsCount;
+            document.getElementById('admin-passed-count').innerText = passedCount;
+            document.getElementById('admin-imported-total').innerText = importedTotal;
+
+            if (pendingWatches.length === 0) {
+                tableBody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: var(--text-muted);">ไม่มีรายการรอดำเนินการในระบบคิว</td></tr>`;
+                return;
+            }
+
+            tableBody.innerHTML = pendingWatches.map(w => {
+                let inspectCell = '';
+                if (w.inspectionStatus === 'pending') {
+                    inspectCell = `
+                        <div class="btn-group">
+                            <button class="btn btn-success" style="padding: 0.25rem 0.5rem; font-size: 0.8rem;" onclick="inspectWatch('${w.id}', 'passed')">ผ่านเกณฑ์ ✔️</button>
+                            <button class="btn btn-danger" style="padding: 0.25rem 0.5rem; font-size: 0.8rem;" onclick="inspectWatch('${w.id}', 'failed')">ตกเกณฑ์ ✖️</button>
+                        </div>
+                    `;
+                } else if (w.inspectionStatus === 'passed') {
+                    inspectCell = '<span class="badge badge-watch-passed">ผ่านเกณฑ์ตรวจสอบ</span>';
+                } else {
+                    inspectCell = '<span class="badge badge-watch-failed">ไม่ผ่านเกณฑ์</span>';
+                }
+
+                let actionCell = '';
+                if (w.inspectionStatus === 'passed' && w.importStatus === 'pending') {
+                    actionCell = `<button class="btn btn-primary" style="padding: 0.25rem 0.6rem; font-size: 0.8rem;" onclick="importWatch('${w.id}')">นำเข้าคลัง (Import) 📦</button>`;
+                } else if (w.importStatus === 'imported') {
+                    actionCell = '<span class="badge badge-watch-imported">นำเข้าสต็อกแล้ว</span>';
+                } else {
+                    actionCell = '<span style="color: var(--text-muted); font-size: 0.8rem;">รอกระบวนการ</span>';
+                }
+
+                return `
+                    <tr>
+                        <td><strong>${w.sellerName}</strong><br><small style="color:var(--text-muted);">${w.sellerEmail}</small></td>
+                        <td><strong>${w.brand}</strong> ${w.model}</td>
+                        <td>฿ ${w.price.toLocaleString()}</td>
+                        <td><span class="badge" style="background: rgba(197,168,128,0.1); color: var(--accent-gold);">${w.proposedBanding.toUpperCase()}</span></td>
+                        <td>${inspectCell}</td>
+                        <td>${actionCell}</td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        function inspectWatch(id, result) {
+            const watch = pendingWatches.find(w => w.id === id);
+            if (watch) {
+                watch.inspectionStatus = result;
+                localStorage.setItem(DB_PENDING_WATCHES_KEY, JSON.stringify(pendingWatches));
+                logSystem(`[ADMIN]: ผู้ดูแลระบบตรวจสอบสภาพนาฬิกา ID ${id} (${watch.brand} ${watch.model}) -> ผลลัพธ์: ${result === 'passed' ? 'ผ่านเกณฑ์ตรวจสภาพจริง' : 'ไม่ผ่านเกณฑ์ตรวจสภาพจริง'}`);
+                showNotification(`คัดกรองตรวจสภาพนาฬิกาสำเร็จ: ${result === 'passed' ? 'ผ่านเกณฑ์' : 'ไม่ผ่านเกณฑ์'}`);
+                renderAdminPortal();
+            }
+        }
+
+        function importWatch(id) {
+            const watch = pendingWatches.find(w => w.id === id);
+            if (watch) {
+                watch.importStatus = 'imported';
+                
+                // Add to product database with stock = 1
+                const newProduct = {
+                    id: watch.id,
+                    name: watch.model,
+                    brand: watch.brand,
+                    category: watch.proposedBanding, // e.g. classic, sport, elegant
+                    price: watch.price,
+                    stock: 1,
+                    color: watch.dialColor || "#2d3748",
+                    strokeColor: "#c5a880",
+                    isGoldFace: watch.dialColor === "#fcfcfc"
+                };
+
+                products.push(newProduct);
+                localStorage.setItem(DB_PRODUCTS_KEY, JSON.stringify(products));
+                localStorage.setItem(DB_PENDING_WATCHES_KEY, JSON.stringify(pendingWatches));
+
+                logSystem(`[DATABASE]: บันทึกข้อมูลนาฬิกาใหม่ลง PostgreSQL สำเร็จ (รหัสผลิตภัณฑ์: ${watch.id})`);
+                logSystem(`[INVENTORY]: อัปเดตคลังระดับราคากลาง (${watch.proposedBanding.toUpperCase()}) สำเร็จ (สินค้าพร้อมวางขาย)`);
+                logSystem(`[API Trigger]: ยิงการแจ้งเตือน Line Notify เพื่อโฆษณาสินค้าเข้าใหม่หากลุ่มลูกค้าเรียบร้อย`);
+
+                showNotification('นำเข้านาฬิกาหรูเข้าสู่คลังจัดจำหน่ายเรียบร้อยแล้ว!');
+                
+                renderProducts();
+                renderAdminPortal();
+            }
+        }
+
+        // ==================== AUDIT PRICE COMPLIANCE LOGIC ====================
+        function renderPriceCompliance() {
+            const tbody = document.getElementById('manager-price-compliance-table');
+            if (products.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="5" style="text-align: center; color: var(--text-muted);">ไม่มีข้อมูลสำหรับการประเมินราคากลาง</td></tr>`;
+                return;
+            }
+
+            tbody.innerHTML = products.map(p => {
+                let expectedRange = '';
+                let isCompliant = false;
+
+                if (p.category === 'classic') {
+                    expectedRange = 'ต่ำกว่า 25,000 บาท';
+                    isCompliant = p.price < 25000;
+                } else if (p.category === 'sport') {
+                    expectedRange = '25,000 - 100,000 บาท';
+                    isCompliant = p.price >= 25000 && p.price <= 100000;
+                } else if (p.category === 'elegant') {
+                    expectedRange = '100,000 บาทขึ้นไป';
+                    isCompliant = p.price >= 100000;
+                }
+
+                const statusBadge = isCompliant
+                    ? '<span class="badge badge-paid">✅ ถูกต้องตามราคากลาง</span>'
+                    : '<span class="badge badge-cancelled">⚠️ เบี่ยงเบนจากราคากลาง</span>';
+
+                return `
+                    <tr>
+                        <td><strong>${p.brand}</strong> ${p.name}</td>
+                        <td><strong>฿ ${p.price.toLocaleString()}</strong></td>
+                        <td><span class="badge" style="background: rgba(197,168,128,0.1); color: var(--accent-gold);">${p.category.toUpperCase()}</span></td>
+                        <td>${expectedRange}</td>
+                        <td>${statusBadge}</td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        function handleAuditSearch() {
+            const query = document.getElementById('audit-search-input')?.value.toLowerCase() || '';
+            const container = document.getElementById('audit-history-list');
+            if (!container) return;
+            container.innerHTML = '';
+
+            const allAudits = [];
+
+            // Add products history
+            products.forEach(p => {
+                const origin = pendingWatches.find(w => w.id === p.id);
+                if (origin) {
+                    allAudits.push({
+                        id: p.id,
+                        title: `${p.brand} ${p.name}`,
+                        price: p.price,
+                        category: p.category,
+                        history: [
+                            `ผู้เสนอขาย: ${origin.sellerName} (${origin.sellerEmail}) เมื่อ ${origin.date}`,
+                            `ผู้ตรวจสภาพ: เจ้าหน้าที่ฝ่ายประเมินและคัดกรอง (สถานะ: APPROVED)`,
+                            `ผู้นำเข้า: ผู้ดูแลระบบ (Admin) บันทึกและนำเข้าคลังสินค้าแล้ว`
+                        ]
+                    });
+                } else {
+                    allAudits.push({
+                        id: p.id,
+                        title: `${p.brand} ${p.name}`,
+                        price: p.price,
+                        category: p.category,
+                        history: [
+                            `ผู้เสนอขาย: สินค้าระบบดั้งเดิม (Initial Inventory)`,
+                            `ผู้ตรวจสภาพ: เจ้าหน้าที่ตรวจสอบระบบคลังสินค้าดั้งเดิม`,
+                            `ผู้นำเข้า: ระบบผู้จัดการร้าน (Manager) CRUD`
+                        ]
+                    });
+                }
+            });
+
+            // Filter results
+            const filteredAudits = allAudits.filter(a => 
+                a.title.toLowerCase().includes(query) || 
+                a.id.toLowerCase().includes(query)
+            );
+
+            if (filteredAudits.length === 0) {
+                container.innerHTML = `<p style="grid-column: 1/-1; text-align: center; color: var(--text-muted); padding: 1.5rem;">ไม่พบข้อมูลประวัติผลิตภัณฑ์สำหรับคำค้นหานี้</p>`;
+                return;
+            }
+
+            container.innerHTML = filteredAudits.map(a => `
+                <div class="audit-card">
+                    <div class="audit-card-title">⌚ ${a.title} (ID: ${a.id})</div>
+                    <div><strong>ราคา:</strong> ฿ ${a.price.toLocaleString()} | <strong>ระดับราคา:</strong> ${a.category.toUpperCase()}</div>
+                    <div style="margin-top: 0.5rem; font-weight: bold; color: var(--text-muted);">รายละเอียดบันทึก Log การวิเคราะห์สถาปัตยกรรม:</div>
+                    <div class="audit-log-list">
+                        ${a.history.map(line => `• ${line}`).join('<br>')}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // ==================== SUPPORT CHAT LIVE SIMULATION ====================
+        function sendChatReply(text) {
+            const chatContainer = document.getElementById('chat-messages-container');
+            const msgElement = document.createElement('div');
+            msgElement.className = 'chat-msg staff';
+            msgElement.innerHTML = `<strong>[พนักงาน - STF-99]:</strong> ${text}`;
+            chatContainer.appendChild(msgElement);
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+
+            logSystem(`[SUPPORT CHAT]: เจ้าหน้าที่ฝ่ายบริการช่วยเหลือ ส่งข้อความตอบกลับ: "${text}"`);
+        }
+
+        function handleSendChat() {
+            const input = document.getElementById('chat-staff-input');
+            const text = input.value.trim();
+            if (text === '') return;
+
+            sendChatReply(text);
+            input.value = '';
+
+            const statusIndicator = document.getElementById('chat-client-status');
+            statusIndicator.innerText = "● ลูกค้าออนไลน์ (กำลังพิมพ์...)";
+            setTimeout(() => {
+                const replies = [
+                    "เข้าใจแล้วครับ ขอบคุณสำหรับคำแนะนำและการสนับสนุนที่ดีครับ",
+                    "ระบบ Easy Donate API ใช้งานได้สะดวกรวดเร็วมากครับ ได้รับสลิปแจ้งยืนยันยอดเรียบร้อย",
+                    "กำลังตรวจสอบรายละเอียดสแตนบายรอคำแนะนำอยู่นะครับ",
+                    "ขอบคุณเจ้าหน้าที่ที่ช่วยเหลือรวดเร็วมากครับ!"
+                ];
+                const randReply = replies[Math.floor(Math.random() * replies.length)];
+                
+                const chatContainer = document.getElementById('chat-messages-container');
+                const msgElement = document.createElement('div');
+                msgElement.className = 'chat-msg customer';
+                msgElement.innerHTML = `<strong>[ผู้ซื้อ - นายมานะ]:</strong> ${randReply}`;
+                chatContainer.appendChild(msgElement);
+                chatContainer.scrollTop = chatContainer.scrollHeight;
+
+                statusIndicator.innerText = "● ลูกค้าออนไลน์";
+                logSystem(`[SUPPORT CHAT]: ลูกค้านายมานะส่งข้อความกลับ: "${randReply}"`);
+            }, 2500);
         }
     </script>
 </body>
