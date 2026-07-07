@@ -1241,5 +1241,113 @@ tr:hover td {
     color: #94a3b8;
 }
 
+/* Login Modal Styles */
+.login-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(11, 12, 16, 0.85);
+    backdrop-filter: blur(8px);
+    z-index: 2050;
+    display: none;
+}
+
+.login-overlay.open {
+    display: block;
+}
+
+.login-modal {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(0.9);
+    width: 95%;
+    max-width: 440px;
+    background: var(--bg-secondary);
+    border: 1px solid var(--accent-gold);
+    border-radius: 16px;
+    z-index: 2100;
+    padding: 2.5rem;
+    box-shadow: 0 15px 45px rgba(0,0,0,0.8);
+    display: none;
+    opacity: 0;
+    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.login-modal.open {
+    display: block;
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+}
+
+.login-modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    border-bottom: 1px solid var(--glass-border);
+    padding-bottom: 0.8rem;
+}
+
+.login-modal-title {
+    font-size: 1.5rem;
+    color: var(--accent-gold);
+    font-weight: 800;
+    text-transform: uppercase;
+}
+
+.login-modal-close {
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    font-size: 1.8rem;
+    cursor: pointer;
+    transition: var(--transition-smooth);
+}
+
+.login-modal-close:hover {
+    color: var(--text-light);
+}
+
+.login-role-select {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.login-role-btn {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--glass-border);
+    color: var(--text-muted);
+    padding: 0.4rem 0.8rem;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: var(--transition-smooth);
+}
+
+.login-role-btn.active, .login-role-btn:hover {
+    color: var(--accent-gold);
+    border-color: var(--accent-gold);
+    background: rgba(197, 168, 128, 0.1);
+}
+
+#user-profile-header {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+}
+
+#header-user-badge {
+    background: rgba(197, 168, 128, 0.15);
+    color: var(--accent-gold);
+    border: 1px solid var(--glass-border);
+}
+
+
 
 

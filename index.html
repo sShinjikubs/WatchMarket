@@ -13,23 +13,20 @@
     <header>
         <a href="#" class="logo" onclick="setRole('user')">Watch<span>Mart</span></a>
         
-        <!-- Role Switcher Panel inside Header -->
-        <div class="role-switcher-container">
-            <label for="role-selector">สลับบทบาท:</label>
-            <select id="role-selector" onchange="switchRole(this.value)">
-                <option value="user">👤 ผู้ซื้อ (User)</option>
-                <option value="customer">🛍️ ผู้ขาย (Customer / Seller)</option>
-                <option value="admin">👑 ผู้ดูแลระบบ (Admin)</option>
-                <option value="manager">👔 ผู้จัดการ (Manager)</option>
-                <option value="staff">💬 พนักงานช่วยเหลือ (Staff)</option>
-            </select>
+        <!-- Sign In & Profile Controls -->
+        <div class="header-auth-controls" style="display: flex; gap: 1rem; align-items: center;">
+            <button class="btn btn-primary" id="login-trigger-btn" onclick="openLoginModal()" style="font-size: 0.85rem; padding: 0.4rem 1.2rem; text-transform: uppercase; letter-spacing: 1px;">Sign In</button>
+            <div id="user-profile-header" class="hidden">
+                <span id="header-user-badge" class="badge">Guest</span>
+                <button class="btn btn-secondary" onclick="handleLogout()" style="padding: 0.4rem 0.8rem; font-size: 0.8rem; text-transform: uppercase;">Sign Out</button>
+            </div>
         </div>
 
         <nav>
             <ul>
-                <li><a href="#" class="active" id="nav-home" onclick="setRole('user')">หน้าหลัก</a></li>
-                <li><a href="#products" id="nav-products">นาฬิกาของเรา</a></li>
-                <li><a href="markdown.html" target="_blank">เอกสารวิเคราะห์ระบบ</a></li>
+                <li><a href="#" class="active" id="nav-home" onclick="setRole('user')">Home</a></li>
+                <li><a href="#products" id="nav-products">Collections</a></li>
+                <li><a href="markdown.html" target="_blank">System Docs</a></li>
             </ul>
         </nav>
         <div class="header-actions">
@@ -46,9 +43,9 @@
         <section class="hero">
             <div class="hero-content">
                 <p class="hero-subtitle">Premium Chronometers</p>
-                <h1 class="hero-title">ศิลปะแห่งเวลา<br>สะท้อนตัวตนของคุณ <span>WatchMart</span></h1>
-                <p class="hero-description">สัมผัสประสบการณ์แห่งความเที่ยงตรงด้วยนาฬิกาพรีเมียมและนาฬิกาหรูที่โดดเด่นทั้งความงดงามทางวิศวกรรมและการออกแบบเหนือกาลเวลา</p>
-                <a href="#products" class="cta-btn">เลือกชมสินค้า</a>
+                <h1 class="hero-title">The Art of Time<br>Defining Who You Are <span>WatchMart</span></h1>
+                <p class="hero-description">Experience absolute precision with curated luxury timepieces, engineered with exceptional design and timeless beauty.</p>
+                <a href="#products" class="cta-btn">Shop Now</a>
             </div>
             <div class="hero-image-container">
                 <div class="hero-watch-glow"></div>
@@ -88,17 +85,17 @@
         <!-- Products Catalog Section -->
         <section class="products-section" id="products">
             <div class="section-header">
-                <h2 class="section-title">คอลเลกชันสุดพิเศษของเรา</h2>
-                <p class="section-desc">สัมผัสดีไซน์ที่หรูหราจากชิ้นงานศิลปะบนข้อมือที่โดดเด่นไม่ซ้ำใคร</p>
+                <h2 class="section-title">Our Exclusive Collections</h2>
+                <p class="section-desc">Discover handpicked watches that reflect your personality and style.</p>
             </div>
 
             <!-- Search Bar -->
             <div class="search-bar-container">
-                <input type="text" id="product-search-input" placeholder="🔍 ค้นหานาฬิกา (เช่น แบรนด์ หรือชื่อรุ่น)..." oninput="handleSearch()">
+                <input type="text" id="product-search-input" placeholder="🔍 Search watches (brand, model)..." oninput="handleSearch()">
             </div>
 
             <div class="product-filters">
-                <button class="filter-btn active" data-category="all" onclick="filterProducts('all', this)">ทั้งหมด</button>
+                <button class="filter-btn active" data-category="all" onclick="filterProducts('all', this)">All Watches</button>
                 <button class="filter-btn" data-category="classic" onclick="filterProducts('classic', this)">Classic</button>
                 <button class="filter-btn" data-category="sport" onclick="filterProducts('sport', this)">Sport</button>
                 <button class="filter-btn" data-category="elegant" onclick="filterProducts('elegant', this)">Elegant</button>
@@ -111,11 +108,11 @@
         <!-- Customer Order History Section -->
         <section class="customer-orders-section" id="customer-orders-area">
             <div class="section-header" style="text-align: left; margin-bottom: 2rem;">
-                <h2 class="section-title" style="font-size: 1.8rem;">📦 ประวัติการสั่งซื้อของคุณ (My Orders)</h2>
-                <p class="section-desc">ติดตามออเดอร์ หรือกดยกเลิกสินค้าของท่านได้ที่นี่</p>
+                <h2 class="section-title" style="font-size: 1.8rem;">📦 Your Orders (My Orders)</h2>
+                <p class="section-desc">Track status or cancel orders here.</p>
             </div>
             <div id="customer-orders-list">
-                <p style="color: var(--text-muted);">ยังไม่มีประวัติการสั่งซื้อสินค้า</p>
+                <p style="color: var(--text-muted);">No order history found.</p>
             </div>
         </section>
     </div>
@@ -510,31 +507,31 @@
     <div class="cart-overlay" id="checkout-overlay" onclick="closeCheckoutModal()"></div>
     <div class="checkout-modal" id="checkout-modal">
         <div class="checkout-modal-header">
-            <h2 class="checkout-modal-title">กรอกข้อมูลสั่งซื้อสินค้า</h2>
+            <h2 class="checkout-modal-title">Secure Checkout</h2>
             <button class="checkout-modal-close" onclick="closeCheckoutModal()">&times;</button>
         </div>
         <form id="checkout-form" onsubmit="processCheckout(event)">
             <div class="form-group" style="margin-bottom: 1.2rem;">
-                <label for="cust-email">อีเมลสำหรับรับหลักฐานยืนยันสั่งซื้อ</label>
+                <label for="cust-email">Email Address (For Order Confirmation)</label>
                 <input type="email" id="cust-email" class="form-control" placeholder="customer@email.com" required>
             </div>
             <div class="form-group" style="margin-bottom: 1.2rem;">
-                <label for="cust-address">ที่อยู่สำหรับจัดส่งนาฬิกา</label>
-                <textarea id="cust-address" class="form-control" rows="3" placeholder="ระบุบ้านเลขที่ ถนน แขวง เขต จังหวัด..." required></textarea>
+                <label for="cust-address">Delivery Address</label>
+                <textarea id="cust-address" class="form-control" rows="3" placeholder="Enter your full shipping address (street, city, zip code)..." required></textarea>
             </div>
             <div class="form-group" style="margin-bottom: 1.5rem;">
-                <label for="cust-payment">ช่องทางการชำระเงิน</label>
+                <label for="cust-payment">Payment Method</label>
                 <select id="cust-payment" class="form-control" onchange="togglePaymentGateway(this.value)">
-                    <option value="bank_transfer">🏦 โอนเงินผ่านธนาคาร (Bank Transfer)</option>
-                    <option value="credit_card">💳 บัตรเครดิต/เดบิต (Credit/Debit Card)</option>
-                    <option value="promptpay">📱 สแกน QR พร้อมเพย์ (PromptPay)</option>
+                    <option value="bank_transfer">🏦 Bank Transfer (Manual Upload)</option>
+                    <option value="credit_card">💳 Credit / Debit Card</option>
+                    <option value="promptpay">📱 PromptPay QR Code (Easy Donate API)</option>
                 </select>
             </div>
 
             <!-- Mock Payment Details Container -->
             <div id="payment-gateway-container" style="margin-bottom: 1.5rem; display: block; border: 1px dashed var(--accent-gold); padding: 1rem; border-radius: 6px; background: rgba(197, 168, 128, 0.05);">
                 <div id="promptpay-payment" style="display: none; text-align: center;">
-                    <p style="margin-bottom: 0.5rem; font-weight: 600;">📱 สแกน QR Code พร้อมเพย์เพื่อชำระเงิน</p>
+                    <p style="margin-bottom: 0.5rem; font-weight: 600;">📱 Scan QR Code to Complete Payment</p>
                     <div style="background: white; padding: 0.5rem; display: inline-block; border-radius: 6px; margin-bottom: 0.5rem;">
                         <svg width="120" height="120" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
                             <rect width="100" height="100" fill="white" />
@@ -554,24 +551,24 @@
                             <rect x="40" y="75" width="10" height="10" fill="#003d6b" />
                         </svg>
                     </div>
-                    <p style="font-size: 0.85rem; color: var(--text-muted);">เลขบัญชี PromptPay: 08x-xxx-xxxx</p>
+                    <p style="font-size: 0.85rem; color: var(--text-muted);">PromptPay ID: 08x-xxx-xxxx</p>
                 </div>
                 
                 <div id="bank-payment" style="display: block; text-align: center;">
-                    <p style="margin-bottom: 0.5rem; font-weight: 600;">🏦 บัญชีธนาคารสำหรับโอนเงิน</p>
-                    <p style="color: var(--accent-gold); font-weight: bold; font-size: 1.1rem; margin-bottom: 0.2rem;">ธนาคารกสิกรไทย (KBANK)</p>
+                    <p style="margin-bottom: 0.5rem; font-weight: 600;">🏦 Bank Account Details</p>
+                    <p style="color: var(--accent-gold); font-weight: bold; font-size: 1.1rem; margin-bottom: 0.2rem;">Kasikorn Bank (KBANK)</p>
                     <p style="font-family: monospace; font-size: 1.1rem; margin-bottom: 0.2rem;">123-4-56789-0</p>
-                    <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 0.5rem;">ชื่อบัญชี: บจก. วอทช์มาร์ท ประเทศไทย</p>
+                    <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 0.5rem;">Account Name: WatchMart Thailand Co., Ltd.</p>
                 </div>
 
                 <div id="credit-payment" style="display: none;">
                     <div class="form-group" style="margin-bottom: 0.8rem;">
-                        <label style="font-size: 0.85rem; color: var(--text-muted);">เลขบัตรเครดิต</label>
+                        <label style="font-size: 0.85rem; color: var(--text-muted);">Credit Card Number</label>
                         <input type="text" class="form-control" placeholder="xxxx-xxxx-xxxx-xxxx" maxlength="19">
                     </div>
                     <div style="display: flex; gap: 0.5rem;">
                         <div class="form-group" style="flex: 1;">
-                            <label style="font-size: 0.85rem; color: var(--text-muted);">วันหมดอายุ (MM/YY)</label>
+                            <label style="font-size: 0.85rem; color: var(--text-muted);">Expiration Date (MM/YY)</label>
                             <input type="text" class="form-control" placeholder="MM/YY" maxlength="5">
                         </div>
                         <div class="form-group" style="flex: 1;">
@@ -583,7 +580,7 @@
 
                 <!-- Slip Upload -->
                 <div id="slip-upload-group" style="margin-top: 1rem; border-top: 1px solid var(--glass-border); padding-top: 0.8rem;">
-                    <label for="cust-slip" style="font-size: 0.85rem; display: block; margin-bottom: 0.4rem; color: var(--accent-gold);">📸 แนบสลิปหลักฐานการโอนเงิน</label>
+                    <label for="cust-slip" style="font-size: 0.85rem; display: block; margin-bottom: 0.4rem; color: var(--accent-gold);">📸 Upload Transfer Receipt Slip</label>
                     <input type="file" id="cust-slip" class="form-control" accept="image/*" onchange="previewSlip(event)">
                     <div id="slip-preview-container" style="display: none; margin-top: 0.5rem; text-align: center;">
                         <img id="slip-preview" src="" alt="Slip Preview" style="max-height: 100px; border-radius: 4px; border: 1px solid var(--accent-gold);">
@@ -592,12 +589,49 @@
             </div>
 
             <div style="border-top: 1px solid var(--glass-border); padding-top: 1.5rem; margin-top: 1.5rem; display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
-                <span style="font-weight: 600;">ยอดเงินรวมที่ต้องชำระ:</span>
+                <span style="font-weight: 600;">Total Price to Pay:</span>
                 <span id="checkout-total-price" style="font-size: 1.4rem; color: var(--accent-gold); font-weight: 800;">฿ 0</span>
             </div>
             <div class="btn-group" style="justify-content: flex-end;">
-                <button type="button" class="btn btn-secondary" onclick="closeCheckoutModal()">ยกเลิก</button>
-                <button type="submit" class="btn btn-primary" style="padding: 0.8rem 2rem;">ยืนยันคำสั่งซื้อ ⚡</button>
+                <button type="button" class="btn btn-secondary" onclick="closeCheckoutModal()">Cancel</button>
+                <button type="submit" class="btn btn-primary" style="padding: 0.8rem 2rem;">Confirm Purchase ⚡</button>
+            </div>
+        </form>
+    </div>
+
+    <!-- ==================== SIGN IN MODAL UI ==================== -->
+    <div class="login-overlay" id="login-overlay" onclick="closeLoginModal()"></div>
+    <div class="login-modal" id="login-modal">
+        <div class="login-modal-header">
+            <h2 class="login-modal-title">Sign In to Platform</h2>
+            <button class="login-modal-close" onclick="closeLoginModal()">&times;</button>
+        </div>
+        <div style="margin-bottom: 1rem;">
+            <label style="font-size: 0.85rem; color: var(--text-muted); font-weight: 600; text-transform: uppercase;">Select Your Role</label>
+            <div class="login-role-select" style="margin-top: 0.5rem;">
+                <button type="button" class="login-role-btn active" onclick="setLoginRole('user', this)">Buyer (User)</button>
+                <button type="button" class="login-role-btn" onclick="setLoginRole('customer', this)">Seller (Customer)</button>
+                <button type="button" class="login-role-btn" onclick="setLoginRole('admin', this)">Admin</button>
+                <button type="button" class="login-role-btn" onclick="setLoginRole('manager', this)">Manager</button>
+                <button type="button" class="login-role-btn" onclick="setLoginRole('staff', this)">Staff</button>
+            </div>
+        </div>
+        <form id="login-form" onsubmit="processLogin(event)">
+            <input type="hidden" id="login-selected-role" value="user">
+            
+            <div class="form-group" style="margin-bottom: 1rem;" id="login-username-group">
+                <label for="login-username">Username</label>
+                <input type="text" id="login-username" class="form-control" placeholder="Enter username..." value="buyer">
+            </div>
+            
+            <div class="form-group" style="margin-bottom: 1.5rem;" id="login-password-group">
+                <label for="login-password">Password</label>
+                <input type="password" id="login-password" class="form-control" placeholder="Enter password..." value="123456">
+            </div>
+            
+            <div class="btn-group" style="justify-content: flex-end;">
+                <button type="button" class="btn btn-secondary" onclick="closeLoginModal()">Cancel</button>
+                <button type="submit" class="btn btn-primary" style="padding: 0.6rem 1.5rem;">Sign In 🔑</button>
             </div>
         </form>
     </div>
@@ -606,45 +640,45 @@
     <div class="cart-overlay" id="cart-overlay"></div>
     <div class="cart-modal" id="cart-sidebar">
         <div class="cart-header">
-            <h2 class="cart-title">ตะกร้าสินค้า</h2>
+            <h2 class="cart-title">Shopping Cart</h2>
             <button class="cart-close-btn" id="cart-close-btn">&times;</button>
         </div>
         <div class="cart-items-container" id="cart-items-list">
             <!-- Empty state default -->
-            <p style="text-align: center; color: var(--text-muted); margin-top: 3rem;">ยังไม่มีสินค้าในตะกร้า</p>
+            <p style="text-align: center; color: var(--text-muted); margin-top: 3rem;">Your cart is empty</p>
         </div>
         <div class="cart-footer">
             <div class="cart-total-row">
-                <span>ราคารวม:</span>
+                <span>Total Price:</span>
                 <span id="cart-total-price">฿ 0</span>
             </div>
-            <button class="checkout-btn" id="checkout-btn">สั่งซื้อสินค้าเลย</button>
+            <button class="checkout-btn" id="checkout-btn">Checkout Now</button>
         </div>
     </div>
 
     <!-- Notification Toast -->
     <div class="notification" id="notification">
         <span>✅</span>
-        <span id="notification-message">เพิ่มสินค้าลงในตะกร้าสำเร็จ</span>
+        <span id="notification-message">Item added to cart successfully</span>
     </div>
 
     <!-- System Log Output Dashboard Area -->
     <section style="max-width: 1200px; margin: 2rem auto; padding: 0 5%;">
         <div class="system-logger">
             <div class="system-logger-title">
-                <span>⚡ การทำงานหลังบ้าน & ระบบแจ้งเตือน (System Logs & LINE Notify Simulation)</span>
+                <span>⚡ Backend Operations & External Integrations (System Logs & LINE Notify Simulation)</span>
                 <span style="color: #64748b;">API Console</span>
             </div>
             <div id="system-logs-container">
-                [SYSTEM]: เริ่มต้นเปิดใช้งานแพลตฟอร์มระบบการค้า WatchMart E-commerce Suite สำเร็จ
+                [SYSTEM]: WatchMart E-commerce Suite initialized successfully
             </div>
         </div>
     </section>
 
     <!-- Footer -->
     <footer>
-        <p>&copy; 2026 WatchMart Store. สงวนลิขสิทธิ์ทั้งหมดตามวิชา CSI204</p>
-        <p>พัฒนาการดีไซน์อย่างเหนือระดับด้วยระบบเว็บคุณภาพสูง</p>
+        <p>&copy; 2026 WatchMart Store. All rights reserved. CSI204 Coursework.</p>
+        <p>Designed & Engineered for Premium E-Commerce Experience.</p>
     </footer>
 
     <!-- App Script -->
@@ -713,6 +747,7 @@
         let pendingWatches = [];
         let blacklist = [];
         let isSellerRegistered = false;
+        let loggedInUser = null;
         let cart = [];
         let currentRole = "user"; // Changed default role to user
         let activeCategory = "all";
@@ -762,8 +797,15 @@
             }
             blacklist = JSON.parse(localStorage.getItem(DB_BLACKLIST_KEY));
 
-            // Set role drop down selector to default role
-            document.getElementById('role-selector').value = currentRole;
+            // Load logged in user session
+            loggedInUser = JSON.parse(localStorage.getItem('watchmart_logged_in_user')) || null;
+            if (loggedInUser) {
+                currentRole = loggedInUser.role;
+            } else {
+                currentRole = "user";
+            }
+
+            // Initialize default view
             switchRole(currentRole);
 
             // Render Views
@@ -779,14 +821,14 @@
             
             checkoutBtn.addEventListener('click', () => {
                 if (cart.length === 0) {
-                    showNotification('กรุณาเลือกซื้อสินค้าใส่ตะกร้าก่อนสั่งซื้อ!', false);
+                    showNotification('Please add items to your cart before checking out!', false);
                     return;
                 }
                 closeCart();
                 openCheckoutModal();
             });
 
-            logSystem("ระบบโหลดข้อมูลสินค้าและประวัติการสั่งซื้อเข้าหน่วยความจำชั่วคราวเรียบร้อยแล้ว");
+            logSystem("WatchMart local database loaded successfully.");
         });
 
         // System Logging Simulation
@@ -836,12 +878,14 @@
                 renderManagerDashboard();
             }
             
-            logSystem(`ผู้ใช้ทำการเปลี่ยนสลับบทบาทหน้าจอเป็น: ${role.toUpperCase()}`);
+            // Update Auth UI in header
+            updateHeaderAuthUI();
+
+            logSystem(`System role switched to: ${role.toUpperCase()}`);
         }
 
         // Helper to force role switcher (e.g. clicking logo)
         function setRole(role) {
-            document.getElementById('role-selector').value = role;
             switchRole(role);
         }
 
@@ -1859,6 +1903,116 @@
                 statusIndicator.innerText = "● ลูกค้าออนไลน์";
                 logSystem(`[SUPPORT CHAT]: ลูกค้านายมานะส่งข้อความกลับ: "${randReply}"`);
             }, 2500);
+        }
+
+        // ==================== AUTHENTICATION & LOGIN DIALOG SYSTEM ====================
+        function updateHeaderAuthUI() {
+            const loginBtn = document.getElementById('login-trigger-btn');
+            const profileHeader = document.getElementById('user-profile-header');
+            const badge = document.getElementById('header-user-badge');
+
+            if (loggedInUser) {
+                if (loginBtn) loginBtn.classList.add('hidden');
+                if (profileHeader) profileHeader.classList.remove('hidden');
+                
+                let roleLabel = '';
+                if (loggedInUser.role === 'user') roleLabel = '👤 Buyer';
+                else if (loggedInUser.role === 'customer') roleLabel = '🛍️ Seller';
+                else if (loggedInUser.role === 'admin') roleLabel = '👑 Admin';
+                else if (loggedInUser.role === 'manager') roleLabel = '👔 Manager';
+                else if (loggedInUser.role === 'staff') roleLabel = '💬 Staff';
+
+                if (badge) badge.innerText = roleLabel;
+            } else {
+                if (loginBtn) loginBtn.classList.remove('hidden');
+                if (profileHeader) profileHeader.classList.add('hidden');
+            }
+        }
+
+        function openLoginModal() {
+            const overlay = document.getElementById('login-overlay');
+            const modal = document.getElementById('login-modal');
+            if (overlay) overlay.classList.add('open');
+            if (modal) modal.classList.add('open');
+        }
+
+        function closeLoginModal() {
+            const overlay = document.getElementById('login-overlay');
+            const modal = document.getElementById('login-modal');
+            if (overlay) overlay.classList.remove('open');
+            if (modal) modal.classList.remove('open');
+        }
+
+        function setLoginRole(role, btnElement) {
+            document.querySelectorAll('.login-role-btn').forEach(btn => btn.classList.remove('active'));
+            if (btnElement) btnElement.classList.add('active');
+            
+            const selectedRoleInput = document.getElementById('login-selected-role');
+            if (selectedRoleInput) selectedRoleInput.value = role;
+
+            const userField = document.getElementById('login-username');
+            const passField = document.getElementById('login-password');
+            const passGroup = document.getElementById('login-password-group');
+
+            if (role === 'user') {
+                if (userField) userField.value = 'buyer';
+                if (passField) passField.value = '123456';
+                if (passGroup) passGroup.style.display = 'flex';
+            } else if (role === 'customer') {
+                if (userField) userField.value = 'seller';
+                if (passField) passField.value = '123456';
+                if (passGroup) passGroup.style.display = 'flex';
+            } else if (role === 'admin') {
+                if (userField) userField.value = 'admin';
+                if (passField) passField.value = 'admin123';
+                if (passGroup) passGroup.style.display = 'flex';
+            } else if (role === 'manager') {
+                if (userField) userField.value = 'manager';
+                if (passField) passField.value = 'manager123';
+                if (passGroup) passGroup.style.display = 'flex';
+            } else if (role === 'staff') {
+                if (userField) userField.value = 'staff';
+                if (passField) passField.value = 'staff123';
+                if (passGroup) passGroup.style.display = 'flex';
+            }
+        }
+
+        function processLogin(e) {
+            e.preventDefault();
+            const role = document.getElementById('login-selected-role').value;
+            const user = document.getElementById('login-username').value.trim();
+            const pass = document.getElementById('login-password').value;
+
+            let isValid = false;
+            if (role === 'admin' && user === 'admin' && pass === 'admin123') isValid = true;
+            else if (role === 'manager' && user === 'manager' && pass === 'manager123') isValid = true;
+            else if (role === 'staff' && user === 'staff' && pass === 'staff123') isValid = true;
+            else if (role === 'user' && user !== '') isValid = true;
+            else if (role === 'customer' && user !== '') isValid = true;
+
+            if (isValid) {
+                loggedInUser = { role: role, username: user };
+                localStorage.setItem('watchmart_logged_in_user', JSON.stringify(loggedInUser));
+                
+                logSystem(`[AUTH]: User logged in successfully as ${role.toUpperCase()} (${user})`);
+                showNotification(`Signed in as ${role.toUpperCase()} successfully!`);
+                
+                closeLoginModal();
+                switchRole(role);
+            } else {
+                showNotification('Invalid credentials! Please try again.', false);
+                logSystem(`[SECURITY]: Failed login attempt as ${role.toUpperCase()}`);
+            }
+        }
+
+        function handleLogout() {
+            loggedInUser = null;
+            localStorage.removeItem('watchmart_logged_in_user');
+            
+            logSystem('[AUTH]: User signed out.');
+            showNotification('Signed out successfully.');
+            
+            switchRole('user');
         }
     </script>
 </body>
