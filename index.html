@@ -81,6 +81,10 @@
                         <span id="header-user-badge" class="badge">User</span>
                     </div>
                     <div class="profile-dropdown-divider"></div>
+                    <button class="profile-dropdown-item" onclick="openProfileModal(); toggleProfileDropdown(event)">
+                        👤 My Profile
+                    </button>
+                    <div class="profile-dropdown-divider"></div>
                     <button class="profile-dropdown-item signout-btn" onclick="handleLogout()">
                         🚪 Sign Out
                     </button>
@@ -652,6 +656,52 @@
     </div>
 
 
+    <!-- ==================== PROFILE MODAL ==================== -->
+    <div class="cart-overlay" id="profile-modal-overlay" onclick="closeProfileModal()"></div>
+    <div class="checkout-modal" id="profile-modal" style="max-width: 480px;">
+        <div class="checkout-modal-header">
+            <h2 class="checkout-modal-title">👤 My Profile</h2>
+            <button class="checkout-modal-close" onclick="closeProfileModal()">&times;</button>
+        </div>
+        <div style="padding: 0 0 1rem 0;">
+            <div style="display: flex; align-items: center; gap: 1.2rem; margin-bottom: 1.8rem; padding: 1.2rem; background: rgba(197,168,128,0.07); border-radius: 10px; border: 1px solid var(--glass-border);">
+                <div id="profile-modal-avatar" style="width: 60px; height: 60px; border-radius: 50%; background: linear-gradient(135deg, var(--accent-gold), #b8975a); display: flex; align-items: center; justify-content: center; font-size: 1.6rem; font-weight: 700; color: #0b0f19; flex-shrink: 0;">U</div>
+                <div>
+                    <div id="profile-modal-username" style="font-size: 1.1rem; font-weight: 700; color: var(--text-light);">Username</div>
+                    <div id="profile-modal-role" style="font-size: 0.82rem; color: var(--text-muted); margin-top: 0.2rem;">Role</div>
+                </div>
+            </div>
+            <form id="profile-edit-form" onsubmit="saveProfile(event)">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
+                    <div class="form-group">
+                        <label style="color: var(--text-light); font-size: 0.82rem; display: block; margin-bottom: 0.4rem;">ชื่อจริง (First Name)</label>
+                        <input type="text" id="profile-firstname" class="form-control" placeholder="เช่น สมชาย">
+                    </div>
+                    <div class="form-group">
+                        <label style="color: var(--text-light); font-size: 0.82rem; display: block; margin-bottom: 0.4rem;">นามสกุล (Last Name)</label>
+                        <input type="text" id="profile-lastname" class="form-control" placeholder="เช่น ใจดี">
+                    </div>
+                </div>
+                <div class="form-group" style="margin-bottom: 1rem;">
+                    <label style="color: var(--text-light); font-size: 0.82rem; display: block; margin-bottom: 0.4rem;">อีเมล (Email)</label>
+                    <input type="email" id="profile-email" class="form-control" placeholder="email@example.com">
+                </div>
+                <div class="form-group" style="margin-bottom: 1rem;">
+                    <label style="color: var(--text-light); font-size: 0.82rem; display: block; margin-bottom: 0.4rem;">เบอร์โทรศัพท์ (Phone)</label>
+                    <input type="tel" id="profile-phone" class="form-control" placeholder="08x-xxx-xxxx">
+                </div>
+                <div class="form-group" style="margin-bottom: 1.5rem;">
+                    <label style="color: var(--text-light); font-size: 0.82rem; display: block; margin-bottom: 0.4rem;">ที่อยู่จัดส่ง (Delivery Address)</label>
+                    <textarea id="profile-address" class="form-control" rows="3" placeholder="บ้านเลขที่ ถนน ตำบล อำเภอ จังหวัด รหัสไปรษณีย์"></textarea>
+                </div>
+                <div style="display: flex; gap: 0.8rem; justify-content: flex-end;">
+                    <button type="button" class="btn btn-secondary" onclick="closeProfileModal()">ยกเลิก</button>
+                    <button type="submit" class="btn btn-primary">💾 บันทึกข้อมูล</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <!-- Cart Sidebar Panel -->
     <div class="cart-overlay" id="cart-overlay"></div>
     <div class="cart-modal" id="cart-sidebar">
@@ -946,6 +996,62 @@
             }
         }
 
+        // ==================== PROFILE MODAL ====================
+        const DB_PROFILES_KEY = 'watchmart_db_profiles';
+
+        function getProfile(username) {
+            const allProfiles = JSON.parse(localStorage.getItem(DB_PROFILES_KEY)) || {};
+            return allProfiles[username] || { firstname: '', lastname: '', email: '', phone: '', address: '' };
+        }
+
+        function saveProfile(e) {
+            e.preventDefault();
+            if (!loggedInUser) return;
+
+            const profile = {
+                firstname: document.getElementById('profile-firstname').value.trim(),
+                lastname:  document.getElementById('profile-lastname').value.trim(),
+                email:     document.getElementById('profile-email').value.trim(),
+                phone:     document.getElementById('profile-phone').value.trim(),
+                address:   document.getElementById('profile-address').value.trim()
+            };
+
+            const allProfiles = JSON.parse(localStorage.getItem(DB_PROFILES_KEY)) || {};
+            allProfiles[loggedInUser.username] = profile;
+            localStorage.setItem(DB_PROFILES_KEY, JSON.stringify(allProfiles));
+
+            closeProfileModal();
+            showNotification('บันทึกข้อมูลโปรไฟล์เรียบร้อยแล้ว! ✅');
+            logSystem(`[PROFILE]: อัพเดตข้อมูลโปรไฟล์ของ ${loggedInUser.username} เรียบร้อย`);
+        }
+
+        function openProfileModal() {
+            if (!loggedInUser) return;
+            const profile = getProfile(loggedInUser.username);
+
+            // Populate header info
+            document.getElementById('profile-modal-avatar').innerText = loggedInUser.username.charAt(0).toUpperCase();
+            document.getElementById('profile-modal-username').innerText = loggedInUser.username;
+            document.getElementById('profile-modal-role').innerText =
+                loggedInUser.role === 'admin' ? '👑 Admin' :
+                loggedInUser.role === 'manager' ? '📊 Manager' : '👤 User';
+
+            // Populate form fields
+            document.getElementById('profile-firstname').value = profile.firstname;
+            document.getElementById('profile-lastname').value  = profile.lastname;
+            document.getElementById('profile-email').value     = profile.email;
+            document.getElementById('profile-phone').value     = profile.phone;
+            document.getElementById('profile-address').value   = profile.address;
+
+            document.getElementById('profile-modal').classList.add('open');
+            document.getElementById('profile-modal-overlay').classList.add('open');
+        }
+
+        function closeProfileModal() {
+            document.getElementById('profile-modal').classList.remove('open');
+            document.getElementById('profile-modal-overlay').classList.remove('open');
+        }
+
         // Helper to force role switcher (e.g. clicking logo)
         function setRole(role) {
             switchRole(role);
@@ -966,6 +1072,14 @@
         function openCheckoutModal() {
             const totalPrice = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
             document.getElementById('checkout-total-price').innerText = `฿ ${totalPrice.toLocaleString()}`;
+
+            // Auto-fill from saved profile
+            if (loggedInUser) {
+                const profile = getProfile(loggedInUser.username);
+                if (profile.email)   document.getElementById('cust-email').value = profile.email;
+                if (profile.address) document.getElementById('cust-address').value = profile.address;
+            }
+
             checkoutModal.classList.add('open');
             checkoutOverlay.classList.add('open');
         }
