@@ -314,14 +314,14 @@ classDiagram
 ```mermaid
 sequenceDiagram
     autonumber
-    actor Customer as 👤 Buyer (User)
+    actor Buyer as 👤 Buyer (User)
     participant UI as 💻 Frontend (Web App)
     participant OrderSvc as 🛒 Order Service
     participant PaySvc as 💳 Payment Service
     participant BankAPI as 📱 Easy Donate API
     participant DB as 🗄️ Database
 
-    Customer->>UI: Click "Checkout Now"
+    Buyer->>UI: Click "Checkout Now"
     UI->>OrderSvc: Create order POST /api/orders (Cart details)
     activate OrderSvc
     OrderSvc->>DB: Save order details (Insert Order & OrderItems)
@@ -337,10 +337,10 @@ sequenceDiagram
     activate BankAPI
     BankAPI-->>PaySvc: Return QR code URL & transaction_ref
     deactivate BankAPI
-    PaySvc-->>UI: Render QR Code to Customer
+    PaySvc-->>UI: Render QR Code to Buyer
     deactivate PaySvc
 
-    Customer->>BankAPI: Scan and transfer via Mobile Banking app
+    Buyer->>BankAPI: Scan and transfer via Mobile Banking app
     activate BankAPI
     BankAPI->>PaySvc: Webhook callback / Verification notification
     deactivate BankAPI
@@ -357,7 +357,7 @@ sequenceDiagram
     OrderSvc->>DB: Update Order Status = 'Paid'
     OrderSvc-->>UI: Show order confirmation screen
     deactivate OrderSvc
-    UI-->>Customer: Display receipt & payment success
+    UI-->>Buyer: Display receipt & payment success
 ```
 
 ### 5.4 Activity Diagram (แผนภาพกิจกรรมการสั่งซื้อสินค้า)
