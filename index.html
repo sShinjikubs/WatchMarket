@@ -49,10 +49,18 @@
         <a href="#" class="logo" onclick="setRole('user')">Watch<span>Mart</span></a>
         
         <nav>
-            <ul>
-                <li><a href="#" class="active" id="nav-home" onclick="setRole('user')">Home</a></li>
-                <li><a href="#products" id="nav-products">Collections</a></li>
-                <li id="nav-docs-li" class="hidden"><a href="markdown.html" target="_blank">System Docs</a></li>
+            <ul id="main-nav-list">
+                <!-- User Nav -->
+                <li id="nav-home" class="nav-item-user"><a href="#" class="active" onclick="setRole('user')">Home</a></li>
+                <li id="nav-products" class="nav-item-user"><a href="#products">Collections</a></li>
+                <!-- Manager Nav -->
+                <li id="nav-mgr-inventory" class="nav-item-manager hidden"><a href="#" onclick="scrollToSection('manager-inventory-table')">📦 Inventory</a></li>
+                <li id="nav-mgr-analytics" class="nav-item-manager hidden"><a href="#" onclick="scrollToSection('salesChart')">📊 Analytics</a></li>
+                <li id="nav-mgr-orders" class="nav-item-manager hidden"><a href="#" onclick="scrollToSection('manager-orders-table')">📋 Orders</a></li>
+                <li id="nav-mgr-audit" class="nav-item-manager hidden"><a href="#" onclick="scrollToSection('manager-price-compliance-table')">⚖️ Price Audit</a></li>
+                <!-- Admin Nav -->
+                <li id="nav-admin-inspect" class="nav-item-admin hidden"><a href="#" onclick="scrollToSection('admin-inspection-table')">🔍 Inspection Queue</a></li>
+                <li id="nav-docs-li" class="hidden"><a href="markdown.html" target="_blank">📖 System Docs</a></li>
             </ul>
         </nav>
         
@@ -70,7 +78,7 @@
                 <div class="profile-dropdown" id="profile-dropdown-menu">
                     <div class="profile-dropdown-header">
                         <div id="header-user-name" class="profile-username">Guest</div>
-                        <span id="header-user-badge" class="badge">Buyer</span>
+                        <span id="header-user-badge" class="badge">User</span>
                     </div>
                     <div class="profile-dropdown-divider"></div>
                     <button class="profile-dropdown-item signout-btn" onclick="handleLogout()">
@@ -887,36 +895,55 @@
             // Show active view
             if (role === 'user') {
                 document.getElementById('customer-view').classList.remove('hidden');
-                document.getElementById('nav-home').style.display = 'block';
-                document.getElementById('nav-products').style.display = 'block';
-                document.getElementById('nav-home').classList.add('active');
                 renderCustomerOrders();
             } else if (role === 'manager') {
                 document.getElementById('manager-view').classList.remove('hidden');
-                document.getElementById('nav-home').style.display = 'none';
-                document.getElementById('nav-products').style.display = 'none';
                 renderManagerDashboard();
             } else if (role === 'admin') {
                 document.getElementById('admin-view').classList.remove('hidden');
-                document.getElementById('nav-home').style.display = 'none';
-                document.getElementById('nav-products').style.display = 'none';
                 renderAdminPortal();
             }
+
+            // Update role-aware navigation visibility
+            updateHeaderNav(role);
             
             // Update Auth UI in header
             updateHeaderAuthUI();
 
-            // Toggle System Docs visibility (only Admin can see it)
-            const docsLi = document.getElementById('nav-docs-li');
-            if (docsLi) {
-                if (role === 'admin') {
-                    docsLi.classList.remove('hidden');
-                } else {
-                    docsLi.classList.add('hidden');
-                }
-            }
-
             logSystem(`System role switched to: ${role.toUpperCase()}`);
+        }
+
+        // Update header nav links based on active role
+        function updateHeaderNav(role) {
+            // Hide all role-specific nav groups
+            document.querySelectorAll('.nav-item-user').forEach(el => el.classList.add('hidden'));
+            document.querySelectorAll('.nav-item-manager').forEach(el => el.classList.add('hidden'));
+            document.querySelectorAll('.nav-item-admin').forEach(el => el.classList.add('hidden'));
+
+            const docsLi = document.getElementById('nav-docs-li');
+            const cartBtn = document.getElementById('cart-toggle-btn');
+
+            if (role === 'user') {
+                document.querySelectorAll('.nav-item-user').forEach(el => el.classList.remove('hidden'));
+                if (cartBtn) cartBtn.style.display = 'flex';
+                if (docsLi) docsLi.classList.add('hidden');
+            } else if (role === 'manager') {
+                document.querySelectorAll('.nav-item-manager').forEach(el => el.classList.remove('hidden'));
+                if (cartBtn) cartBtn.style.display = 'none';
+                if (docsLi) docsLi.classList.add('hidden');
+            } else if (role === 'admin') {
+                document.querySelectorAll('.nav-item-admin').forEach(el => el.classList.remove('hidden'));
+                if (cartBtn) cartBtn.style.display = 'none';
+                if (docsLi) docsLi.classList.remove('hidden');
+            }
+        }
+
+        // Smooth scroll to a section by element ID
+        function scrollToSection(elementId) {
+            const el = document.getElementById(elementId);
+            if (el) {
+                el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
         }
 
         // Helper to force role switcher (e.g. clicking logo)
