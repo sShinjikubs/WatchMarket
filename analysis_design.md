@@ -40,11 +40,9 @@
 ```mermaid
 graph TB
     subgraph Client_Layer ["📱 Client Layer (Frontend UI)"]
-        A1["💻 Buyer Portal (User UI)"]
+        A1["💻 User Portal (User UI)"]
         A2["🛍️ Employee Portal (Sales UI)"]
-        A3["👑 Admin Dashboard (Inspection)"]
-        A4["👔 Manager Panel (Audit & Analytics)"]
-        A5["💬 Staff Chat Interface (Live Support)"]
+        A3["👑 Admin Dashboard (Operations & Audit)"]
     end
  
     subgraph Gateway_Layer ["🔒 Gateway & Authentication"]
@@ -74,7 +72,7 @@ graph TB
     end
 
     %% Client to Gateway Connections
-    A1 & A2 & A3 & A4 & A5 --> CDN
+    A1 & A2 & A3 --> CDN
     CDN --> GW
 
     %% Gateway to Microservices Connections
@@ -109,7 +107,7 @@ graph TB
     classDef data fill:#78350f,stroke:#fbbf24,stroke-width:2px,color:#fff;
     classDef external fill:#7f1d1d,stroke:#f87171,stroke-width:2px,color:#fff;
 
-    class A1,A2,A3,A4,A5 client;
+    class A1,A2,A3 client;
     class CDN,GW gateway;
     class AuthSvc,VerifySvc,InspectSvc,AuditSvc,ChatSvc,PaySvc backend;
     class SQL_DB,Redis_DB,Storage data;
@@ -433,9 +431,7 @@ graph TB
     subgraph Actors ["👥 บทบาทในระบบ (Actors & Roles)"]
         User["👤 User (ผู้ซื้อ)"]
         Customer["🛍️ Employee (พนักงาน)"]
-        Admin["👑 Admin (ผู้ดูแลระบบ)"]
-        Manager["👔 Manager (ผู้จัดการ)"]
-        Staff["💬 Staff (ผู้ช่วยซัพพอร์ต)"]
+        Admin["👑 Admin (ผู้ดูแลระบบ/ผู้จัดการ)"]
     end
 
     subgraph Security ["🔒 ความปลอดภัยและการตรวจสอบ"]
@@ -444,9 +440,7 @@ graph TB
 
     subgraph Operations ["⚙️ กิจกรรมและการดำเนินงาน"]
         Purchase["🤝 กระบวนการซื้อ-ขายสินค้า"]
-        AdminFlow["🛠️ Admin Task<br>- ตรวจสอบช่องทางสินค้า<br>- ตรวจสินค้า<br>- คิดราคา<br>- นำเข้าสินค้า"]
-        ManagerFlow["📊 Manager Task<br>- สอบสินค้า<br>- ตรวจสินค้า<br>- สอบราคา"]
-        StaffFlow["💬 Staff Task<br>- ตอบแชทสอบถามต่างๆ"]
+        AdminFlow["🛠️ Admin Task<br>- ตรวจสอบและนำสินค้าเข้าคลัง<br>- ตรวจสอบราคากลางและความถูกต้อง<br>- ตอบแชทบริการช่วยเหลือ"]
     end
 
     subgraph Interfaces ["🔌 บริการชำระเงิน & การเชื่อมต่อภายนอก"]
@@ -454,7 +448,7 @@ graph TB
     end
 
     subgraph Database_Storage ["💾 ส่วนจัดเก็บข้อมูลและทรัพยากร (Database & Storage)"]
-        SQL_DB[("🗄️ SQL Database<br>(นาฬิกา, ผู้ใช้, พนักงาน, Support)")]
+        SQL_DB[("🗄️ SQL Database<br>(นาฬิกา, ผู้ใช้, พนักงาน)")]
         Storage_Data[("📦 Storage Data<br>(ข้อมูล, รูปภาพสินค้า, Price Banding)")]
     end
 
@@ -468,14 +462,12 @@ graph TB
     Purchase -->|เรียกชำระเงินสแกน QR Code| PaymentAPI
     PaymentAPI -->|บันทึกธุรกรรม| SQL_DB
 
-    %% Admin & Manager & Staff Actions
+    %% Admin Actions
     Admin --> AdminFlow
-    Manager --> ManagerFlow
-    Staff --> StaffFlow
 
     %% DB & Storage Links
-    AdminFlow & ManagerFlow & StaffFlow -->|จัดการและเก็บข้อมูล| SQL_DB
-    AdminFlow & ManagerFlow & StaffFlow -->|จัดเก็บทรัพยากร/ไฟล์| Storage_Data
+    AdminFlow -->|จัดการและเก็บข้อมูล| SQL_DB
+    AdminFlow -->|จัดเก็บทรัพยากร/ไฟล์| Storage_Data
 ```
 
 ### 7.2 รายละเอียดการทำงานของระบบใหม่ (System Requirements Specification)
@@ -483,11 +475,9 @@ graph TB
 1. **บทบาทการดำเนินงานของผู้ใช้งาน (Actors & Operations)**
     - **User (ผู้ซื้อ)**: ทำหน้าที่สั่งซื้อสินค้าจากระบบที่ดำเนินการลงสินค้าโดยพนักงาน (**Employee**)
     - **Employee (พนักงาน/พนักงานขาย)**: สมาชิกที่เป็นพนักงานองค์กรที่มีหน้าที่รับผิดชอบในการนำนาฬิกาเข้าระบบคลังสินค้าเพื่อตั้งขาย
-    - **Admin (ผู้ดูแลระบบ)**: รับผิดชอบในการตรวจสอบช่องทางสินค้า, ทำการตรวจสอบสินค้า (Inspection), คำนวณคิดราคากลาง และดำเนินการนำเข้าสินค้าเข้าระบบสต็อก
-    - **Manager (ผู้จัดการ)**: ดูแลการทำงานของระบบในเรื่องการสอบถาม/ตรวจสอบข้อมูลสินค้า (สอบสินค้า), ตรวจสินค้า และดำเนินการสอบราคาสินค้าเพื่อความเหมาะสม
-    - **Staff (เจ้าหน้าที่ช่วยเหลือ)**: ทำหน้าที่หลักในการตอบแชท ให้บริการสอบถาม และสนับสนุนผู้ใช้งานในเรื่องต่าง ๆ
+    - **Admin (ผู้ดูแลระบบ/ผู้จัดการ)**: รับผิดชอบการบริหารจัดการระบบทั้งหมด ครอบคลุมการตรวจสอบความถูกต้องของสินค้าและราคากลาง (Audit & Inspection), อนุมัติการนำเข้าสินค้า, ตรวจสอบแบล็คลิสต์ และตอบแชทซัพพอร์ตช่วยเหลือลูกค้า
 2. **ระบบฐานข้อมูลและพื้นที่จัดเก็บข้อมูล (Database & Storage)**
-    - **SQL Database**: จัดเก็บข้อมูลโครงสร้างหลัก ได้แก่ ข้อมูลนาฬิกา (Watch), ข้อมูลผู้ใช้งานทั่วไป (User), ข้อมูลพนักงานขาย (Employee) และข้อมูลประวัติการทำงานของซัพพอร์ต (Support)
+    - **SQL Database**: จัดเก็บข้อมูลโครงสร้างหลัก ได้แก่ ข้อมูลนาฬิกา (Watch), ข้อมูลผู้ใช้งานทั่วไป (User) และข้อมูลพนักงานขาย (Employee)
     - **Storage (Data Store)**: ทำหน้าที่จัดเก็บข้อมูลรูปภาพสินค้า (Picture), โครงสร้างระดับราคา (Price Banding) และไฟล์ข้อมูล (Data) อื่น ๆ ทั้งหมดของระบบ
 3. **ระบบตรวจสอบความปลอดภัย (Blacklist & Identity Verification)**
     - ระบบเพิ่มความปลอดภัยขั้นสูงในการลงทะเบียนพนักงาน โดยผู้ที่เป็น **พนักงาน (Employee)** เท่านั้นที่จะต้องยื่นเอกสาร **บัตรประชาชน** และ **Email** เพื่อตรวจสอบความถูกต้องผ่านระบบ Blacklist ก่อนที่จะได้รับอนุญาตให้จัดการและนำนาฬิกาเข้าคลังสินค้า
@@ -534,12 +524,6 @@ erDiagram
         string status "สถานะ (พร้อมขาย/รอตรวจสอบ/ขายแล้ว)"
     }
 
-    SUPPORT {
-        int id PK "รหัสเจ้าหน้าที่"
-        string name "ชื่อเจ้าหน้าที่"
-        string email "อีเมลเจ้าหน้าที่"
-        string role "บทบาท (Staff/Manager)"
-    }
 
     PAYMENT {
         int id PK "รหัสการจ่ายเงิน"

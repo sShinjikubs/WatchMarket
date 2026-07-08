@@ -20,11 +20,9 @@
             <div style="margin-bottom: 1.5rem;">
                 <label style="font-size: 0.85rem; color: var(--text-muted); font-weight: 600; text-transform: uppercase; letter-spacing: 1px;">Choose Your Role</label>
                 <div class="login-role-select" style="margin-top: 0.5rem;">
-                    <button type="button" class="login-role-btn active" onclick="setLoginRole('user', this)">Buyer</button>
+                    <button type="button" class="login-role-btn active" onclick="setLoginRole('user', this)">User</button>
                     <button type="button" class="login-role-btn" onclick="setLoginRole('customer', this)">Employee</button>
                     <button type="button" class="login-role-btn" onclick="setLoginRole('admin', this)">Admin</button>
-                    <button type="button" class="login-role-btn" onclick="setLoginRole('manager', this)">Manager</button>
-                    <button type="button" class="login-role-btn" onclick="setLoginRole('staff', this)">Staff</button>
                 </div>
             </div>
             
@@ -1970,11 +1968,9 @@
                 }
                 
                 let roleLabel = '';
-                if (loggedInUser.role === 'user') roleLabel = '👤 Buyer';
+                if (loggedInUser.role === 'user') roleLabel = '👤 User';
                 else if (loggedInUser.role === 'customer') roleLabel = '🛍️ Employee';
                 else if (loggedInUser.role === 'admin') roleLabel = '👑 Admin';
-                else if (loggedInUser.role === 'manager') roleLabel = '👔 Manager';
-                else if (loggedInUser.role === 'staff') roleLabel = '💬 Staff';
 
                 if (badge) badge.innerText = roleLabel;
             } else {
