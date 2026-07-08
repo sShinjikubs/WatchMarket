@@ -21,7 +21,7 @@
                 <label style="font-size: 0.85rem; color: var(--text-muted); font-weight: 600; text-transform: uppercase; letter-spacing: 1px;">Choose Your Role</label>
                 <div class="login-role-select" style="margin-top: 0.5rem;">
                     <button type="button" class="login-role-btn active" onclick="setLoginRole('user', this)">User</button>
-                    <button type="button" class="login-role-btn" onclick="setLoginRole('customer', this)">Employee</button>
+                    <button type="button" class="login-role-btn" onclick="setLoginRole('manager', this)">Manager</button>
                     <button type="button" class="login-role-btn" onclick="setLoginRole('admin', this)">Admin</button>
                 </div>
             </div>
@@ -890,26 +890,17 @@
                 document.getElementById('nav-home').style.display = 'block';
                 document.getElementById('nav-products').style.display = 'block';
                 document.getElementById('nav-home').classList.add('active');
-            } else if (role === 'customer') {
-                document.getElementById('seller-view').classList.remove('hidden');
-                document.getElementById('nav-home').style.display = 'block';
-                document.getElementById('nav-products').style.display = 'none';
-                renderSellerPortal();
-            } else if (role === 'admin') {
-                document.getElementById('admin-view').classList.remove('hidden');
-                document.getElementById('nav-home').style.display = 'none';
-                document.getElementById('nav-products').style.display = 'none';
-                renderAdminPortal();
-            } else if (role === 'staff') {
-                document.getElementById('staff-view').classList.remove('hidden');
-                document.getElementById('nav-home').style.display = 'none';
-                document.getElementById('nav-products').style.display = 'none';
-                renderStaffDashboard();
+                renderCustomerOrders();
             } else if (role === 'manager') {
                 document.getElementById('manager-view').classList.remove('hidden');
                 document.getElementById('nav-home').style.display = 'none';
                 document.getElementById('nav-products').style.display = 'none';
                 renderManagerDashboard();
+            } else if (role === 'admin') {
+                document.getElementById('admin-view').classList.remove('hidden');
+                document.getElementById('nav-home').style.display = 'none';
+                document.getElementById('nav-products').style.display = 'none';
+                renderAdminPortal();
             }
             
             // Update Auth UI in header
@@ -1173,6 +1164,7 @@
             // Create New Order
             const newOrder = {
                 id: "ORD-" + Math.floor(100000 + Math.random() * 900000),
+                userId: loggedInUser ? loggedInUser.username : 'guest',
                 items: [...cart],
                 total: totalPrice,
                 email: email,
@@ -1219,12 +1211,13 @@
         // Render Customer Order History
         function renderCustomerOrders() {
             const container = document.getElementById('customer-orders-list');
-            if (orders.length === 0) {
+            const myOrders = loggedInUser ? orders.filter(o => o.userId === loggedInUser.username) : [];
+            if (myOrders.length === 0) {
                 container.innerHTML = `<p style="color: var(--text-muted);">ยังไม่มีประวัติการสั่งซื้อสินค้า</p>`;
                 return;
             }
 
-            container.innerHTML = orders.map(ord => {
+            container.innerHTML = myOrders.map(ord => {
                 const itemsDesc = ord.items.map(i => `${i.name} (x${i.quantity})`).join(', ');
                 let actionButton = '';
                 
@@ -1969,7 +1962,7 @@
                 
                 let roleLabel = '';
                 if (loggedInUser.role === 'user') roleLabel = '👤 User';
-                else if (loggedInUser.role === 'customer') roleLabel = '🛍️ Employee';
+                else if (loggedInUser.role === 'manager') roleLabel = '📊 Manager';
                 else if (loggedInUser.role === 'admin') roleLabel = '👑 Admin';
 
                 if (badge) badge.innerText = roleLabel;
@@ -2004,24 +1997,17 @@
             const passGroup = document.getElementById('login-password-group');
 
             if (role === 'user') {
-                if (userField) userField.value = 'buyer';
+                if (userField) userField.value = '';
+                if (userField) userField.placeholder = 'กรอก Username ของคุณ...';
                 if (passField) passField.value = '123456';
-                if (passGroup) passGroup.style.display = 'flex';
-            } else if (role === 'customer') {
-                if (userField) userField.value = 'seller';
-                if (passField) passField.value = '123456';
-                if (passGroup) passGroup.style.display = 'flex';
-            } else if (role === 'admin') {
-                if (userField) userField.value = 'admin';
-                if (passField) passField.value = 'admin123';
                 if (passGroup) passGroup.style.display = 'flex';
             } else if (role === 'manager') {
                 if (userField) userField.value = 'manager';
                 if (passField) passField.value = 'manager123';
                 if (passGroup) passGroup.style.display = 'flex';
-            } else if (role === 'staff') {
-                if (userField) userField.value = 'staff';
-                if (passField) passField.value = 'staff123';
+            } else if (role === 'admin') {
+                if (userField) userField.value = 'admin';
+                if (passField) passField.value = 'admin123';
                 if (passGroup) passGroup.style.display = 'flex';
             }
         }
@@ -2035,9 +2021,7 @@
             let isValid = false;
             if (role === 'admin' && user === 'admin' && pass === 'admin123') isValid = true;
             else if (role === 'manager' && user === 'manager' && pass === 'manager123') isValid = true;
-            else if (role === 'staff' && user === 'staff' && pass === 'staff123') isValid = true;
-            else if (role === 'user' && user !== '') isValid = true;
-            else if (role === 'customer' && user !== '') isValid = true;
+            else if (role === 'user' && user.trim() !== '') isValid = true;
 
             if (isValid) {
                 loggedInUser = { role: role, username: user };
