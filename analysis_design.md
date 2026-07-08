@@ -41,28 +41,28 @@
 graph TB
     subgraph Client_Layer ["📱 Client Layer (Frontend UI)"]
         A1["💻 Buyer Portal (User UI)"]
-        A2["🛍️ Seller Portal (Customer UI)"]
+        A2["🛍️ Employee Portal (Sales UI)"]
         A3["👑 Admin Dashboard (Inspection)"]
         A4["👔 Manager Panel (Audit & Analytics)"]
         A5["💬 Staff Chat Interface (Live Support)"]
     end
-
+ 
     subgraph Gateway_Layer ["🔒 Gateway & Authentication"]
         CDN["🌐 CDN (Content Delivery Network)"]
         GW["🔑 API Gateway & Auth Manager (JWT / Roles)"]
     end
-
+ 
     subgraph Backend_Layer ["⚙️ Backend Microservices"]
         AuthSvc["👤 Authentication Service"]
-        VerifySvc["🛡️ Seller Verification & Blacklist check"]
+        VerifySvc["🛡️ Employee Verification & Blacklist check"]
         InspectSvc["🔎 Watch Inspection & Catalog Service"]
         AuditSvc["📊 Price Compliance & Audit Service"]
         ChatSvc["💬 Live Support Chat Service"]
         PaySvc["💳 Easy Donate QR Payment Service"]
     end
-
+ 
     subgraph Data_Layer ["💾 Database & Storage Layer"]
-        SQL_DB[("🗄️ Primary SQL DB<br>(Users, Sellers, Watches, Logs)")]
+        SQL_DB[("🗄️ Primary SQL DB<br>(Users, Employees, Watches, Logs)")]
         Redis_DB[("⚡ Redis Cache<br>(Blacklist, Product Catalog)")]
         Storage[("📦 File Storage<br>(Receipt Slips, Watch Themes)")]
     end
@@ -432,7 +432,7 @@ stateDiagram-v2
 graph TB
     subgraph Actors ["👥 บทบาทในระบบ (Actors & Roles)"]
         User["👤 User (ผู้ซื้อ)"]
-        Customer["🛍️ Customer (ผู้ขาย)"]
+        Customer["🛍️ Employee (พนักงาน)"]
         Admin["👑 Admin (ผู้ดูแลระบบ)"]
         Manager["👔 Manager (ผู้จัดการ)"]
         Staff["💬 Staff (ผู้ช่วยซัพพอร์ต)"]
@@ -454,13 +454,13 @@ graph TB
     end
 
     subgraph Database_Storage ["💾 ส่วนจัดเก็บข้อมูลและทรัพยากร (Database & Storage)"]
-        SQL_DB[("🗄️ SQL Database<br>(นาฬิกา, ผู้ใช้, ผู้ขาย, Support)")]
+        SQL_DB[("🗄️ SQL Database<br>(นาฬิกา, ผู้ใช้, พนักงาน, Support)")]
         Storage_Data[("📦 Storage Data<br>(ข้อมูล, รูปภาพสินค้า, Price Banding)")]
     end
 
     %% Relationships and Flows
-    User -->|สั่งซื้อสินค้าจาก| Customer
-    Customer -->|ลงทะเบียนผู้ขายด้วยบัตรประชาชนและอีเมล| Blacklist
+    User -->|สั่งซื้อสินค้าที่ลงโดย| Customer
+    Customer -->|ลงทะเบียนพนักงานด้วยบัตรประชาชนและอีเมล| Blacklist
     Blacklist -->|ตรวจสอบข้อมูลยืนยันตัวตน| SQL_DB
 
     %% Purchase & Payment Flow
@@ -479,20 +479,20 @@ graph TB
 ```
 
 ### 7.2 รายละเอียดการทำงานของระบบใหม่ (System Requirements Specification)
-
+ 
 1. **บทบาทการดำเนินงานของผู้ใช้งาน (Actors & Operations)**
-   - **User (ผู้ซื้อ)**: ทำหน้าที่สั่งซื้อสินค้าโดยตรงจากผู้ที่เป็นผู้ขาย (**Customer**)
-   - **Customer (ผู้ขาย)**: สมาชิกที่มีความประสงค์จะลงขายสินค้า (นาฬิกา) ในแพลตฟอร์ม
-   - **Admin (ผู้ดูแลระบบ)**: รับผิดชอบในการตรวจสอบช่องทางสินค้า, ทำการตรวจสอบสินค้า (Inspection), คำนวณคิดราคากลาง และดำเนินการนำเข้าสินค้าเข้าระบบสต็อก
-   - **Manager (ผู้จัดการ)**: ดูแลการทำงานของระบบในเรื่องการสอบถาม/ตรวจสอบข้อมูลสินค้า (สอบสินค้า), ตรวจสินค้า และดำเนินการสอบราคาสินค้าเพื่อความเหมาะสม
-   - **Staff (เจ้าหน้าที่ช่วยเหลือ)**: ทำหน้าที่หลักในการตอบแชท ให้บริการสอบถาม และสนับสนุนผู้ใช้งานในเรื่องต่าง ๆ
+    - **User (ผู้ซื้อ)**: ทำหน้าที่สั่งซื้อสินค้าจากระบบที่ดำเนินการลงสินค้าโดยพนักงาน (**Employee**)
+    - **Employee (พนักงาน/พนักงานขาย)**: สมาชิกที่เป็นพนักงานองค์กรที่มีหน้าที่รับผิดชอบในการนำนาฬิกาเข้าระบบคลังสินค้าเพื่อตั้งขาย
+    - **Admin (ผู้ดูแลระบบ)**: รับผิดชอบในการตรวจสอบช่องทางสินค้า, ทำการตรวจสอบสินค้า (Inspection), คำนวณคิดราคากลาง และดำเนินการนำเข้าสินค้าเข้าระบบสต็อก
+    - **Manager (ผู้จัดการ)**: ดูแลการทำงานของระบบในเรื่องการสอบถาม/ตรวจสอบข้อมูลสินค้า (สอบสินค้า), ตรวจสินค้า และดำเนินการสอบราคาสินค้าเพื่อความเหมาะสม
+    - **Staff (เจ้าหน้าที่ช่วยเหลือ)**: ทำหน้าที่หลักในการตอบแชท ให้บริการสอบถาม และสนับสนุนผู้ใช้งานในเรื่องต่าง ๆ
 2. **ระบบฐานข้อมูลและพื้นที่จัดเก็บข้อมูล (Database & Storage)**
-   - **SQL Database**: จัดเก็บข้อมูลโครงสร้างหลัก ได้แก่ ข้อมูลนาฬิกา (Watch), ข้อมูลผู้ใช้งานทั่วไป (User), ข้อมูลผู้ขาย (Seller/Customer) และข้อมูลประวัติการทำงานของซัพพอร์ต (Support)
-   - **Storage (Data Store)**: ทำหน้าที่จัดเก็บข้อมูลรูปภาพสินค้า (Picture), โครงสร้างระดับราคา (Price Banding) และไฟล์ข้อมูล (Data) อื่น ๆ ทั้งหมดของระบบ
+    - **SQL Database**: จัดเก็บข้อมูลโครงสร้างหลัก ได้แก่ ข้อมูลนาฬิกา (Watch), ข้อมูลผู้ใช้งานทั่วไป (User), ข้อมูลพนักงานขาย (Employee) และข้อมูลประวัติการทำงานของซัพพอร์ต (Support)
+    - **Storage (Data Store)**: ทำหน้าที่จัดเก็บข้อมูลรูปภาพสินค้า (Picture), โครงสร้างระดับราคา (Price Banding) และไฟล์ข้อมูล (Data) อื่น ๆ ทั้งหมดของระบบ
 3. **ระบบตรวจสอบความปลอดภัย (Blacklist & Identity Verification)**
-   - ระบบเพิ่มความปลอดภัยขั้นสูงในการลงทะเบียนเป็นผู้ขาย โดยผู้ที่เป็น **ผู้ขาย (Seller)** เท่านั้นที่จะต้องยื่นเอกสาร **บัตรประชาชน** และ **Email** เพื่อตรวจสอบความถูกต้องผ่านระบบ Blacklist ก่อนที่จะได้รับอนุญาตให้ลงขายสินค้าได้
+    - ระบบเพิ่มความปลอดภัยขั้นสูงในการลงทะเบียนพนักงาน โดยผู้ที่เป็น **พนักงาน (Employee)** เท่านั้นที่จะต้องยื่นเอกสาร **บัตรประชาชน** และ **Email** เพื่อตรวจสอบความถูกต้องผ่านระบบ Blacklist ก่อนที่จะได้รับอนุญาตให้จัดการและนำนาฬิกาเข้าคลังสินค้า
 4. **ระบบรับชำระเงิน (QR Code Payment API)**
-   - ดำเนินการชำระเงินโดยใช้ **QR Code** ที่ดึงข้อมูลผ่าน API จากธนาคารใดธนาคารหนึ่ง โดยใช้ระบบการรับบริจาค/ชำระเงิน **Easy Donate** เพื่อความปลอดภัยและยืนยันยอดเงินอัตโนมัติ
+    - ดำเนินการชำระเงินโดยใช้ **QR Code** ที่ดึงข้อมูลผ่าน API จากธนาคารใดธนาคารหนึ่ง โดยใช้ระบบการรับบริจาค/ชำระเงิน **Easy Donate** เพื่อความปลอดภัยและยืนยันยอดเงินอัตโนมัติ
 
 ### 7.3 แผนภาพความสัมพันธ์ฐานข้อมูล (Database ER Diagram)
 
@@ -508,11 +508,11 @@ erDiagram
         datetime created_at "วันที่สมัครสมาชิก"
     }
 
-    SELLER {
-        int id PK "รหัสผู้ขาย"
+    EMPLOYEE {
+        int id PK "รหัสพนักงานขาย"
         int user_id FK "รหัสผู้ใช้"
-        string email UK "อีเมลยืนยันตน"
-        string national_id UK "เลขบัตรประชาชน (ยืนยันตนเฉพาะผู้ขาย)"
+        string email UK "อีเมลองค์กรพนักงาน"
+        string national_id UK "เลขบัตรประชาชน (ยืนยันตนพนักงาน)"
         string verify_status "สถานะการตรวจสอบ (Verified/Pending/Failed)"
         datetime verified_at "วันที่ผ่านการอนุมัติ"
     }
@@ -559,8 +559,8 @@ erDiagram
     }
 
     %% ความสัมพันธ์
-    USER ||--o| SELLER : "ลงทะเบียนเป็น"
-    SELLER ||--o| BLACKLIST : "ตรวจสอบกับ"
+    USER ||--o| EMPLOYEE : "ลงทะเบียนเป็น"
+    EMPLOYEE ||--o| BLACKLIST : "ตรวจสอบกับ"
     USER ||--o| PAYMENT : "ชำระเงิน"
     WATCH ||--o| STORAGE_DATA : "เก็บไฟล์รูปภาพ/เอกสาร (Picture)"
 ```

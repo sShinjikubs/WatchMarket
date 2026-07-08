@@ -21,7 +21,7 @@
                 <label style="font-size: 0.85rem; color: var(--text-muted); font-weight: 600; text-transform: uppercase; letter-spacing: 1px;">Choose Your Role</label>
                 <div class="login-role-select" style="margin-top: 0.5rem;">
                     <button type="button" class="login-role-btn active" onclick="setLoginRole('user', this)">Buyer</button>
-                    <button type="button" class="login-role-btn" onclick="setLoginRole('customer', this)">Seller</button>
+                    <button type="button" class="login-role-btn" onclick="setLoginRole('customer', this)">Employee</button>
                     <button type="button" class="login-role-btn" onclick="setLoginRole('admin', this)">Admin</button>
                     <button type="button" class="login-role-btn" onclick="setLoginRole('manager', this)">Manager</button>
                     <button type="button" class="login-role-btn" onclick="setLoginRole('staff', this)">Staff</button>
@@ -163,67 +163,67 @@
         </section>
     </div>
 
-    <!-- ==================== SELLER (CUSTOMER / SELLER) VIEW CONTAINER ==================== -->
+    <!-- ==================== SELLER (EMPLOYEE / SALES PORTAL) VIEW CONTAINER ==================== -->
     <div id="seller-view" class="dashboard-section hidden">
         <div class="dashboard-header">
-            <div class="dashboard-title">🛍️ พอร์ทัลผู้ขาย <span>(Seller Portal)</span></div>
-            <span class="badge badge-paid">โหมดผู้ขายสินค้า</span>
+            <div class="dashboard-title">🛍️ พอร์ทัลพนักงานขาย <span>(Employee/Sales Portal)</span></div>
+            <span class="badge badge-paid">โหมดพนักงานร้าน</span>
         </div>
 
         <!-- Registration Step -->
         <div id="seller-registration-card" class="form-card">
-            <div class="form-title">📝 สมัครลงทะเบียนเป็นผู้ขาย (Seller Identity Verification)</div>
+            <div class="form-title">📝 ลงทะเบียนยืนยันตัวตนพนักงาน (Employee Verification)</div>
             <div class="alert-banner info">
-                <span>ℹ️</span> เพื่อความปลอดภัยในการซื้อขายนาฬิกาพรีเมียม ผู้ขายทุกรายต้องแสดงตัวตนเพื่อคัดกรองกับระบบแบล็คลิสต์
+                <span>ℹ️</span> เพื่อความปลอดภัยของระบบในการจัดการคลังสินค้า พนักงานทุกคนต้องยืนยันตัวตนเพื่อคัดกรองความปลอดภัยกับระบบแบล็คลิสต์
             </div>
             <form id="seller-reg-form" onsubmit="handleSellerRegister(event)">
                 <div class="form-grid">
                     <div class="form-group">
-                        <label for="seller-name">ชื่อ-นามสกุลจริง</label>
+                        <label for="seller-name">ชื่อ-นามสกุลพนักงานจริง</label>
                         <input type="text" id="seller-name" class="form-control" placeholder="เช่น นายสมบูรณ์ ดีงาม" required>
                     </div>
                     <div class="form-group">
-                        <label for="seller-email">อีเมลยืนยันตน</label>
-                        <input type="email" id="seller-email" class="form-control" placeholder="seller@email.com" required>
+                        <label for="seller-email">อีเมลองค์กรพนักงาน</label>
+                        <input type="email" id="seller-email" class="form-control" placeholder="employee@watchmart.com" required>
                     </div>
                     <div class="form-group">
                         <label for="seller-national-id">เลขบัตรประชาชน (13 หลัก)</label>
                         <input type="text" id="seller-national-id" class="form-control" placeholder="x-xxxx-xxxxx-xx-x" maxlength="17" required>
                     </div>
                 </div>
-                <button type="submit" class="btn btn-primary">ส่งข้อมูลยืนยันตัวตน 🔒</button>
+                <button type="submit" class="btn btn-primary">ยืนยันตัวตนพนักงาน 🔒</button>
             </form>
         </div>
 
         <!-- Blocked Status Banner (Hidden by default) -->
         <div id="seller-blocked-banner" class="alert-banner danger hidden">
-            <span>⚠️</span> <strong>ตรวจพบแบล็คลิสต์!</strong> บัญชีผู้ใช้นี้หรือเลขบัตรประชาชนนี้อยู่ในระบบบัญชีดำ (Blacklist) ไม่ได้รับอนุญาตให้ลงทะเบียนขายสินค้าได้
+            <span>⚠️</span> <strong>ตรวจพบประวัติแบล็คลิสต์!</strong> พนักงานรายนี้มีข้อมูลอยู่ในระบบบัญชีดำ (Blacklist) ไม่ได้รับอนุญาตให้เข้าใช้งานระบบจัดการคลังและยอดขาย
         </div>
 
         <!-- Seller Actions Dashboard (Hidden until registered) -->
         <div id="seller-dashboard" class="hidden">
             <div class="alert-banner success" style="margin-bottom: 2rem;">
-                <span>✅</span> ยืนยันตัวตนกับระบบแบล็คลิสต์เรียบร้อยแล้ว! สถานะของคุณ: <strong>ผู้ขายที่ได้รับการอนุมัติ (Verified Seller)</strong>
+                <span>✅</span> ยืนยันตัวตนพนักงานผ่านเกณฑ์ความปลอดภัยเรียบร้อยแล้ว! สถานะของคุณ: <strong>พนักงานขายที่ได้รับอนุมัติ (Verified Employee)</strong>
             </div>
 
             <div class="stats-grid">
                 <div class="stat-card">
-                    <div class="stat-label">นาฬิกาที่เสนอขายทั้งหมด</div>
+                    <div class="stat-label">รายการนาฬิกาที่ลงระบบทั้งหมด</div>
                     <div class="stat-value" id="seller-total-proposed">0</div>
                 </div>
                 <div class="stat-card">
-                    <div class="stat-label">รอนำเข้า/รอตรวจสอบ</div>
+                    <div class="stat-label">รอแอดมินอนุมัติคลัง</div>
                     <div class="stat-value" id="seller-pending-count">0</div>
                 </div>
                 <div class="stat-card">
-                    <div class="stat-label">อนุมัติลงขายแล้ว</div>
+                    <div class="stat-label">นำขึ้นหน้าร้านเรียบร้อย</div>
                     <div class="stat-value" id="seller-imported-count">0</div>
                 </div>
             </div>
 
             <!-- Submit Watch Form -->
             <div class="form-card">
-                <div class="form-title">⌚ เสนอขายนาฬิกาเข้าระบบตรวจสอบ (Submit Watch for Inspection)</div>
+                <div class="form-title">⌚ พนักงานเพิ่มรายการนาฬิกาเพื่อรออนุมัติคลัง (Add Watch to Stock for Audit)</div>
                 <form id="seller-watch-form" onsubmit="handleWatchSubmit(event)">
                     <div class="form-grid">
                         <div class="form-group">
@@ -235,7 +235,7 @@
                             <input type="text" id="sw-model" class="form-control" placeholder="เช่น Submariner Date" required>
                         </div>
                         <div class="form-group">
-                            <label for="sw-price">ราคาเสนอขาย (บาท)</label>
+                            <label for="sw-price">ราคาตั้งขาย (บาท)</label>
                             <input type="number" id="sw-price" class="form-control" placeholder="เช่น 350000" min="0" required>
                         </div>
                         <div class="form-group">
@@ -260,13 +260,13 @@
                             <input type="text" id="sw-desc" class="form-control" placeholder="เช่น สภาพดีมาก กล่องใบครบถ้วนปี 2024" required>
                         </div>
                     </div>
-                    <button type="submit" class="btn btn-primary">ส่งตรวจสอบสภาพเรือน 📤</button>
+                    <button type="submit" class="btn btn-primary">ส่งคำขอนำเข้าสินค้าคลัง 📤</button>
                 </form>
             </div>
 
             <!-- List of seller's submitted watches -->
             <div class="form-card">
-                <div class="form-title">📋 สถานะรายการนาฬิกาที่คุณเสนอขาย (My Submitted Watches)</div>
+                <div class="form-title">📋 สถานะรายการนาฬิกาที่พนักงานลงระบบ (My Submitted Watches)</div>
                 <div class="table-container">
                     <table>
                         <thead>
@@ -280,7 +280,7 @@
                         </thead>
                         <tbody id="seller-watches-table">
                             <tr>
-                                <td colspan="5" style="text-align: center; color: var(--text-muted);">ยังไม่มีการเสนอขายสินค้าในระบบ</td>
+                                <td colspan="5" style="text-align: center; color: var(--text-muted);">ยังไม่มีการลงรายการสินค้าในระบบ</td>
                             </tr>
                         </tbody>
                     </table>
@@ -1971,7 +1971,7 @@
                 
                 let roleLabel = '';
                 if (loggedInUser.role === 'user') roleLabel = '👤 Buyer';
-                else if (loggedInUser.role === 'customer') roleLabel = '🛍️ Seller';
+                else if (loggedInUser.role === 'customer') roleLabel = '🛍️ Employee';
                 else if (loggedInUser.role === 'admin') roleLabel = '👑 Admin';
                 else if (loggedInUser.role === 'manager') roleLabel = '👔 Manager';
                 else if (loggedInUser.role === 'staff') roleLabel = '💬 Staff';

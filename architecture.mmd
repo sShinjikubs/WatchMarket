@@ -1,28 +1,28 @@
 graph TB
     subgraph Client_Layer ["📱 Client Layer (Frontend UI)"]
         A1["💻 Buyer Portal (User UI)"]
-        A2["🛍️ Seller Portal (Customer UI)"]
+        A2["🛍️ Employee Portal (Sales UI)"]
         A3["👑 Admin Dashboard (Inspection)"]
         A4["👔 Manager Panel (Audit & Analytics)"]
         A5["💬 Staff Chat Interface (Live Support)"]
     end
-
+ 
     subgraph Gateway_Layer ["🔒 Gateway & Authentication"]
         CDN["🌐 CDN (Content Delivery Network)"]
         GW["🔑 API Gateway & Auth Manager (JWT / Roles)"]
     end
-
+ 
     subgraph Backend_Layer ["⚙️ Backend Microservices"]
         AuthSvc["👤 Authentication Service"]
-        VerifySvc["🛡️ Seller Verification & Blacklist check"]
+        VerifySvc["🛡️ Employee Verification & Blacklist check"]
         InspectSvc["🔎 Watch Inspection & Catalog Service"]
         AuditSvc["📊 Price Compliance & Audit Service"]
         ChatSvc["💬 Live Support Chat Service"]
         PaySvc["💳 Easy Donate QR Payment Service"]
     end
-
+ 
     subgraph Data_Layer ["💾 Database & Storage Layer"]
-        SQL_DB[("🗄️ Primary SQL DB<br>(Users, Sellers, Watches, Logs)")]
+        SQL_DB[("🗄️ Primary SQL DB<br>(Users, Employees, Watches, Logs)")]
         Redis_DB[("⚡ Redis Cache<br>(Blacklist, Product Catalog)")]
         Storage[("📦 File Storage<br>(Receipt Slips, Watch Themes)")]
     end
