@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="th">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -10,7 +11,7 @@
     <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap');
-        
+
         :root {
             --bg-dark: #0f172a;
             --bg-card: #1e293b;
@@ -71,7 +72,8 @@
             border-left: 3px solid transparent;
         }
 
-        .doc-menu li a:hover, .doc-menu li a.active {
+        .doc-menu li a:hover,
+        .doc-menu li a.active {
             color: var(--text-main);
             background-color: rgba(197, 168, 128, 0.15);
             border-left-color: var(--primary);
@@ -117,7 +119,8 @@
             color: var(--text-sub);
         }
 
-        #doc-render-target ul, #doc-render-target ol {
+        #doc-render-target ul,
+        #doc-render-target ol {
             margin-left: 2rem;
             margin-bottom: 1.2rem;
             color: var(--text-sub);
@@ -190,6 +193,7 @@
             body {
                 flex-direction: column;
             }
+
             .sidebar {
                 width: 100%;
                 height: auto;
@@ -197,6 +201,7 @@
                 border-right: none;
                 border-bottom: 1px solid var(--border);
             }
+
             .content-container {
                 margin-left: 0;
                 padding: 2rem;
@@ -204,6 +209,7 @@
         }
     </style>
 </head>
+
 <body>
 
     <!-- Sidebar Navigation -->
@@ -266,7 +272,7 @@
                     throw new Error(`Failed to load ${fileName}`);
                 }
                 const markdownText = await response.text();
-                
+
                 // Parse markdown content
                 const htmlContent = marked.parse(markdownText);
                 document.getElementById('doc-render-target').innerHTML = htmlContent;
@@ -277,13 +283,13 @@
                 codeBlocks.forEach((block, index) => {
                     const rawMermaid = block.innerText;
                     const container = block.parentElement; // pre tag
-                    
+
                     // Create a div with class 'mermaid' and assign unique ID
                     const mermaidDiv = document.createElement('div');
                     mermaidDiv.className = 'mermaid';
                     mermaidDiv.id = `mermaid-diagram-${index}`;
                     mermaidDiv.innerHTML = rawMermaid;
-                    
+
                     // Replace the pre code block with the mermaid div
                     container.parentNode.replaceChild(mermaidDiv, container);
                 });
@@ -310,4 +316,5 @@
         });
     </script>
 </body>
+
 </html>
