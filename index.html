@@ -837,7 +837,8 @@
         // Initial Data Load
         window.addEventListener('DOMContentLoaded', () => {
             // Load products from localStorage or set defaults
-            if (!localStorage.getItem(DB_PRODUCTS_KEY)) {
+            const storedProducts = JSON.parse(localStorage.getItem(DB_PRODUCTS_KEY));
+            if (!storedProducts || storedProducts.length === 0) {
                 localStorage.setItem(DB_PRODUCTS_KEY, JSON.stringify(initialProducts));
             }
             products = JSON.parse(localStorage.getItem(DB_PRODUCTS_KEY));
