@@ -307,19 +307,19 @@ classDiagram
 ```
 
 ### 5.3 Sequence Diagram (แผนภาพขั้นตอนการทำงาน)
-แสดงขั้นตอนการส่งข้อความโต้ตอบระหว่างผู้ใช้ หน้าบ้าน (Frontend) ระบบควบคุมการสั่งซื้อ (Order Service) บริการชำระเงิน (Payment Service) และฐานข้อมูลหลัก เมื่อลูกค้าทำการสั่งซื้อนาฬิกาพรีเมียม
+แสดงขั้นตอนการส่งข้อความโต้ตอบระหว่างผู้ใช้ หน้าบ้าน (Frontend) ระบบควบคุมการสั่งซื้อ (Order Service) บริการชำระเงิน (Payment Service) และฐานข้อมูลหลัก เมื่อผู้ใช้ (User) ทำการสั่งซื้อนาฬิกาพรีเมียม
 
 ```mermaid
 sequenceDiagram
     autonumber
-    actor Buyer as 👤 Buyer (User)
+    actor User as 👤 User (ผู้ซื้อ)
     participant UI as 💻 Frontend (Web App)
     participant OrderSvc as 🛒 Order Service
     participant PaySvc as 💳 Payment Service
     participant BankAPI as 📱 Easy Donate API
     participant DB as 🗄️ Database
 
-    Buyer->>UI: Click "Checkout Now"
+    User->>UI: Click "Checkout Now"
     UI->>OrderSvc: Create order POST /api/orders (Cart details)
     activate OrderSvc
     OrderSvc->>DB: Save order details (Insert Order & OrderItems)
@@ -335,10 +335,10 @@ sequenceDiagram
     activate BankAPI
     BankAPI-->>PaySvc: Return QR code URL & transaction_ref
     deactivate BankAPI
-    PaySvc-->>UI: Render QR Code to Buyer
+    PaySvc-->>UI: Render QR Code to User
     deactivate PaySvc
 
-    Buyer->>BankAPI: Scan and transfer via Mobile Banking app
+    User->>BankAPI: Scan and transfer via Mobile Banking app
     activate BankAPI
     BankAPI->>PaySvc: Webhook callback / Verification notification
     deactivate BankAPI
@@ -355,7 +355,7 @@ sequenceDiagram
     OrderSvc->>DB: Update Order Status = 'Paid'
     OrderSvc-->>UI: Show order confirmation screen
     deactivate OrderSvc
-    UI-->>Buyer: Display receipt & payment success
+    UI-->>User: Display receipt & payment success
 ```
 
 ### 5.4 Activity Diagram (แผนภาพกิจกรรมการสั่งซื้อสินค้า)
