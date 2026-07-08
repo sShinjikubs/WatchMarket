@@ -834,6 +834,7 @@
         const DB_PENDING_WATCHES_KEY = "watchmart_db_pending_watches";
         const DB_SELLER_REG_KEY = "watchmart_db_seller_registered";
         const DB_BLACKLIST_KEY = "watchmart_db_blacklist";
+        const DB_PROFILES_KEY = "watchmart_db_profiles";
 
         // Initial Blacklist Data
         const initialBlacklist = [
@@ -1032,7 +1033,6 @@
         }
 
         // ==================== PROFILE MODAL ====================
-        const DB_PROFILES_KEY = 'watchmart_db_profiles';
 
         function getProfile(username) {
             const allProfiles = JSON.parse(localStorage.getItem(DB_PROFILES_KEY)) || {};
