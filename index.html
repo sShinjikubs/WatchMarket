@@ -50,8 +50,21 @@
     <header class="hidden" id="main-header">
         <a href="#" class="logo" onclick="setRole('user')">Watch<span>Mart</span></a>
         
-        <!-- Profile Controls (Dropdown) -->
-        <div class="header-auth-controls" style="display: flex; gap: 1rem; align-items: center;">
+        <nav>
+            <ul>
+                <li><a href="#" class="active" id="nav-home" onclick="setRole('user')">Home</a></li>
+                <li><a href="#products" id="nav-products">Collections</a></li>
+                <li id="nav-docs-li" class="hidden"><a href="markdown.html" target="_blank">System Docs</a></li>
+            </ul>
+        </nav>
+        
+        <div class="header-actions">
+            <button class="cart-icon" id="cart-toggle-btn" aria-label="Open Shopping Cart">
+                🛒
+                <span class="cart-count" id="cart-counter">0</span>
+            </button>
+            
+            <!-- Profile Controls (Dropdown) -->
             <div class="user-profile-dropdown-container hidden" id="user-profile-header">
                 <button class="profile-avatar-btn" onclick="toggleProfileDropdown(event)" aria-label="User Profile">
                     <div class="profile-avatar" id="header-avatar-initial">U</div>
@@ -67,20 +80,6 @@
                     </button>
                 </div>
             </div>
-        </div>
-
-        <nav>
-            <ul>
-                <li><a href="#" class="active" id="nav-home" onclick="setRole('user')">Home</a></li>
-                <li><a href="#products" id="nav-products">Collections</a></li>
-                <li id="nav-docs-li" class="hidden"><a href="markdown.html" target="_blank">System Docs</a></li>
-            </ul>
-        </nav>
-        <div class="header-actions">
-            <button class="cart-icon" id="cart-toggle-btn" aria-label="Open Shopping Cart">
-                🛒
-                <span class="cart-count" id="cart-counter">0</span>
-            </button>
         </div>
     </header>
 
