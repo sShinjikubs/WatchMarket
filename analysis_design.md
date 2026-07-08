@@ -183,41 +183,55 @@ CREATE TABLE orders (
 เพื่อแสดงโครงสร้าง ลำดับการทำงาน และความสัมพันธ์ของระบบ **WatchMart** ให้ชัดเจนยิ่งขึ้นตามแนวทางวิศวกรรมซอฟต์แวร์
 
 ### 5.1 Use Case Diagram (แผนภาพแสดงการทำงานของผู้ใช้)
-แผนภาพ Use Case แสดงขอบเขตของระบบ (System Boundary) และปฏิสัมพันธ์ระหว่างนักช้อป (Customer) และผู้ควบคุมระบบ (Admin)
+แผนภาพ Use Case แสดงขอบเขตของระบบ (System Boundary) และปฏิสัมพันธ์ระหว่างนักช้อป (User), พนักงาน (Employee) และผู้ดูแลระบบ (Admin)
 
 ```mermaid
 graph TD
     %% Define Actors
-    Customer["👤 ลูกค้า (Customer)"]
-    Admin["👑 ผู้ดูแลระบบ (Admin)"]
+    UserActor["👤 ผู้ซื้อ (User)"]
+    EmpActor["🛍️ พนักงาน (Employee)"]
+    AdminActor["👑 ผู้ดูแลระบบ (Admin)"]
 
     subgraph WatchMart_System ["💼 ระบบ WatchMart Platform"]
-        UC_Register["สมัครสมาชิก (Register)"]
         UC_Login["เข้าสู่ระบบ (Login)"]
         UC_Search["ค้นหาและกรองนาฬิกา (Search & Filter)"]
         UC_Cart["จัดการตะกร้าสินค้า (Manage Cart)"]
         UC_Checkout["สั่งซื้อและชำระเงิน (Checkout)"]
         UC_Track["ติดตามสถานะจัดส่ง (Track Order)"]
-        
-        UC_ManageProduct["จัดการสินค้าสต็อก (Manage Products)"]
+
+        UC_Verify["ยืนยันตัวตนพนักงาน (Employee Verify)"]
+        UC_AddWatch["ลงรายการนาฬิกาเข้าคลัง (Add Watch to Stock)"]
+
+        UC_Inspect["ตรวจสอบและอนุมัติสินค้า (Inspect & Approve)"]
         UC_ManageOrder["จัดการรายการสั่งซื้อ (Manage Orders)"]
-        
-        %% Include and extend relations within system
+        UC_PriceAudit["ตรวจสอบราคากลาง (Price Audit)"]
+        UC_Chat["ให้บริการแชทช่วยเหลือ (Support Chat)"]
+        UC_Blacklist["จัดการบัญชีดำ (Blacklist Management)"]
+
+        %% Include relation
         UC_Checkout -.->|"<<include>>"| UC_Login
+        UC_AddWatch -.->|"<<include>>"| UC_Verify
     end
 
-    %% Customer Connections
-    Customer --> UC_Register
-    Customer --> UC_Login
-    Customer --> UC_Search
-    Customer --> UC_Cart
-    Customer --> UC_Checkout
-    Customer --> UC_Track
+    %% User Connections
+    UserActor --> UC_Login
+    UserActor --> UC_Search
+    UserActor --> UC_Cart
+    UserActor --> UC_Checkout
+    UserActor --> UC_Track
+
+    %% Employee Connections
+    EmpActor --> UC_Login
+    EmpActor --> UC_Verify
+    EmpActor --> UC_AddWatch
 
     %% Admin Connections
-    Admin --> UC_Login
-    Admin --> UC_ManageProduct
-    Admin --> UC_ManageOrder
+    AdminActor --> UC_Login
+    AdminActor --> UC_Inspect
+    AdminActor --> UC_ManageOrder
+    AdminActor --> UC_PriceAudit
+    AdminActor --> UC_Chat
+    AdminActor --> UC_Blacklist
 ```
 
 ### 5.2 Class Diagram (แผนภาพคลาสโครงสร้างข้อมูล)
