@@ -1,0 +1,43 @@
+[
+  {
+    "id": "1",
+    "name": "Chronos Classic 40",
+    "brand": "Heritage",
+    "category": "classic",
+    "price": 15900,
+    "stock": 14,
+    "color": "#4e342e",
+    "strokeColor": "#c5a880"
+  },
+  {
+    "id": "2",
+    "name": "Veloce Sport Chronograph",
+    "brand": "Veloce",
+    "category": "sport",
+    "price": 24500,
+    "stock": 8,
+    "color": "#263238",
+    "strokeColor": "#d32f2f"
+  },
+  {
+    "id": "3",
+    "name": "Grandeur Rose Gold",
+    "brand": "Grandeur",
+    "category": "elegant",
+    "price": 89000,
+    "stock": 4,
+    "color": "#1c1d21",
+    "strokeColor": "#e0a96d",
+    "isGoldFace": true
+  },
+  {
+    "id": "4",
+    "name": "Stella Midnight Blue",
+    "brand": "Stella",
+    "category": "elegant",
+    "price": 32000,
+    "stock": 12,
+    "color": "#2d3748",
+    "strokeColor": "#c5a880"
+  }
+]

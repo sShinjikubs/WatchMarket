@@ -1,0 +1,34 @@
+[
+  {
+    "timestamp": "2026-07-09T19:23:02.829Z",
+    "message": "WatchMart Backend initialized"
+  },
+  {
+    "timestamp": "2026-07-09T19:23:35.966Z",
+    "message": "[AUTH]: ผู้ใช้เข้าสู่ระบบสำเร็จในบทบาท USER (buyer)"
+  },
+  {
+    "timestamp": "2026-07-09T19:23:36.040Z",
+    "message": "System role switched to: USER"
+  },
+  {
+    "timestamp": "2026-07-09T19:24:15.937Z",
+    "message": "[CART]: เพิ่มสินค้าลงในตะกร้าชั่วคราว - Chronos Classic 40"
+  },
+  {
+    "timestamp": "2026-07-09T19:25:17.659Z",
+    "message": "[DATABASE]: บันทึกประวัติใบสั่งซื้อลง PostgreSQL สำเร็จ (ID: ORD-778354)"
+  },
+  {
+    "timestamp": "2026-07-09T19:25:17.670Z",
+    "message": "[API Trigger]: เรียกใช้ Easy Donate API (Bank Gateway) จำลอง เพื่อออก QR Code และตรวจรับยอดชำระสำเร็จ"
+  },
+  {
+    "timestamp": "2026-07-09T19:25:17.688Z",
+    "message": "[API Trigger]: ยิงคำสั่ง POST ไปยัง LINE Notify API เรียบร้อย -> \"มีคำสั่งซื้อใหม่ ยอดเงิน ฿15,900\""
+  },
+  {
+    "timestamp": "2026-07-09T19:25:17.697Z",
+    "message": "[Email Service]: ส่งรายละเอียดหลักฐานการสั่งซื้อไปยังกล่องจดหมาย: buyer@example.com สำเร็จ"
+  }
+]

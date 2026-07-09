@@ -1,0 +1,21 @@
+[
+  {
+    "id": "ORD-778354",
+    "userId": "buyer",
+    "items": [
+      {
+        "id": "1",
+        "name": "Chronos Classic 40",
+        "price": 15900,
+        "quantity": 1
+      }
+    ],
+    "total": 15900,
+    "email": "buyer@example.com",
+    "address": "123 Bangkok, Thailand",
+    "payment": "promptpay",
+    "status": "paid",
+    "date": "7/10/2026, 2:25:17 AM",
+    "slip": null
+  }
+]

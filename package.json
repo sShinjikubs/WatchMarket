@@ -1,0 +1,16 @@
+{
+  "name": "watchmart-suite",
+  "version": "1.0.0",
+  "description": "Premium Watch E-Commerce Platform",
+  "scripts": {
+    "install:all": "cd backend && npm install && cd ../frontend && npm install",
+    "dev": "cd backend && npm run dev",
+    "dev:frontend": "cd frontend && npm run dev",
+    "build:frontend": "cd frontend && npm run build",
+    "build": "cd backend && npm run build",
+    "start": "cd backend && npm start"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}

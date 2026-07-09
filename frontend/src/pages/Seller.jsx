@@ -1,0 +1,203 @@
+import React, { useState, useEffect } from 'react';
+import { api } from '../api';
+import { useAuth } from '../App';
+import Header from '../components/Header';
+import SystemLogger from '../components/SystemLogger';
+
+export default function Seller() {
+  const { user } = useAuth();
+  const [pendingWatches, setPendingWatches] = useState([]);
+  const [isRegistered, setIsRegistered] = useState(() => {
+    try { return JSON.parse(localStorage.getItem('watchmart_db_seller_registered')) || false; }
+    catch { return false; }
+  });
+  const [blocked, setBlocked] = useState(false);
+  const [notification, setNotification] = useState(null);
+  const [regForm, setRegForm] = useState({ name: '', email: '', nationalId: '' });
+  const [watchForm, setWatchForm] = useState({ brand: '', model: '', price: '', proposedBanding: 'classic', dialColor: '#1a1a2e', description: '' });
+
+  const showNotif = (msg, ok = true) => {
+    setNotification({ msg, ok });
+    setTimeout(() => setNotification(null), 3000);
+  };
+
+  const refreshData = async () => {
+    try {
+      const res = await api.getPendingWatches();
+      if (res.ok) setPendingWatches(await res.json());
+    } catch (_) {}
+  };
+
+  useEffect(() => { refreshData(); }, []);
+
+  const setReg = (f) => (e) => setRegForm((prev) => ({ ...prev, [f]: e.target.value }));
+  const setWatch = (f) => (e) => setWatchForm((prev) => ({ ...prev, [f]: e.target.value }));
+
+  const handleRegister = async (e) => {
+    e.preventDefault();
+    try {
+      const res = await api.registerSeller(regForm);
+      if (res.ok) {
+        setIsRegistered(true);
+        setBlocked(false);
+        localStorage.setItem('watchmart_db_seller_registered', JSON.stringify(true));
+        showNotif('ยืนยันตัวตนสำเร็จ!');
+        refreshData();
+      } else {
+        setBlocked(true);
+        const d = await res.json();
+        showNotif(d.error || 'ข้อมูลอยู่ในบัญชีดำ!', false);
+      }
+    } catch (_) { showNotif('เซิร์ฟเวอร์ขัดข้อง', false); }
+  };
+
+  const handleWatchSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      const res = await api.proposWatch({
+        ...watchForm,
+        price: parseFloat(watchForm.price),
+        sellerName: regForm.name || user?.username || 'Seller',
+        sellerEmail: regForm.email || '',
+      });
+      if (res.ok) {
+        showNotif('ส่งเสนอขายนาฬิกาสำเร็จ!');
+        setWatchForm({ brand: '', model: '', price: '', proposedBanding: 'classic', dialColor: '#1a1a2e', description: '' });
+        refreshData();
+      } else {
+        const d = await res.json();
+        showNotif(d.error || 'ส่งข้อมูลไม่สำเร็จ', false);
+      }
+    } catch (_) { showNotif('เซิร์ฟเวอร์ขัดข้อง', false); }
+  };
+
+  const totalProposed = pendingWatches.length;
+  const pendingCount = pendingWatches.filter((w) => w.importStatus === 'pending').length;
+  const importedCount = pendingWatches.filter((w) => w.importStatus === 'imported').length;
+
+  return (
+    <div className="page-wrapper">
+      {notification && <div className={`notification ${notification.ok ? '' : 'error'}`}>{notification.msg}</div>}
+      <Header />
+
+      <main className="main-content">
+        <div className="page-header">
+          <h1 className="page-title">🛍️ Seller Portal</h1>
+          <p className="page-subtitle">พอร์ทัลสำหรับผู้เสนอขายนาฬิกาหรูเข้าสู่ WatchMart</p>
+        </div>
+
+        {!isRegistered ? (
+          <div className="glass-card" style={{ maxWidth: '560px', margin: '0 auto' }}>
+            <h2 className="card-title">ยืนยันตัวตนผู้ขาย</h2>
+            {blocked && (
+              <div className="error-banner">
+                ⚠️ ตรวจพบประวัติแบล็คลิสต์! ไม่สามารถเข้าสู่ระบบผู้ขายได้
+              </div>
+            )}
+            <form onSubmit={handleRegister} className="form-stack">
+              <div className="form-group">
+                <label className="form-label">ชื่อ-นามสกุล</label>
+                <input className="form-input" value={regForm.name} onChange={setReg('name')} required placeholder="ชื่อเต็ม" />
+              </div>
+              <div className="form-group">
+                <label className="form-label">อีเมล</label>
+                <input type="email" className="form-input" value={regForm.email} onChange={setReg('email')} required placeholder="email@example.com" id="seller-email" />
+              </div>
+              <div className="form-group">
+                <label className="form-label">เลขบัตรประชาชน</label>
+                <input className="form-input" value={regForm.nationalId} onChange={setReg('nationalId')} required placeholder="X-XXXX-XXXXX-XX-X" id="seller-national-id" />
+              </div>
+              <button type="submit" className="btn btn-primary w-full">ยืนยันตัวตนและสมัครเป็นผู้ขาย</button>
+            </form>
+          </div>
+        ) : (
+          <>
+            {/* Stats */}
+            <div className="stats-grid">
+              <div className="stat-card"><div className="stat-value">{totalProposed}</div><div className="stat-label">เสนอขายทั้งหมด</div></div>
+              <div className="stat-card"><div className="stat-value">{pendingCount}</div><div className="stat-label">รอดำเนินการ</div></div>
+              <div className="stat-card"><div className="stat-value">{importedCount}</div><div className="stat-label">นำเข้าแล้ว</div></div>
+            </div>
+
+            <div className="content-grid two-col">
+              {/* Propose Watch Form */}
+              <div className="glass-card">
+                <h2 className="card-title">➕ เสนอขายนาฬิกา</h2>
+                <form onSubmit={handleWatchSubmit} className="form-stack" id="seller-watch-form">
+                  <div className="form-group">
+                    <label className="form-label">แบรนด์นาฬิกา</label>
+                    <input className="form-input" value={watchForm.brand} onChange={setWatch('brand')} required placeholder="Rolex, Patek Philippe..." id="sw-brand" />
+                  </div>
+                  <div className="form-group">
+                    <label className="form-label">รุ่น / Model</label>
+                    <input className="form-input" value={watchForm.model} onChange={setWatch('model')} required placeholder="Submariner, Nautilus..." id="sw-model" />
+                  </div>
+                  <div className="form-group">
+                    <label className="form-label">ราคาเสนอขาย (บาท)</label>
+                    <input type="number" className="form-input" value={watchForm.price} onChange={setWatch('price')} required placeholder="250000" id="sw-price" />
+                  </div>
+                  <div className="form-group">
+                    <label className="form-label">กลุ่มราคา (Banding)</label>
+                    <select className="form-select" value={watchForm.proposedBanding} onChange={setWatch('proposedBanding')} id="sw-banding">
+                      <option value="classic">Classic (ต่ำกว่า 25,000)</option>
+                      <option value="sport">Sport (25,000 - 100,000)</option>
+                      <option value="elegant">Elegant (100,000+)</option>
+                    </select>
+                  </div>
+                  <div className="form-group">
+                    <label className="form-label">สีหน้าปัด</label>
+                    <input type="color" className="form-input" value={watchForm.dialColor} onChange={setWatch('dialColor')} id="sw-dial-color" />
+                  </div>
+                  <div className="form-group">
+                    <label className="form-label">รายละเอียด / Condition</label>
+                    <textarea className="form-input" rows={3} value={watchForm.description} onChange={setWatch('description')} id="sw-desc" placeholder="อธิบายสภาพนาฬิกา..." />
+                  </div>
+                  <button type="submit" className="btn btn-primary w-full">ส่งข้อเสนอขายนาฬิกา 📨</button>
+                </form>
+              </div>
+
+              {/* Proposed Watches Table */}
+              <div className="glass-card">
+                <h2 className="card-title">📋 รายการเสนอขายของฉัน</h2>
+                <div className="table-responsive">
+                  <table className="data-table">
+                    <thead>
+                      <tr>
+                        <th>นาฬิกา</th>
+                        <th>ราคา</th>
+                        <th>Banding</th>
+                        <th>สภาพ</th>
+                        <th>สถานะ</th>
+                      </tr>
+                    </thead>
+                    <tbody id="seller-watches-table">
+                      {pendingWatches.length === 0 ? (
+                        <tr><td colSpan={5} style={{ textAlign: 'center', color: 'var(--text-muted)' }}>ยังไม่มีการเสนอขาย</td></tr>
+                      ) : pendingWatches.map((w) => (
+                        <tr key={w.id}>
+                          <td><strong>{w.brand}</strong> {w.model}</td>
+                          <td>฿ {w.price?.toLocaleString()}</td>
+                          <td><span className="badge" style={{ background: 'rgba(197,168,128,0.1)', color: 'var(--accent-gold)' }}>{w.proposedBanding?.toUpperCase()}</span></td>
+                          <td>
+                            {w.inspectionStatus === 'pending' && <span className="badge badge-watch-pending">รอตรวจ</span>}
+                            {w.inspectionStatus === 'passed' && <span className="badge badge-watch-passed">ผ่านเกณฑ์</span>}
+                            {w.inspectionStatus === 'failed' && <span className="badge badge-watch-failed">ตกเกณฑ์</span>}
+                          </td>
+                          <td>
+                            {w.importStatus === 'imported' ? <span className="badge badge-watch-imported">นำเข้าแล้ว</span> : <span className="badge badge-watch-pending">รอนำเข้า</span>}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </>
+        )}
+
+        <SystemLogger />
+      </main>
+    </div>
+  );
+}
