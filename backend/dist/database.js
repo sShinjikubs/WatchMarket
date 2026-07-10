@@ -378,7 +378,7 @@ exports.db = {
     getProducts: async () => {
         const res = await pool.query(`SELECT id, name, brand, category, CAST(price AS FLOAT) as price, stock, color,
               stroke_color as "strokeColor", is_gold_face as "isGoldFace", image, image_back as "imageBack"
-       FROM products ORDER BY CAST(id AS INT) ASC`);
+       FROM products ORDER BY length(id) ASC, id ASC`);
         return res.rows;
     },
     saveProducts: async (products) => {
@@ -396,6 +396,21 @@ exports.db = {
            is_gold_face = EXCLUDED.is_gold_face,
            image = EXCLUDED.image,
            image_back = EXCLUDED.image_back`, [p.id, p.name, p.brand, p.category, p.price, p.stock, p.color || '', p.strokeColor || '', p.isGoldFace || false, p.image || '', p.imageBack || '']);
+        }
+    },
+    forceReseedProducts: async () => {
+        const client = await pool.connect();
+        try {
+            await client.query('DELETE FROM reviews');
+            await client.query('DELETE FROM products');
+            for (const p of defaultProducts) {
+                await client.query(`INSERT INTO products (id, name, brand, category, price, stock, color, stroke_color, is_gold_face, image, image_back)
+           VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)`, [p.id, p.name, p.brand, p.category, p.price, p.stock, p.color || '', p.strokeColor || '', p.isGoldFace || false, p.image || '', p.imageBack || '']);
+            }
+            console.log(`Force reseeded ${defaultProducts.length} products (LUMINOX & SEIKO collections).`);
+        }
+        finally {
+            client.release();
         }
     },
     addProduct: async (p) => {
