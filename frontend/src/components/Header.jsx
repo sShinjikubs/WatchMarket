@@ -202,7 +202,7 @@ export default function Header({ showCart, cartCount: cartCountProp, onCartClick
           </form>
           {/* Small Keywords Tag Row - SEIKO and LUMINOX only (Classic/Sport deleted) */}
           <div style={{ display: 'flex', gap: '0.8rem', fontSize: '0.72rem', color: 'var(--text-muted)' }}>
-            {['SEIKO', 'LUMINOX'].map((kw) => (
+            {['SEIKO', 'LUMINOX', 'TAG HEUER'].map((kw) => (
               <span
                 key={kw}
                 onClick={() => {

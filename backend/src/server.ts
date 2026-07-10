@@ -465,7 +465,7 @@ app.delete('/api/admin/users/:username', async (req, res) => {
 app.post('/api/admin/force-reseed', async (req, res) => {
   try {
     await db.forceReseedProducts();
-    return res.json({ success: true, message: 'Products reseeded with LUMINOX & SEIKO collections!' });
+    return res.json({ success: true, message: 'Products reseeded with LUMINOX, SEIKO & TAG Heuer collections!' });
   } catch (err) {
     console.error('Force reseed error:', err);
     return res.status(500).json({ error: 'Failed to reseed products.' });

@@ -84,7 +84,7 @@ export default function Storefront() {
           <div className="section-header">
             <h2 className="section-title">สินค้าทั้งหมด</h2>
             <div className="filter-controls">
-              {[{ key: 'all', label: 'ทั้งหมด' }, { key: 'Luminox', label: 'LUMINOX' }, { key: 'Seiko', label: 'SEIKO' }].map(({ key, label }) => (
+              {[{ key: 'all', label: 'ทั้งหมด' }, { key: 'Luminox', label: 'LUMINOX' }, { key: 'Seiko', label: 'SEIKO' }, { key: 'TAG Heuer', label: 'TAG HEUER' }].map(({ key, label }) => (
                 <button
                   key={key}
                   className={`filter-btn ${filter === key ? 'active' : ''}`}

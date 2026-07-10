@@ -228,6 +228,106 @@ const defaultProducts: Product[] = [
     stock: 3,
     image: "/images/SEIKO/นาฬิกาข้อมือผู้ชาย Prospex Divers Watch 1965 Heritage Limited Edition 145th Anniversary รุ่น HBC005J ขนาด 40 มม. สีขาว หน้า.webp",
     imageBack: "/images/SEIKO/นาฬิกาข้อมือผู้ชาย Prospex Divers Watch 1965 Heritage Limited Edition 145th Anniversary รุ่น HBC005J ขนาด 40 มม. สีขาว หลัง.webp"
+  },
+  {
+    id: "21",
+    name: "TAG Heuer Aquaracer Professional 500 Date Automatic, 42 mm, Titanium",
+    brand: "TAG Heuer",
+    category: "sport",
+    price: 135000,
+    stock: 5,
+    image: "/images/TAG Heuer/TAG Heuer Aquaracer Professional 500 Date Automatic, 42 mm, Titanium Front.avif",
+    imageBack: "/images/TAG Heuer/TAG Heuer Aquaracer Professional 500 Date Automatic, 42 mm, Titanium back.avif"
+  },
+  {
+    id: "22",
+    name: "TAG Heuer Formula 1 Chronograph",
+    brand: "TAG Heuer",
+    category: "sport",
+    price: 78000,
+    stock: 10,
+    image: "/images/TAG Heuer/TAG Heuer Formula 1 Chronograph  Front.avif",
+    imageBack: "/images/TAG Heuer/TAG Heuer Formula 1 Chronograph Bank.avif"
+  },
+  {
+    id: "23",
+    name: "TAG Heuer Formula 1 Chronograph Quartz, 43 mm, Steel",
+    brand: "TAG Heuer",
+    category: "sport",
+    price: 85000,
+    stock: 8,
+    image: "/images/TAG Heuer/TAG Heuer Formula 1 Chronograph Quartz, 43 mm, Steel Front.avif",
+    imageBack: "/images/TAG Heuer/TAG Heuer Formula 1 Chronograph Quartz, 43 mm, Steel Back.avif"
+  },
+  {
+    id: "24",
+    name: "TAG Heuer Formula 1 Chronograph x Red Bull Racing Quartz, 43 mm, Steel",
+    brand: "TAG Heuer",
+    category: "sport",
+    price: 98000,
+    stock: 6,
+    image: "/images/TAG Heuer/TAG Heuer Formula 1 Chronograph x Red Bull Racing Quartz, 43 mm, Steel  Front.avif",
+    imageBack: "/images/TAG Heuer/TAG Heuer Formula 1 Chronograph x Red Bull Racing Quartz, 43 mm, Steel back.avif"
+  },
+  {
+    id: "25",
+    name: "TAG Heuer Formula 1 Date Automatic, 43 mm, Steel",
+    brand: "TAG Heuer",
+    category: "classic",
+    price: 110000,
+    stock: 7,
+    image: "/images/TAG Heuer/TAG Heuer Formula 1 Date Automatic, 43 mm, Steel Front.avif",
+    imageBack: "/images/TAG Heuer/TAG Heuer Formula 1 Date Automatic, 43 mm, Steel Bacnk.avif"
+  },
+  {
+    id: "26",
+    name: "TAG Heuer Carrera Chronograph Automatic, 39 mm, Steel",
+    brand: "TAG Heuer",
+    category: "sport",
+    price: 195000,
+    stock: 4,
+    image: "/images/TAG Heuer/More/TAG Heuer Carrera Chronograph Automatic, 39 mm, Steel Front.avif",
+    imageBack: "/images/TAG Heuer/More/TAG Heuer Carrera Chronograph Automatic, 39 mm, Steel Back.avif"
+  },
+  {
+    id: "27",
+    name: "TAG Heuer Carrera Chronograph x Porsche Automatic, 44 mm, Steel",
+    brand: "TAG Heuer",
+    category: "sport",
+    price: 285000,
+    stock: 3,
+    image: "/images/TAG Heuer/More/TAG Heuer Carrera Chronograph x Porsche Automatic, 44 mm, Steel Front.avif",
+    imageBack: "/images/TAG Heuer/More/TAG Heuer Carrera Chronograph x Porsche Automatic, 44 mm, Steel back.avif"
+  },
+  {
+    id: "28",
+    name: "TAG Heuer Carrera Date Automatic, 36 mm, Steel",
+    brand: "TAG Heuer",
+    category: "classic",
+    price: 125000,
+    stock: 6,
+    image: "/images/TAG Heuer/More/TAG Heuer Carrera Date Automatic, 36 mm, Steel Front.avif",
+    imageBack: "/images/TAG Heuer/More/TAG Heuer Carrera Date Automatic, 36 mm, Steel back.avif"
+  },
+  {
+    id: "29",
+    name: "TAG Heuer Formula 1 Chronograph Automatic, 44 mm, Steel",
+    brand: "TAG Heuer",
+    category: "sport",
+    price: 95000,
+    stock: 5,
+    image: "/images/TAG Heuer/More/TAG Heuer Formula 1 Chronograph Automatic, 44 mm, Steel Front.avif",
+    imageBack: "/images/TAG Heuer/More/TAG Heuer Formula 1 Chronograph Automatic, 44 mm, Steel Back.avif"
+  },
+  {
+    id: "30",
+    name: "TAG Heuer Monaco Evergraph Automatic, 40 mm, Titanium",
+    brand: "TAG Heuer",
+    category: "elegant",
+    price: 320000,
+    stock: 2,
+    image: "/images/TAG Heuer/More/TAG Heuer Monaco Evergraph Automatic, 40 mm, Titanium Front.avif",
+    imageBack: "/images/TAG Heuer/More/TAG Heuer Monaco Evergraph Automatic, 40 mm, Titanium back.avif"
   }
 ];
 
@@ -362,17 +462,17 @@ export const db = {
       }
 
       const prodCheck = await client.query('SELECT COUNT(*) FROM products');
-      // If table is empty or has only the old 4 placeholder items, drop and seed the new ones
-      if (parseInt(prodCheck.rows[0].count) <= 4) {
-        await client.query('DELETE FROM products');
+      // Seed missing products or if table has old placeholders
+      if (parseInt(prodCheck.rows[0].count) < defaultProducts.length) {
         for (const p of defaultProducts) {
           await client.query(
             `INSERT INTO products (id, name, brand, category, price, stock, color, stroke_color, is_gold_face, image, image_back)
-             VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)`,
+             VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
+             ON CONFLICT (id) DO NOTHING`,
             [p.id, p.name, p.brand, p.category, p.price, p.stock, p.color || '', p.strokeColor || '', p.isGoldFace || false, p.image || '', p.imageBack || '']
           );
         }
-        console.log('Seeded new watch database with LUMINOX & SEIKO collections!');
+        console.log('Seeded watch database with LUMINOX, SEIKO & TAG Heuer collections!');
       }
 
       const blacklistCheck = await client.query('SELECT COUNT(*) FROM blacklist');
