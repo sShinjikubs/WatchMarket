@@ -14,6 +14,93 @@ import Checkout from './pages/Checkout';
 import { CartProvider } from './CartContext';
 import CartDrawer from './components/CartDrawer';
 
+// ─── Language Context ────────────────────────────────────────────────────────
+export const LanguageContext = createContext(null);
+
+export function useLanguage() {
+  return useContext(LanguageContext);
+}
+
+const translations = {
+  th: {
+    home: "หน้าแรก",
+    admin: "แอดมิน",
+    docs: "เอกสาร",
+    manager: "ผู้จัดการ",
+    staff: "พนักงาน",
+    notifications: "การแจ้งเตือน",
+    help: "ช่วยเหลือ",
+    lang: "ไทย",
+    searchPlaceholder: "ค้นหานาฬิกาหรูสไตล์คุณ...",
+    callCenter: "📞 ศูนย์บริการลูกค้า: 02-123-4567",
+    project: "✨ โครงงาน CSI204 ระดับพรีเมียม",
+    myProfile: "👤 โปรไฟล์ของฉัน",
+    signOut: "🚪 ออกจากระบบ",
+    all: "ทั้งหมด",
+    cart: "ตะกร้าสินค้า",
+    checkout: "ดำเนินการชำระเงิน 💳",
+    role: "บทบาท",
+    welcome: "ยินดีต้อนรับ",
+    cancel: "ยกเลิก",
+    productsTitle: "สินค้าทั้งหมด",
+    myOrders: "ประวัติใบสั่งซื้อของฉัน",
+    noOrders: "ไม่มีรายการคำสั่งซื้อในขณะนี้",
+    stock: "สต็อก",
+    outOfStock: "หมดสต็อก",
+    addToCart: "ใส่ตะกร้าสินค้า 🛒",
+    tempOutOfStock: "สินค้าหมดชั่วคราว",
+    price: "ราคา",
+    brand: "แบรนด์",
+  },
+  en: {
+    home: "Home",
+    admin: "Admin",
+    docs: "Docs",
+    manager: "Manager",
+    staff: "Staff",
+    notifications: "Notifications",
+    help: "Help",
+    lang: "English",
+    searchPlaceholder: "Search your luxury watch...",
+    callCenter: "📞 Call Center: 02-123-4567",
+    project: "✨ Premium CSI204 Project",
+    myProfile: "👤 My Profile",
+    signOut: "🚪 Sign Out",
+    all: "All",
+    cart: "Shopping Cart",
+    checkout: "Proceed to Checkout 💳",
+    role: "Role",
+    welcome: "Welcome",
+    cancel: "Cancel",
+    productsTitle: "All Products",
+    myOrders: "My Order History",
+    noOrders: "No orders found.",
+    stock: "Stock",
+    outOfStock: "Out of Stock",
+    addToCart: "Add to Cart 🛒",
+    tempOutOfStock: "Temporarily Out of Stock",
+    price: "Price",
+    brand: "Brand",
+  }
+};
+
+export function LanguageProvider({ children }) {
+  const [lang, setLang] = useState(() => localStorage.getItem('watchmart_lang') || 'th');
+
+  const changeLang = (newLang) => {
+    localStorage.setItem('watchmart_lang', newLang);
+    setLang(newLang);
+  };
+
+  const t = (key) => translations[lang][key] || key;
+
+  return (
+    <LanguageContext.Provider value={{ lang, changeLang, t }}>
+      {children}
+    </LanguageContext.Provider>
+  );
+}
+
 // ─── Auth Context ───────────────────────────────────────────────────────────
 export const AuthContext = createContext(null);
 
@@ -80,37 +167,39 @@ function GuestOnly({ children }) {
 // ─── App Router ──────────────────────────────────────────────────────────────
 export default function App() {
   return (
-    <AuthProvider>
-      <CartProvider>
-        <BrowserRouter>
-          {/* Global Cart Drawer — rendered once across all pages */}
-          <CartDrawer />
+    <LanguageProvider>
+      <AuthProvider>
+        <CartProvider>
+          <BrowserRouter>
+            {/* Global Cart Drawer — rendered once across all pages */}
+            <CartDrawer />
 
-          <Routes>
-            {/* Public Auth Routes */}
-            <Route path="/login" element={<GuestOnly><Login /></GuestOnly>} />
-            <Route path="/register" element={<GuestOnly><Register /></GuestOnly>} />
+            <Routes>
+              {/* Public Auth Routes */}
+              <Route path="/login" element={<GuestOnly><Login /></GuestOnly>} />
+              <Route path="/register" element={<GuestOnly><Register /></GuestOnly>} />
 
-            {/* Customer (any logged-in user) */}
-            <Route path="/" element={<RequireAuth><Storefront /></RequireAuth>} />
-            <Route path="/product/:id" element={<RequireAuth><ProductDetail /></RequireAuth>} />
-            <Route path="/profile" element={<RequireAuth><Profile /></RequireAuth>} />
-            <Route path="/checkout" element={<RequireAuth><Checkout /></RequireAuth>} />
+              {/* Customer (any logged-in user) */}
+              <Route path="/" element={<RequireAuth><Storefront /></RequireAuth>} />
+              <Route path="/product/:id" element={<RequireAuth><ProductDetail /></RequireAuth>} />
+              <Route path="/profile" element={<RequireAuth><Profile /></RequireAuth>} />
+              <Route path="/checkout" element={<RequireAuth><Checkout /></RequireAuth>} />
 
-            {/* Manager + Admin only */}
-            <Route path="/manager" element={<RequireRole roles={['manager', 'admin']}><Manager /></RequireRole>} />
-            <Route path="/staff" element={<RequireRole roles={['manager', 'admin']}><Staff /></RequireRole>} />
+              {/* Manager + Admin only */}
+              <Route path="/manager" element={<RequireRole roles={['manager', 'admin']}><Manager /></RequireRole>} />
+              <Route path="/staff" element={<RequireRole roles={['manager', 'admin']}><Staff /></RequireRole>} />
 
-            {/* Admin only */}
-            <Route path="/admin" element={<RequireRole roles={['admin']}><Admin /></RequireRole>} />
-            {/* System Docs - Admin only */}
-            <Route path="/docs" element={<RequireRole roles={['admin']}><MarkdownViewer /></RequireRole>} />
+              {/* Admin only */}
+              <Route path="/admin" element={<RequireRole roles={['admin']}><Admin /></RequireRole>} />
+              {/* System Docs - Admin only */}
+              <Route path="/docs" element={<RequireRole roles={['admin']}><MarkdownViewer /></RequireRole>} />
 
-            {/* Fallback */}
-            <Route path="*" element={<Navigate to="/" replace />} />
-          </Routes>
-        </BrowserRouter>
-      </CartProvider>
-    </AuthProvider>
+              {/* Fallback */}
+              <Route path="*" element={<Navigate to="/" replace />} />
+            </Routes>
+          </BrowserRouter>
+        </CartProvider>
+      </AuthProvider>
+    </LanguageProvider>
   );
 }

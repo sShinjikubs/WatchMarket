@@ -177,7 +177,7 @@ export default function Storefront() {
           </div>
         </section>
 
-        <SystemLogger />
+        {(user?.role === 'admin' || user?.role === 'manager') && <SystemLogger />}
       </main>
     </div>
   );

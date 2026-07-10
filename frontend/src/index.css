@@ -1701,22 +1701,21 @@ tr:hover td {
 /* Notifications */
 .notification {
     position: fixed;
-    top: 2rem;
-    left: 50%;
-    transform: translateX(-50%);
+    top: 140px;
+    right: 2rem;
     z-index: 9999;
     background: rgba(26, 42, 26, 0.95);
     backdrop-filter: blur(10px);
     border: 1px solid #51cf66;
     color: #51cf66;
-    padding: 0.8rem 2rem;
-    border-radius: 30px;
-    font-size: 0.95rem;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+    padding: 0.8rem 1.4rem;
+    border-radius: 10px;
+    font-size: 0.88rem;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.5);
     display: flex;
     align-items: center;
     gap: 0.5rem;
-    animation: fadeInDown 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    animation: slideInRight 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .notification.error {
@@ -1725,9 +1724,9 @@ tr:hover td {
     color: #ff6b6b;
 }
 
-@keyframes fadeInDown {
-    from { transform: translate(-50%, -50px); opacity: 0; }
-    to   { transform: translate(-50%, 0);     opacity: 1; }
+@keyframes slideInRight {
+    from { transform: translateX(120%); opacity: 0; }
+    to   { transform: translateX(0);     opacity: 1; }
 }
 
 /* Error / blocked banner */
