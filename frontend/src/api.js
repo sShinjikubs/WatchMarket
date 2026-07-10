@@ -34,6 +34,7 @@ export const api = {
   createOrder: (data) => request('POST', '/api/orders', data),
   cancelOrder: (id) => request('POST', `/api/orders/${id}/cancel`),
   shipOrder: (id) => request('POST', `/api/orders/${id}/ship`),
+  getPaymentQR: (amount) => request('GET', `/api/payment/qr?amount=${amount}`),
 
   // Pending Watches
   getPendingWatches: () => request('GET', '/api/pending-watches'),

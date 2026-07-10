@@ -1,6 +1,8 @@
 import express from 'express';
 import cors from 'cors';
 import path from 'path';
+import generatePayload from 'promptpay-qr';
+import QRCode from 'qrcode';
 import { db } from './database';
 import { Product, Order, PendingWatch, User } from './types';
 
@@ -165,6 +167,31 @@ app.delete('/api/products/:id', async (req, res) => {
   await db.deleteProduct(prodId);
   await db.addLog(`[INVENTORY]: ผู้จัดการลบสินค้าออกจากระบบ (รหัสสินค้า: ${prodId})`);
   return res.json({ success: true, message: 'ลบข้อมูลนาฬิกาสำเร็จ' });
+});
+
+// GET /api/payment/qr - Generate PromptPay QR code
+app.get('/api/payment/qr', async (req, res) => {
+  const amountStr = req.query.amount as string;
+  const amount = parseFloat(amountStr);
+
+  if (isNaN(amount) || amount <= 0) {
+    return res.status(400).json({ error: 'Invalid amount.' });
+  }
+
+  try {
+    const DEMO_PROMPTPAY_ID = '0000000000'; // Demo ID
+    const payload = generatePayload(DEMO_PROMPTPAY_ID, { amount });
+    const qrDataUri = await QRCode.toDataURL(payload, {
+      errorCorrectionLevel: 'M',
+      type: 'image/png',
+      margin: 2,
+      width: 300,
+    });
+    return res.json({ qrCode: qrDataUri });
+  } catch (err) {
+    console.error('QR generation error:', err);
+    return res.status(500).json({ error: 'Failed to generate PromptPay QR.' });
+  }
 });
 
 // -------------------------------------------------------------

@@ -16,6 +16,8 @@ export default function Checkout() {
   const [submitting, setSubmitting] = useState(false);
   const [orderSuccess, setOrderSuccess] = useState(false);
   const [orderId, setOrderId] = useState('');
+  const [qrCode, setQrCode] = useState(null);
+  const [loadingQR, setLoadingQR] = useState(false);
 
   const showNotif = (msg, ok = true) => {
     setNotification({ msg, ok });
@@ -38,6 +40,27 @@ export default function Checkout() {
       }
     }).catch(() => {});
   }, []);
+
+  useEffect(() => {
+    if (form.payment === 'promptpay' && cartTotal > 0) {
+      setLoadingQR(true);
+      api.getPaymentQR(cartTotal)
+        .then(async (res) => {
+          if (res.ok) {
+            const data = await res.json();
+            setQrCode(data.qrCode);
+          } else {
+            showNotif('ไม่สามารถสร้าง QR Code ได้', false);
+          }
+        })
+        .catch(() => {
+          showNotif('เชื่อมต่อระบบชำระเงินล้มเหลว', false);
+        })
+        .finally(() => {
+          setLoadingQR(false);
+        });
+    }
+  }, [form.payment, cartTotal]);
 
   const handleSlip = (e) => {
     const file = e.target.files[0];
@@ -207,17 +230,26 @@ export default function Checkout() {
               {form.payment === 'promptpay' && (
                 <div style={{ textAlign: 'center', marginBottom: '1.5rem', padding: '1.5rem', background: 'white', borderRadius: '12px', display: 'inline-block', width: '100%', boxSizing: 'border-box' }}>
                   <div style={{ color: '#0c4a60', fontWeight: 'bold', fontSize: '1.1rem', marginBottom: '0.8rem' }}>🔲 PromptPay QR Code</div>
-                  <div style={{
-                    width: '140px', height: '140px', margin: '0 auto',
-                    background: 'repeating-conic-gradient(from 45deg, #0b0c10 0% 25%, #fff 0% 50%)',
-                    backgroundSize: '10px 10px',
-                    display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    borderRadius: '4px',
-                  }}>
-                    <div style={{ width: '40px', height: '40px', background: '#0c4a60', borderRadius: '6px' }} />
-                  </div>
+                  
+                  {loadingQR ? (
+                    <div style={{ height: '160px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#666' }}>
+                      ⏳ กำลังสร้าง QR Code...
+                    </div>
+                  ) : qrCode ? (
+                    <img 
+                      src={qrCode} 
+                      alt="PromptPay QR" 
+                      style={{ width: '160px', height: '160px', margin: '0 auto', display: 'block', borderRadius: '8px' }} 
+                    />
+                  ) : (
+                    <div style={{ height: '160px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#ff6b6b' }}>
+                      ❌ ไม่สามารถโหลด QR Code ได้
+                    </div>
+                  )}
+
                   <div style={{ marginTop: '0.8rem', color: '#0c4a60', fontWeight: 700, fontSize: '1.2rem' }}>฿ {cartTotal.toLocaleString()}</div>
-                  <div style={{ color: '#666', fontSize: '0.8rem' }}>โอนครบแล้วแนบสลิปด้านล่าง</div>
+                  <div style={{ color: '#666', fontSize: '0.8rem', marginTop: '0.3rem' }}>สแกน QR Code ด้านบนเพื่อชำระเงินและแนบสลิปด้านล่าง</div>
+                  <div style={{ color: '#ff922b', fontSize: '0.7rem', marginTop: '0.3rem', fontWeight: 'bold' }}>⚠️ นี่คือระบบจำลองสำหรับโครงงาน CSI204 เท่านั้น ห้ามสแกนเพื่อโอนเงินจริง</div>
                 </div>
               )}
 
