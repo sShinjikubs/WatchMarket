@@ -64,12 +64,13 @@ export function CartProvider({ children }) {
 
   const openCart = () => setCartOpen(true);
   const closeCart = () => setCartOpen(false);
+  const toggleCart = () => setCartOpen((prev) => !prev);
 
   return (
     <CartContext.Provider value={{
       cart, cartOpen, cartCount, cartTotal,
       addToCart, changeQty, removeFromCart, clearCart,
-      openCart, closeCart,
+      openCart, closeCart, toggleCart,
     }}>
       {children}
     </CartContext.Provider>

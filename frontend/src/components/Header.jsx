@@ -6,7 +6,7 @@ import { api } from '../api';
 
 export default function Header({ showCart, cartCount: cartCountProp, onCartClick }) {
   const { user, logout } = useAuth();
-  const { cartCount: ctxCartCount, openCart } = useCart();
+  const { cartCount: ctxCartCount, toggleCart } = useCart();
   const navigate = useNavigate();
   const location = useLocation();
   const [dropdownOpen, setDropdownOpen] = useState(false);
@@ -14,7 +14,7 @@ export default function Header({ showCart, cartCount: cartCountProp, onCartClick
 
   // Use CartContext count by default; fall back to prop if explicitly provided
   const displayCartCount = ctxCartCount;
-  const handleCartClick = onCartClick || openCart;
+  const handleCartClick = onCartClick || toggleCart;
 
   useEffect(() => {
     function handleOutsideClick(e) {
