@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Link, useNavigate, useLocation, useSearchParams } from 'react-router-dom';
-import { useAuth } from '../App';
+import { useAuth, useLanguage } from '../App';
 import { useCart } from '../CartContext';
 import { api } from '../api';
 
