@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuth } from '../App';
 import { useCart } from '../CartContext';
 import { api } from '../api';
@@ -10,12 +10,14 @@ export default function Storefront() {
   const { user } = useAuth();
   const navigate = useNavigate();
   const { addToCart } = useCart();
+  const [searchParams] = useSearchParams();
 
   const [products, setProducts] = useState([]);
   const [orders, setOrders] = useState([]);
   const [filter, setFilter] = useState('all'); // 'all' | 'Luminox' | 'Seiko'
-  const [search, setSearch] = useState('');
   const [notification, setNotification] = useState(null);
+
+  const search = searchParams.get('search') || '';
 
   const showNotif = (msg, ok = true) => {
     setNotification({ msg, ok });
@@ -82,13 +84,6 @@ export default function Storefront() {
           <div className="section-header">
             <h2 className="section-title">สินค้าทั้งหมด</h2>
             <div className="filter-controls">
-              <input
-                className="search-input"
-                type="text"
-                placeholder="ค้นหานาฬิกา..."
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-              />
               {[{ key: 'all', label: 'ทั้งหมด' }, { key: 'Luminox', label: 'LUMINOX' }, { key: 'Seiko', label: 'SEIKO' }].map(({ key, label }) => (
                 <button
                   key={key}
