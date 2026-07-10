@@ -71,7 +71,7 @@ function drawTrendChart(canvas, orders) {
     try {
       const s = new Date(ord.date).toLocaleDateString('th-TH', { day: 'numeric', month: 'short' });
       if (salesData[s] !== undefined) salesData[s] += ord.total;
-    } catch (_) {}
+    } catch (_) { }
   });
 
   const points = days.map((d) => salesData[d]);
@@ -139,7 +139,7 @@ export default function Manager() {
       if (pRes.ok) setProducts(await pRes.json());
       if (oRes.ok) setOrders(await oRes.json());
       if (wRes.ok) setPendingWatches(await wRes.json());
-    } catch (_) {}
+    } catch (_) { }
   }, []);
 
   useEffect(() => { refreshData(); }, [refreshData]);
