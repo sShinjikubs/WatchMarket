@@ -95,7 +95,6 @@ export default function App() {
             <Route path="/" element={<RequireAuth><Storefront /></RequireAuth>} />
             <Route path="/product/:id" element={<RequireAuth><ProductDetail /></RequireAuth>} />
             <Route path="/profile" element={<RequireAuth><Profile /></RequireAuth>} />
-            <Route path="/seller" element={<RequireAuth><Seller /></RequireAuth>} />
             <Route path="/checkout" element={<RequireAuth><Checkout /></RequireAuth>} />
 
             {/* Manager + Admin only */}
@@ -104,9 +103,8 @@ export default function App() {
 
             {/* Admin only */}
             <Route path="/admin" element={<RequireRole roles={['admin']}><Admin /></RequireRole>} />
-
-            {/* System Docs */}
-            <Route path="/docs" element={<MarkdownViewer />} />
+            {/* System Docs - Admin only */}
+            <Route path="/docs" element={<RequireRole roles={['admin']}><MarkdownViewer /></RequireRole>} />
 
             {/* Fallback */}
             <Route path="*" element={<Navigate to="/" replace />} />

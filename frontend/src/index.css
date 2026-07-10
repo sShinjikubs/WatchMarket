@@ -1701,28 +1701,33 @@ tr:hover td {
 /* Notifications */
 .notification {
     position: fixed;
-    top: 90px;
-    right: 2rem;
+    top: 2rem;
+    left: 50%;
+    transform: translateX(-50%);
     z-index: 9999;
-    background: #1a2a1a;
+    background: rgba(26, 42, 26, 0.95);
+    backdrop-filter: blur(10px);
     border: 1px solid #51cf66;
     color: #51cf66;
-    padding: 0.8rem 1.4rem;
-    border-radius: 10px;
+    padding: 0.8rem 2rem;
+    border-radius: 30px;
     font-size: 0.95rem;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.5);
-    animation: slideIn 0.3s ease;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    animation: fadeInDown 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
 .notification.error {
-    background: #2a1a1a;
+    background: rgba(42, 26, 26, 0.95);
     border-color: #ff6b6b;
     color: #ff6b6b;
 }
 
-@keyframes slideIn {
-    from { transform: translateX(120%); opacity: 0; }
-    to   { transform: translateX(0);   opacity: 1; }
+@keyframes fadeInDown {
+    from { transform: translate(-50%, -50px); opacity: 0; }
+    to   { transform: translate(-50%, 0);     opacity: 1; }
 }
 
 /* Error / blocked banner */

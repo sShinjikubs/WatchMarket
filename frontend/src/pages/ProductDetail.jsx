@@ -199,30 +199,83 @@ export default function ProductDetail() {
                 <WatchPreview color={product.color} strokeColor={product.strokeColor} size={320} />
               )}
             </div>
-            {product.image && (
-              <div className="pd-thumbnail-row" style={{ display: 'flex', gap: '0.8rem', marginTop: '1rem' }}>
-                <div 
-                  className="pd-thumbnail" 
-                  onClick={() => setSelectedImage(product.image)}
-                  style={{ 
-                    border: selectedImage === product.image ? '2px solid var(--accent-gold)' : '1px solid var(--glass-border)',
-                    cursor: 'pointer', opacity: selectedImage === product.image ? 1 : 0.6 
-                  }}
-                >
-                  <img src={product.image} alt="front" style={{ width: '50px', height: '50px', objectFit: 'contain' }} />
-                </div>
-                {product.imageBack && (
-                  <div 
-                    className="pd-thumbnail" 
-                    onClick={() => setSelectedImage(product.imageBack)}
-                    style={{ 
-                      border: selectedImage === product.imageBack ? '2px solid var(--accent-gold)' : '1px solid var(--glass-border)',
-                      cursor: 'pointer', opacity: selectedImage === product.imageBack ? 1 : 0.6 
+             {product.image && (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.8rem', marginTop: '1rem', width: '100%' }}>
+                {/* Explicit buttons for users to toggle front/back images */}
+                <div style={{ display: 'flex', gap: '0.8rem', width: '100%' }}>
+                  <button 
+                    className="btn"
+                    onClick={() => setSelectedImage(product.image)}
+                    style={{
+                      flex: 1,
+                      padding: '0.6rem 1rem',
+                      fontSize: '0.85rem',
+                      background: selectedImage === product.image || !selectedImage ? 'var(--accent-gold)' : 'rgba(255,255,255,0.05)',
+                      color: selectedImage === product.image || !selectedImage ? '#0f172a' : 'var(--text-light)',
+                      border: '1px solid var(--glass-border)',
+                      borderRadius: '8px',
+                      cursor: 'pointer',
+                      fontWeight: 'bold',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      gap: '0.4rem',
+                      transition: 'all 0.2s',
                     }}
                   >
-                    <img src={product.imageBack} alt="back" style={{ width: '50px', height: '50px', objectFit: 'contain' }} />
+                    🔍 ดูภาพหน้าปัด
+                  </button>
+                  {product.imageBack && (
+                    <button 
+                      className="btn"
+                      onClick={() => setSelectedImage(product.imageBack)}
+                      style={{
+                        flex: 1,
+                        padding: '0.6rem 1rem',
+                        fontSize: '0.85rem',
+                        background: selectedImage === product.imageBack ? 'var(--accent-gold)' : 'rgba(255,255,255,0.05)',
+                        color: selectedImage === product.imageBack ? '#0f172a' : 'var(--text-light)',
+                        border: '1px solid var(--glass-border)',
+                        borderRadius: '8px',
+                        cursor: 'pointer',
+                        fontWeight: 'bold',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        gap: '0.4rem',
+                        transition: 'all 0.2s',
+                      }}
+                    >
+                      🔍 ดูภาพฝาหลัง
+                    </button>
+                  )}
+                </div>
+
+                {/* Thumbnails row */}
+                <div className="pd-thumbnail-row" style={{ display: 'flex', gap: '0.8rem', justifyContent: 'center' }}>
+                  <div 
+                    className="pd-thumbnail" 
+                    onClick={() => setSelectedImage(product.image)}
+                    style={{ 
+                      border: (!selectedImage || selectedImage === product.image) ? '2px solid var(--accent-gold)' : '1px solid var(--glass-border)',
+                      cursor: 'pointer', opacity: (!selectedImage || selectedImage === product.image) ? 1 : 0.6 
+                    }}
+                  >
+                    <img src={product.image} alt="front" style={{ width: '50px', height: '50px', objectFit: 'contain' }} />
                   </div>
-                )}
+                  {product.imageBack && (
+                    <div 
+                      className="pd-thumbnail" 
+                      onClick={() => setSelectedImage(product.imageBack)}
+                      style={{ 
+                        border: selectedImage === product.imageBack ? '2px solid var(--accent-gold)' : '1px solid var(--glass-border)',
+                        cursor: 'pointer', opacity: selectedImage === product.imageBack ? 1 : 0.6 
+                      }}
+                    >
+                      <img src={product.imageBack} alt="back" style={{ width: '50px', height: '50px', objectFit: 'contain' }} />
+                    </div>
+                  )}
+                </div>
               </div>
             )}
           </div>

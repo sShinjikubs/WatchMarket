@@ -19,7 +19,7 @@ export default function CartDrawer() {
         <div
           className="cart-overlay show"
           onClick={closeCart}
-          style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)', zIndex: 999 }}
+          style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)', zIndex: 2400 }}
         />
       )}
 
@@ -36,7 +36,7 @@ export default function CartDrawer() {
           maxWidth: '95vw',
           background: 'var(--glass-bg, #1a1a2e)',
           borderLeft: '1px solid var(--glass-border, rgba(197,168,128,0.2))',
-          zIndex: 1000,
+          zIndex: 2500,
           display: 'flex',
           flexDirection: 'column',
           transform: cartOpen ? 'translateX(0)' : 'translateX(100%)',

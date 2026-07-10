@@ -49,7 +49,10 @@ export default function Header({ showCart, cartCount: cartCountProp, onCartClick
           <li><Link to="/" className={isActive('/')}>Home</Link></li>
 
           {user?.role === 'admin' && (
-            <li><Link to="/admin" className={isActive('/admin')}>👑 Admin</Link></li>
+            <>
+              <li><Link to="/admin" className={isActive('/admin')}>👑 Admin</Link></li>
+              <li><Link to="/docs" className={isActive('/docs')}>📖 Docs</Link></li>
+            </>
           )}
           {(user?.role === 'manager' || user?.role === 'admin') && (
             <>
@@ -57,10 +60,6 @@ export default function Header({ showCart, cartCount: cartCountProp, onCartClick
               <li><Link to="/staff" className={isActive('/staff')}>🧑‍💼 Staff</Link></li>
             </>
           )}
-          {user?.role === 'user' && (
-            <li><Link to="/seller" className={isActive('/seller')}>🛍️ Seller</Link></li>
-          )}
-          <li><Link to="/docs">📖 Docs</Link></li>
         </ul>
       </nav>
 
