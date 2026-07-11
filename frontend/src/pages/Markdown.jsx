@@ -8,7 +8,7 @@ export default function MarkdownViewer() {
 
   const loadDoc = async (name) => {
     try {
-      const res = await fetch(`/${name}`);
+      const res = await fetch(`/${name}?t=${Date.now()}`);
       if (res.ok) {
         const text = await res.text();
         setContent(text);
