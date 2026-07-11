@@ -38,8 +38,9 @@ export default function Login() {
   return (
     <div className="auth-page">
       <div className="auth-card glass-card">
-        <div className="brand-logo">
-          Watch<span>Mart</span>
+        <div className="brand-logo" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.5rem', marginBottom: '1.2rem' }}>
+          <img src="/images/logo.jpg" alt="WatchMart Logo" style={{ height: '70px', borderRadius: '12px', border: '1px solid var(--glass-border)', objectFit: 'contain' }} />
+          <div style={{ fontSize: '1.8rem', fontWeight: 'bold' }}>Watch<span>Mart</span></div>
         </div>
         <h1 className="auth-title">เข้าสู่ระบบ</h1>
         <p className="auth-subtitle">ยินดีต้อนรับกลับมา</p>

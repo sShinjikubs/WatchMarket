@@ -155,7 +155,10 @@ export default function Header({ showCart, cartCount: cartCountProp, onCartClick
       {/* 2. MAIN HEADER BAR */}
       <div className="header-main-bar" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0.8rem 5%', gap: '2rem', width: '100%', boxSizing: 'border-box' }}>
         {/* Logo */}
-        <Link to="/" className="logo" style={{ textDecoration: 'none', flexShrink: 0, fontSize: '1.6rem' }}>Watch<span>Mart</span></Link>
+        <Link to="/" style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', textDecoration: 'none', flexShrink: 0 }}>
+          <img src="/images/logo.jpg" alt="WatchMart Logo" style={{ height: '42px', borderRadius: '6px', border: '1px solid var(--glass-border)', objectFit: 'contain' }} />
+          <span className="logo" style={{ fontSize: '1.4rem', fontWeight: 'bold', textDecoration: 'none' }}>Watch<span>Mart</span></span>
+        </Link>
 
         {/* Center: Search Bar & Keywords */}
         <div style={{ flex: 1, maxWidth: '550px', display: 'flex', flexDirection: 'column', gap: '0.35rem' }}>
