@@ -26,10 +26,10 @@ export default function Login() {
         else if (userData.role === 'manager') navigate('/manager');
         else navigate('/');
       } else {
-        setError(data.error || data.message || 'ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง');
+        setError(data.error || data.message || 'Invalid username or password');
       }
     } catch (err) {
-      setError('ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ได้');
+      setError('Cannot connect to server');
     } finally {
       setLoading(false);
     }
@@ -71,52 +71,44 @@ export default function Login() {
       {/* Right Side: Login Form */}
       <div className="login-right-side">
         <div className="login-form-container">
-          <h2 className="login-title-minimal">เข้าสู่ระบบ</h2>
+          <h2 className="login-title-minimal">Log in</h2>
           
           {error && <div className="error-message" style={{ marginBottom: '1.5rem', background: 'rgba(239, 68, 68, 0.1)', color: '#ef4444', border: '1px solid #ef4444', padding: '0.8rem', borderRadius: '4px', fontSize: '0.9rem' }}>{error}</div>}
 
           <form onSubmit={handleSubmit}>
-            <div className="login-input-group">
-              <label>เข้าสู่ระบบเป็น</label>
-              <select value={role} onChange={(e) => setRole(e.target.value)}>
-                <option value="user">👤 Customer / Seller</option>
-                <option value="admin">👑 Admin</option>
-                <option value="manager">📊 Manager</option>
-              </select>
-            </div>
 
             <div className="login-input-group">
-              <label>ชื่อผู้ใช้</label>
+              <label>Username</label>
               <input
                 type="text"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
-                placeholder="กรอกชื่อผู้ใช้"
+                placeholder="Enter username"
                 required
                 autoFocus
               />
             </div>
 
             <div className="login-input-group">
-              <label>รหัสผ่าน</label>
+              <label>Password</label>
               <input
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                placeholder="กรอกรหัสผ่าน"
+                placeholder="Enter password"
                 required
               />
             </div>
 
             <button type="submit" className="login-btn-full" disabled={loading}>
-              {loading ? 'กำลังเข้าสู่ระบบ...' : 'เข้าสู่ระบบ'}
+              {loading ? 'Logging in...' : 'Log in'}
             </button>
           </form>
 
           <div className="login-form-footer">
-            ยังไม่มีบัญชี?{' '}
+            Don't have an account?{' '}
             <a href="/register" onClick={(e) => { e.preventDefault(); navigate('/register'); }}>
-              สมัครสมาชิก
+              Register
             </a>
           </div>
         </div>

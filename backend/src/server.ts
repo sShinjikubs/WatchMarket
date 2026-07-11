@@ -17,36 +17,40 @@ app.use(express.json({ limit: '10mb' })); // Support base64 image slips
 // -------------------------------------------------------------
 
 app.post('/api/auth/login', async (req, res) => {
-  const { role, username, password } = req.body;
-  if (!username || !password || !role) {
+  const { username, password } = req.body;
+  if (!username || !password) {
     await db.addLog(`[SECURITY]: พยายามเข้าสู่ระบบแต่ข้อมูลไม่ครบถ้วน`);
-    return res.status(400).json({ error: 'Username, password, and role are required.' });
+    return res.status(400).json({ error: 'Username and password are required.' });
   }
 
   const users = await db.getUsers();
   const matchedUser = users.find(
-    u => u.username.toLowerCase() === username.toLowerCase() && u.role === role
+    u => u.username.toLowerCase() === username.toLowerCase()
   );
 
   let isValid = false;
+  let finalRole = 'user';
+
   if (matchedUser) {
     if (matchedUser.password === password) {
       isValid = true;
+      finalRole = matchedUser.role;
     }
-  } else if (role === 'user' && password === '123456') {
+  } else if (password === '123456') {
     // Legacy support: auto-create standard users that use default password
     const newUser: User = { username, password, role: 'user' };
     await db.addUser(newUser);
     isValid = true;
+    finalRole = 'user';
     await db.addLog(`[AUTH]: สร้างบัญชีผู้ใช้ใหม่โดยอัตโนมัติ: ${username}`);
   }
 
   if (isValid) {
-    await db.addLog(`[AUTH]: ผู้ใช้เข้าสู่ระบบสำเร็จในบทบาท ${role.toUpperCase()} (${username})`);
-    return res.json({ success: true, user: { username, role } });
+    await db.addLog(`[AUTH]: ผู้ใช้เข้าสู่ระบบสำเร็จในบทบาท ${finalRole.toUpperCase()} (${username})`);
+    return res.json({ success: true, user: { username, role: finalRole } });
   } else {
-    await db.addLog(`[SECURITY]: ความพยายามเข้าสู่ระบบล้มเหลวสำหรับบทบาท ${role.toUpperCase()} (ผู้ใช้: ${username})`);
-    return res.status(401).json({ error: 'ชื่อผู้ใช้งานหรือรหัสผ่านไม่ถูกต้อง' });
+    await db.addLog(`[SECURITY]: ความพยายามเข้าสู่ระบบล้มเหลว (ผู้ใช้: ${username})`);
+    return res.status(401).json({ error: 'Invalid username or password' });
   }
 });
 

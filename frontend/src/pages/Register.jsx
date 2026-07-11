@@ -18,7 +18,7 @@ export default function Register() {
     e.preventDefault();
     setError('');
     if (form.password !== form.confirmPassword) {
-      setError('รหัสผ่านไม่ตรงกัน');
+      setError('Passwords do not match');
       return;
     }
     setLoading(true);
@@ -33,13 +33,13 @@ export default function Register() {
       });
       const data = await res.json();
       if (res.ok && data.success) {
-        setSuccess('สมัครสมาชิกสำเร็จ! กำลังนำไปหน้า Login...');
+        setSuccess('Registration successful! Redirecting to Login...');
         setTimeout(() => navigate('/login'), 1500);
       } else {
-        setError(data.message || 'สมัครสมาชิกไม่สำเร็จ');
+        setError(data.message || 'Registration failed');
       }
     } catch (err) {
-      setError('ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ได้');
+      setError('Cannot connect to server');
     } finally {
       setLoading(false);
     }
@@ -81,7 +81,7 @@ export default function Register() {
       {/* Right Side: Register Form */}
       <div className="login-right-side" style={{ padding: '2rem 3rem' }}>
         <div className="login-form-container" style={{ maxWidth: '450px' }}>
-          <h2 className="login-title-minimal">สมัครสมาชิก</h2>
+          <h2 className="login-title-minimal">Register</h2>
           
           {error && <div className="error-message" style={{ marginBottom: '1.5rem', background: 'rgba(239, 68, 68, 0.1)', color: '#ef4444', border: '1px solid #ef4444', padding: '0.8rem', borderRadius: '4px', fontSize: '0.9rem' }}>{error}</div>}
           {success && <div className="success-message" style={{ marginBottom: '1.5rem', background: 'rgba(16, 185, 129, 0.1)', color: '#10b981', border: '1px solid #10b981', padding: '0.8rem', borderRadius: '4px', fontSize: '0.9rem' }}>{success}</div>}
@@ -89,50 +89,50 @@ export default function Register() {
           <form onSubmit={handleSubmit}>
             <div style={{ display: 'flex', gap: '1rem' }}>
               <div className="login-input-group" style={{ flex: 1, marginBottom: '1.5rem' }}>
-                <label>ชื่อจริง</label>
-                <input type="text" placeholder="ชื่อจริง" value={form.firstname} onChange={set('firstname')} required autoFocus />
+                <label>First Name</label>
+                <input type="text" placeholder="First Name" value={form.firstname} onChange={set('firstname')} required autoFocus />
               </div>
               <div className="login-input-group" style={{ flex: 1, marginBottom: '1.5rem' }}>
-                <label>นามสกุล</label>
-                <input type="text" placeholder="นามสกุล" value={form.lastname} onChange={set('lastname')} required />
+                <label>Last Name</label>
+                <input type="text" placeholder="Last Name" value={form.lastname} onChange={set('lastname')} required />
               </div>
             </div>
 
             <div className="login-input-group" style={{ marginBottom: '1.5rem' }}>
-              <label>ชื่อผู้ใช้</label>
+              <label>Username</label>
               <input type="text" placeholder="Username" value={form.username} onChange={set('username')} required />
             </div>
 
             <div className="login-input-group" style={{ marginBottom: '1.5rem' }}>
-              <label>อีเมล</label>
+              <label>Email</label>
               <input type="email" placeholder="Email@example.com" value={form.email} onChange={set('email')} required />
             </div>
 
             <div className="login-input-group" style={{ marginBottom: '1.5rem' }}>
-              <label>เบอร์โทรศัพท์</label>
+              <label>Phone Number</label>
               <input type="text" placeholder="08X-XXX-XXXX" value={form.phone} onChange={set('phone')} />
             </div>
 
             <div style={{ display: 'flex', gap: '1rem' }}>
               <div className="login-input-group" style={{ flex: 1, marginBottom: '1.5rem' }}>
-                <label>รหัสผ่าน</label>
-                <input type="password" placeholder="อย่างน้อย 6 ตัวอักษร" value={form.password} onChange={set('password')} required minLength={6} />
+                <label>Password</label>
+                <input type="password" placeholder="At least 6 characters" value={form.password} onChange={set('password')} required minLength={6} />
               </div>
               <div className="login-input-group" style={{ flex: 1, marginBottom: '1.5rem' }}>
-                <label>ยืนยันรหัสผ่าน</label>
-                <input type="password" placeholder="กรอกรหัสผ่านอีกครั้ง" value={form.confirmPassword} onChange={set('confirmPassword')} required />
+                <label>Confirm Password</label>
+                <input type="password" placeholder="Enter password again" value={form.confirmPassword} onChange={set('confirmPassword')} required />
               </div>
             </div>
 
             <button type="submit" className="login-btn-full" disabled={loading} style={{ marginTop: '0.5rem' }}>
-              {loading ? 'กำลังสมัคร...' : 'สมัครสมาชิก'}
+              {loading ? 'Registering...' : 'Register'}
             </button>
           </form>
 
           <div className="login-form-footer">
-            มีบัญชีแล้ว?{' '}
+            Already have an account?{' '}
             <a href="/login" onClick={(e) => { e.preventDefault(); navigate('/login'); }}>
-              เข้าสู่ระบบ
+              Log in
             </a>
           </div>
         </div>
