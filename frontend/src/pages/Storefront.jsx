@@ -214,16 +214,30 @@ export default function Storefront() {
             position: 'relative',
             zIndex: 5
           }}>
-            <img 
-              src={HERO_SLIDES[currentSlide].image} 
-              alt={HERO_SLIDES[currentSlide].title} 
-              style={{
-                maxHeight: '300px',
-                objectFit: 'contain',
-                filter: 'drop-shadow(0 15px 25px rgba(0,0,0,0.8))',
-                transition: 'all 0.5s ease-in-out'
-              }}
-            />
+            <div style={{
+              width: '260px',
+              height: '260px',
+              borderRadius: '50%',
+              backgroundColor: '#ffffff',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              boxShadow: '0 10px 25px rgba(0,0,0,0.5), inset 0 0 15px rgba(0,0,0,0.05)',
+              border: `4px solid ${HERO_SLIDES[currentSlide].accent}`,
+              overflow: 'hidden',
+              transition: 'all 0.5s ease-in-out'
+            }}>
+              <img 
+                src={HERO_SLIDES[currentSlide].image} 
+                alt={HERO_SLIDES[currentSlide].title} 
+                style={{
+                  maxHeight: '220px',
+                  maxWidth: '220px',
+                  objectFit: 'contain',
+                  transition: 'all 0.5s ease-in-out'
+                }}
+              />
+            </div>
           </div>
 
           {/* Slider Arrow Controls */}
