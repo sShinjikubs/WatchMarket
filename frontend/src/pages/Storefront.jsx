@@ -158,6 +158,26 @@ export default function Storefront() {
     }
   };
 
+  const renderRatingStars = (rating = 0.0, count = 0) => {
+    const roundedRating = Math.round(rating * 10) / 10;
+    const stars = [];
+    const fullStars = Math.round(rating);
+    for (let i = 1; i <= 5; i++) {
+      stars.push(
+        <span key={i} style={{ color: i <= fullStars && fullStars > 0 ? 'var(--accent-gold)' : 'rgba(255,255,255,0.15)', marginRight: '2px', fontSize: '0.85rem' }}>
+          ★
+        </span>
+      );
+    }
+    return (
+      <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', margin: '0.3rem 0 0 0', lineHeight: 1 }}>
+        <div style={{ display: 'inline-flex' }}>{stars}</div>
+        <span style={{ color: 'var(--text-light)', fontSize: '0.78rem', fontWeight: 'bold' }}>{roundedRating}</span>
+        <span style={{ color: 'var(--text-muted)', fontSize: '0.72rem' }}>({count > 0 ? `${count} รีวิว` : '0 รีวิว'})</span>
+      </div>
+    );
+  };
+
 
 
   return (
@@ -403,6 +423,7 @@ export default function Storefront() {
                   <div className="product-card-details">
                     <span className="product-card-brand">{p.brand}</span>
                     <h3 className="product-card-title">{p.name}</h3>
+                    {renderRatingStars(p.rating, p.reviewCount)}
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '1rem' }}>
                       <span className="product-card-price">฿ {p.price.toLocaleString()}</span>
                       <span className="product-card-stock" style={{ color: p.stock === 0 ? '#ff6b6b' : p.stock <= 3 ? '#ff922b' : '#51cf66' }}>
@@ -450,6 +471,7 @@ export default function Storefront() {
                   <div className="product-card-details">
                     <span className="product-card-brand">{p.brand}</span>
                     <h3 className="product-card-title">{p.name}</h3>
+                    {renderRatingStars(p.rating, p.reviewCount)}
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '1rem' }}>
                       <span className="product-card-price">฿ {p.price.toLocaleString()}</span>
                       <span className="product-card-stock" style={{ color: p.stock === 0 ? '#ff6b6b' : p.stock <= 3 ? '#ff922b' : '#51cf66' }}>
@@ -497,6 +519,7 @@ export default function Storefront() {
                   <div className="product-card-details">
                     <span className="product-card-brand">{p.brand}</span>
                     <h3 className="product-card-title">{p.name}</h3>
+                    {renderRatingStars(p.rating, p.reviewCount)}
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '1rem' }}>
                       <div style={{ display: 'flex', flexDirection: 'column' }}>
                         <span style={{ fontSize: '0.75rem', textDecoration: 'line-through', color: 'var(--text-muted)' }}>
@@ -569,6 +592,7 @@ export default function Storefront() {
                 <div className="product-card-details">
                   <span className="product-card-brand">{p.brand}</span>
                   <h3 className="product-card-title">{p.name}</h3>
+                  {renderRatingStars(p.rating, p.reviewCount)}
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '1rem' }}>
                     <span className="product-card-price">฿ {p.price.toLocaleString()}</span>
                     <span className="product-card-stock" style={{ color: p.stock === 0 ? '#ff6b6b' : p.stock <= 3 ? '#ff922b' : '#51cf66' }}>

@@ -492,11 +492,20 @@ export const db = {
 
   getProducts: async (): Promise<Product[]> => {
     const res = await pool.query(
-      `SELECT id, name, brand, category, CAST(price AS FLOAT) as price, stock, color,
-              stroke_color as "strokeColor", is_gold_face as "isGoldFace", image, image_back as "imageBack"
-       FROM products ORDER BY length(id) ASC, id ASC`
+      `SELECT p.id, p.name, p.brand, p.category, CAST(p.price AS FLOAT) as price, p.stock, p.color,
+              p.stroke_color as "strokeColor", p.is_gold_face as "isGoldFace", p.image, p.image_back as "imageBack",
+              COALESCE(AVG(r.rating), 0.0) as rating,
+              COUNT(r.id) as "reviewCount"
+       FROM products p
+       LEFT JOIN reviews r ON p.id = r.product_id
+       GROUP BY p.id, p.name, p.brand, p.category, p.price, p.stock, p.color, p.stroke_color, p.is_gold_face, p.image, p.image_back
+       ORDER BY length(p.id) ASC, p.id ASC`
     );
-    return res.rows;
+    return res.rows.map(row => ({
+      ...row,
+      rating: parseFloat(row.rating),
+      reviewCount: parseInt(row.reviewCount, 10)
+    }));
   },
 
   saveProducts: async (products: Product[]): Promise<void> => {
