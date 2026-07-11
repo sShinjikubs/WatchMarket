@@ -229,7 +229,7 @@ export default function Manager() {
 
       <main className="main-content">
         <div className="page-header">
-          <h1 className="page-title">📊 Manager Dashboard</h1>
+          <h1 className="page-title">📊 Management Dashboard</h1>
           <p className="page-subtitle">บริหารสินค้าคงคลัง วิเคราะห์ยอดขาย และตรวจสอบราคา</p>
         </div>
 
