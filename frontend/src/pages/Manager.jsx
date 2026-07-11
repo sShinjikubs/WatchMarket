@@ -130,6 +130,8 @@ export default function Manager() {
   const [auditSearch, setAuditSearch] = useState('');
   const [editingProduct, setEditingProduct] = useState(null);
   const [productForm, setProductForm] = useState({ name: '', brand: '', category: 'classic', price: '', stock: '', image: '', imageBack: '' });
+  const [rejectNotes, setRejectNotes] = useState({}); // orderId -> note text
+  const [slipModal, setSlipModal] = useState(null);   // orderId whose slip is open
   const barRef = useRef(null);
   const trendRef = useRef(null);
 
@@ -198,8 +200,45 @@ export default function Manager() {
 
   const shipOrder = async (id) => {
     const res = await api.shipOrder(id);
-    if (res.ok) { showNotif('จัดส่งพัสดุสำเร็จ!'); refreshData(); }
-    else showNotif('อัปเดตสถานะล้มเหลว', false);
+    if (res.ok) {
+      showNotif('จัดส่งพัสดุสำเร็จ!');
+      refreshData();
+    } else {
+      const d = await res.json();
+      showNotif(d.error || 'อัปเดตสถานะล้มเหลว', false);
+    }
+  };
+
+  const approveSlip = async (id) => {
+    const res = await api.managerApproveOrder(id);
+    if (res.ok) {
+      showNotif('อนุมัติสลิปสำเร็จ — รอ Admin ยืนยัน');
+      refreshData();
+    } else {
+      const d = await res.json();
+      showNotif(d.error || 'ไม่สามารถอนุมัติได้', false);
+    }
+  };
+
+  const rejectSlip = async (id) => {
+    const note = rejectNotes[id] || '';
+    if (!note.trim()) {
+      showNotif('กรุณาระบุเหตุผลการปฏิเสธ', false);
+      return;
+    }
+    const res = await api.managerRejectOrder(id, note);
+    if (res.ok) {
+      showNotif('ปฏิเสธสลิปแล้ว — ออเดอร์ถูกยกเลิก', false);
+      refreshData();
+      setRejectNotes(prev => {
+        const n = {...prev};
+        delete n[id];
+        return n;
+      });
+    } else {
+      const d = await res.json();
+      showNotif(d.error || 'ไม่สามารถปฏิเสธได้', false);
+    }
   };
 
   const totalSales = orders.filter((o) => o.status !== 'cancelled').reduce((s, o) => s + o.total, 0);
@@ -415,25 +454,50 @@ export default function Manager() {
                     </td>
                     <td><strong>฿ {ord.total?.toLocaleString()}</strong></td>
                     <td>
-                      <span className={`badge ${ord.status === 'paid' ? 'badge-paid' : ord.status === 'shipped' ? 'badge-shipped' : 'badge-cancelled'}`}>
-                        {ord.status === 'paid' ? 'เตรียมส่ง' : ord.status === 'shipped' ? 'ส่งแล้ว' : 'ยกเลิก'}
-                      </span>
+                      {ord.status === 'pending_review' && <span className="badge" style={{ background: 'rgba(255,165,0,0.18)', color: '#ffa94d', border: '1px solid #ffa94d55' }}>รอตรวจสลิป</span>}
+                      {ord.status === 'manager_approved' && <span className="badge" style={{ background: 'rgba(59,130,246,0.18)', color: '#60a5fa', border: '1px solid #60a5fa55' }}>รอ Admin ยืนยัน</span>}
+                      {ord.status === 'confirmed' && <span className="badge badge-paid">ยืนยันแล้ว</span>}
+                      {ord.status === 'shipped' && <span className="badge badge-shipped">ส่งแล้ว</span>}
+                      {ord.status === 'cancelled' && <span className="badge badge-cancelled">ยกเลิก</span>}
+                      {ord.status === 'paid' && <span className="badge badge-paid">เตรียมส่ง</span>}
                     </td>
                     <td>
                       <small style={{ color: 'var(--text-muted)', fontFamily: 'monospace' }}>{ord.payment?.toUpperCase()}</small>
-                      {ord.slip && <><br /><button className="btn btn-secondary" style={{ padding: '0.15rem 0.4rem', fontSize: '0.75rem', marginTop: '0.3rem' }} onClick={() => { const w = window.open(); w.document.write(`<img src="${ord.slip}" style="max-width:100%">`); }}>ดูสลิป</button></>}
+                      {ord.slip && <><br /><button className="btn btn-secondary" style={{ padding: '0.15rem 0.4rem', fontSize: '0.75rem', marginTop: '0.3rem' }} onClick={() => setSlipModal(slipModal === ord.id ? null : ord.id)}>ดูสลิป</button></>}
                     </td>
-                    <td>
-                      {ord.status === 'paid' ? (
-                        <button className="btn btn-primary" style={{ padding: '0.25rem 0.6rem', fontSize: '0.8rem' }} onClick={() => shipOrder(ord.id)}>
-                          จัดส่ง
-                        </button>
-                      ) : ord.status === 'shipped' ? (
+                    <td style={{ minWidth: '220px' }}>
+                      {ord.slip && slipModal === ord.id && (
+                        <div style={{ marginBottom: '0.4rem', borderRadius: '8px', overflow: 'hidden', border: '1px solid var(--glass-border)', maxWidth: '180px' }}>
+                          <img src={ord.slip} alt="สลิป" style={{ width: '100%', display: 'block' }} />
+                        </div>
+                      )}
+                      {ord.status === 'pending_review' && (
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
+                          <div style={{ display: 'flex', gap: '0.4rem', flexWrap: 'wrap' }}>
+                            <button className="btn btn-primary" style={{ padding: '0.25rem 0.6rem', fontSize: '0.8rem', background: 'linear-gradient(135deg,#22c55e,#16a34a)', border: 'none' }} onClick={() => approveSlip(ord.id)}>อนุมัติสลิป</button>
+                            <button className="btn btn-secondary" style={{ padding: '0.25rem 0.6rem', fontSize: '0.8rem', background: 'rgba(239,68,68,0.15)', color: '#f87171', border: '1px solid #f8717155' }} onClick={() => rejectSlip(ord.id)}>ปฏิเสธ</button>
+                          </div>
+                          <input
+                            type="text"
+                            placeholder="เหตุผลปฏิเสธ..."
+                            value={rejectNotes[ord.id] || ''}
+                            onChange={e => setRejectNotes(prev => ({...prev, [ord.id]: e.target.value}))}
+                            style={{ padding: '0.3rem 0.5rem', fontSize: '0.78rem', borderRadius: '6px', border: '1px solid var(--glass-border)', background: 'rgba(255,255,255,0.05)', color: 'var(--text-primary)', width: '100%' }}
+                          />
+                        </div>
+                      )}
+                      {ord.status === 'manager_approved' && (
+                        <span style={{ color: '#60a5fa', fontSize: '0.8rem' }}>รอ Admin ยืนยันขั้นสุดท้าย...</span>
+                      )}
+                      {(ord.status === 'confirmed' || ord.status === 'paid') && (
+                        <button className="btn btn-primary" style={{ padding: '0.25rem 0.6rem', fontSize: '0.8rem' }} onClick={() => shipOrder(ord.id)}>จัดส่ง</button>
+                      )}
+                      {ord.status === 'shipped' && (
                         <span style={{ color: '#4ade80', fontSize: '0.8rem', fontWeight: 700, display: 'inline-flex', alignItems: 'center', gap: '0.2rem' }}>
-                          <Icons.Check />
-                          <span>นำจ่ายแล้ว</span>
+                          <Icons.Check /><span>นำจ่ายแล้ว</span>
                         </span>
-                      ) : (
+                      )}
+                      {ord.status === 'cancelled' && (
                         <span style={{ color: 'var(--text-muted)', fontSize: '0.8rem' }}>ยกเลิกแล้ว</span>
                       )}
                     </td>

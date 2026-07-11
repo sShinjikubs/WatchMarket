@@ -94,7 +94,7 @@ app.get('/api/products', async (req, res) => {
     return res.json(filtered);
 });
 app.post('/api/products', async (req, res) => {
-    const { name, brand, category, price, stock, color, strokeColor } = req.body;
+    const { name, brand, category, price, stock, color, strokeColor, image, imageBack } = req.body;
     if (!name || !brand || !category || isNaN(price) || isNaN(stock)) {
         return res.status(400).json({ error: 'Invalid product properties.' });
     }
@@ -106,7 +106,9 @@ app.post('/api/products', async (req, res) => {
         price: Number(price),
         stock: Number(stock),
         color: color || "#2d3748",
-        strokeColor: strokeColor || "#c5a880"
+        strokeColor: strokeColor || "#c5a880",
+        image: image || "",
+        imageBack: imageBack || ""
     };
     await database_1.db.addProduct(newProduct);
     await database_1.db.addLog(`[INVENTORY]: ผู้จัดการเพิ่มนาฬิการุ่นใหม่เข้าคลังสินค้า: ${name} (รหัส: ${newProduct.id})`);
@@ -114,15 +116,15 @@ app.post('/api/products', async (req, res) => {
 });
 app.put('/api/products/:id', async (req, res) => {
     const prodId = req.params.id;
-    const { name, brand, category, price, stock, color, strokeColor } = req.body;
+    const { name, brand, category, price, stock, color, strokeColor, image, imageBack } = req.body;
     const products = await database_1.db.getProducts();
     const exists = products.some(p => p.id === prodId);
     if (!exists) {
         return res.status(404).json({ error: 'Product not found.' });
     }
-    await database_1.db.updateProduct(prodId, { name, brand, category, price, stock, color, strokeColor });
+    await database_1.db.updateProduct(prodId, { name, brand, category, price, stock, color, strokeColor, image, imageBack });
     await database_1.db.addLog(`[INVENTORY]: ผู้จัดการทำการอัปเดตข้อมูลนาฬิกา: ${name} (ID: ${prodId})`);
-    return res.json({ id: prodId, name, brand, category, price, stock, color, strokeColor });
+    return res.json({ id: prodId, name, brand, category, price, stock, color, strokeColor, image, imageBack });
 });
 app.delete('/api/products/:id', async (req, res) => {
     const prodId = req.params.id;
@@ -197,21 +199,23 @@ app.post('/api/orders', async (req, res) => {
         email,
         address,
         payment,
-        status: "paid", // Auto confirmed upon payment simulation
+        // COD is confirmed instantly. PromptPay & Bank Transfer start at pending_review
+        status: payment === 'cod' ? 'confirmed' : 'pending_review',
         date: new Date().toLocaleString(),
-        slip: payment !== 'credit_card' ? slip : null
+        slip: payment !== 'cod' ? slip : null
     };
     await database_1.db.addOrder(newOrder);
-    // Simulated integrations logging
-    await database_1.db.addLog(`[DATABASE]: บันทึกประวัติใบสั่งซื้อลง PostgreSQL สำเร็จ (ID: ${newOrder.id})`);
+    await database_1.db.addLog(`[ORDER]: บันทึกออเดอร์ใหม่ (ID: ${newOrder.id}) สถานะ: ${newOrder.status}`);
     if (payment === 'promptpay') {
-        await database_1.db.addLog(`[API Trigger]: เรียกใช้ Easy Donate API (Bank Gateway) จำลอง เพื่อออก QR Code และตรวจรับยอดชำระสำเร็จ`);
+        await database_1.db.addLog(`[PAYMENT]: PromptPay QR Code ชำระเสร็จสิ้น — รอ Manager ตรวจสลิปก่อนยืนยัน`);
     }
-    if (newOrder.slip && payment !== 'promptpay') {
-        await database_1.db.addLog(`[STORAGE]: จัดเก็บไฟล์สลิปหลักฐานใน AWS S3 bucket จำลองสำเร็จ`);
+    else if (payment === 'bank_transfer') {
+        await database_1.db.addLog(`[PAYMENT]: ได้รับสลิปโอนเงิน — รอ Manager ตรวจสอบความถูกต้อง`);
     }
-    await database_1.db.addLog(`[API Trigger]: ยิงคำสั่ง POST ไปยัง LINE Notify API เรียบร้อย -> "มีคำสั่งซื้อใหม่ ยอดเงิน ฿${totalPrice.toLocaleString()}"`);
-    await database_1.db.addLog(`[Email Service]: ส่งรายละเอียดหลักฐานการสั่งซื้อไปยังกล่องจดหมาย: ${email} สำเร็จ`);
+    else {
+        await database_1.db.addLog(`[PAYMENT]: COD ยืนยันทันที — ชำระเงินเมื่อรับสินค้า`);
+    }
+    await database_1.db.addLog(`[LINE Notify]: แจ้ง Manager มีออเดอร์ใหม่รอตรวจสลิป → ออเดอร์ ${newOrder.id} ยอด ฿${totalPrice.toLocaleString()}`);
     return res.status(201).json(newOrder);
 });
 app.post('/api/orders/:id/cancel', async (req, res) => {
@@ -245,9 +249,65 @@ app.post('/api/orders/:id/ship', async (req, res) => {
     if (idx === -1) {
         return res.status(404).json({ error: 'Order not found.' });
     }
+    if (orders[idx].status !== 'confirmed') {
+        return res.status(400).json({ error: 'สามารถจัดส่งได้เฉพาะออเดอร์ที่ Admin ยืนยันแล้วเท่านั้น' });
+    }
     await database_1.db.updateOrderStatus(orderId, 'shipped');
-    await database_1.db.addLog(`[SHIPPING]: พนักงานเตรียมพัสดุและนำจ่ายส่งสถานะจัดส่งสำเร็จ (ออเดอร์: ${orderId})`);
-    await database_1.db.addLog(`[Email Service]: แจ้งเตือนเลขพัสดุจำลองส่งตรงหาอีเมลลูกค้า: ${orders[idx].email}`);
+    await database_1.db.addLog(`[SHIPPING]: Manager ยืนยันจัดส่งพัสดุ (ออเดอร์: ${orderId})`);
+    await database_1.db.addLog(`[Email Service]: แจ้งเตือนเลขพัสดุส่งหาลูกค้า: ${orders[idx].email}`);
+    return res.json({ success: true });
+});
+// Manager approves payment slip → manager_approved
+app.post('/api/orders/:id/manager-approve', async (req, res) => {
+    const orderId = req.params.id;
+    const orders = await database_1.db.getOrders();
+    const idx = orders.findIndex(o => o.id === orderId);
+    if (idx === -1)
+        return res.status(404).json({ error: 'Order not found.' });
+    if (orders[idx].status !== 'pending_review') {
+        return res.status(400).json({ error: 'ออเดอร์นี้ไม่ได้อยู่ในสถานะรอตรวจสลิป' });
+    }
+    await database_1.db.updateOrderStatus(orderId, 'manager_approved');
+    await database_1.db.addLog(`[PAYMENT REVIEW]: Manager อนุมัติสลิปการชำระเงิน (ออเดอร์: ${orderId}) — รอ Admin ยืนยันขั้นสุดท้าย`);
+    await database_1.db.addLog(`[LINE Notify]: แจ้ง Admin สลิปถูกตรวจสอบแล้ว รอการยืนยัน → ออเดอร์ ${orderId}`);
+    return res.json({ success: true });
+});
+// Manager rejects payment slip → cancelled
+app.post('/api/orders/:id/manager-reject', async (req, res) => {
+    const orderId = req.params.id;
+    const { note } = req.body;
+    const orders = await database_1.db.getOrders();
+    const idx = orders.findIndex(o => o.id === orderId);
+    if (idx === -1)
+        return res.status(404).json({ error: 'Order not found.' });
+    if (orders[idx].status !== 'pending_review') {
+        return res.status(400).json({ error: 'ออเดอร์นี้ไม่ได้อยู่ในสถานะรอตรวจสลิป' });
+    }
+    // Restore stock
+    const products = await database_1.db.getProducts();
+    for (const item of orders[idx].items) {
+        const prod = products.find(p => p.id === item.id);
+        if (prod)
+            await database_1.db.updateProduct(item.id, { stock: prod.stock + item.quantity });
+    }
+    await database_1.db.updateOrderStatus(orderId, 'cancelled');
+    await database_1.db.addLog(`[PAYMENT REVIEW]: Manager ปฏิเสธสลิป (ออเดอร์: ${orderId}) เหตุผล: ${note || 'ไม่ระบุ'} — คืนสต็อกสินค้าแล้ว`);
+    await database_1.db.addLog(`[Email Service]: แจ้งลูกค้า ${orders[idx].email} ว่าสลิปถูกปฏิเสธ เหตุผล: ${note || 'กรุณาส่งสลิปใหม่'}`);
+    return res.json({ success: true });
+});
+// Admin gives final confirmation → confirmed
+app.post('/api/orders/:id/admin-confirm', async (req, res) => {
+    const orderId = req.params.id;
+    const orders = await database_1.db.getOrders();
+    const idx = orders.findIndex(o => o.id === orderId);
+    if (idx === -1)
+        return res.status(404).json({ error: 'Order not found.' });
+    if (orders[idx].status !== 'manager_approved') {
+        return res.status(400).json({ error: 'ออเดอร์นี้ยังไม่ผ่านการอนุมัติจาก Manager' });
+    }
+    await database_1.db.updateOrderStatus(orderId, 'confirmed');
+    await database_1.db.addLog(`[PAYMENT REVIEW]: Admin ยืนยันขั้นสุดท้าย (ออเดอร์: ${orderId}) — พร้อมจัดส่งสินค้า`);
+    await database_1.db.addLog(`[Email Service]: แจ้งลูกค้า ${orders[idx].email} ว่าการชำระเงินได้รับการยืนยันแล้ว`);
     return res.json({ success: true });
 });
 // -------------------------------------------------------------

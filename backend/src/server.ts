@@ -242,23 +242,23 @@ app.post('/api/orders', async (req, res) => {
     email,
     address,
     payment,
-    status: "paid", // Auto confirmed upon payment simulation
+    // COD is confirmed instantly. PromptPay & Bank Transfer start at pending_review
+    status: payment === 'cod' ? 'confirmed' : 'pending_review',
     date: new Date().toLocaleString(),
-    slip: payment !== 'credit_card' ? slip : null
+    slip: payment !== 'cod' ? slip : null
   };
 
   await db.addOrder(newOrder);
 
-  // Simulated integrations logging
-  await db.addLog(`[DATABASE]: บันทึกประวัติใบสั่งซื้อลง PostgreSQL สำเร็จ (ID: ${newOrder.id})`);
+  await db.addLog(`[ORDER]: บันทึกออเดอร์ใหม่ (ID: ${newOrder.id}) สถานะ: ${newOrder.status}`);
   if (payment === 'promptpay') {
-    await db.addLog(`[API Trigger]: เรียกใช้ Easy Donate API (Bank Gateway) จำลอง เพื่อออก QR Code และตรวจรับยอดชำระสำเร็จ`);
+    await db.addLog(`[PAYMENT]: PromptPay QR Code ชำระเสร็จสิ้น — รอ Manager ตรวจสลิปก่อนยืนยัน`);
+  } else if (payment === 'bank_transfer') {
+    await db.addLog(`[PAYMENT]: ได้รับสลิปโอนเงิน — รอ Manager ตรวจสอบความถูกต้อง`);
+  } else {
+    await db.addLog(`[PAYMENT]: COD ยืนยันทันที — ชำระเงินเมื่อรับสินค้า`);
   }
-  if (newOrder.slip && payment !== 'promptpay') {
-    await db.addLog(`[STORAGE]: จัดเก็บไฟล์สลิปหลักฐานใน AWS S3 bucket จำลองสำเร็จ`);
-  }
-  await db.addLog(`[API Trigger]: ยิงคำสั่ง POST ไปยัง LINE Notify API เรียบร้อย -> "มีคำสั่งซื้อใหม่ ยอดเงิน ฿${totalPrice.toLocaleString()}"`);
-  await db.addLog(`[Email Service]: ส่งรายละเอียดหลักฐานการสั่งซื้อไปยังกล่องจดหมาย: ${email} สำเร็จ`);
+  await db.addLog(`[LINE Notify]: แจ้ง Manager มีออเดอร์ใหม่รอตรวจสลิป → ออเดอร์ ${newOrder.id} ยอด ฿${totalPrice.toLocaleString()}`);
 
   return res.status(201).json(newOrder);
 });
@@ -303,11 +303,67 @@ app.post('/api/orders/:id/ship', async (req, res) => {
     return res.status(404).json({ error: 'Order not found.' });
   }
 
+  if (orders[idx].status !== 'confirmed') {
+    return res.status(400).json({ error: 'สามารถจัดส่งได้เฉพาะออเดอร์ที่ Admin ยืนยันแล้วเท่านั้น' });
+  }
+
   await db.updateOrderStatus(orderId, 'shipped');
+  await db.addLog(`[SHIPPING]: Manager ยืนยันจัดส่งพัสดุ (ออเดอร์: ${orderId})`);
+  await db.addLog(`[Email Service]: แจ้งเตือนเลขพัสดุส่งหาลูกค้า: ${orders[idx].email}`);
+  return res.json({ success: true });
+});
 
-  await db.addLog(`[SHIPPING]: พนักงานเตรียมพัสดุและนำจ่ายส่งสถานะจัดส่งสำเร็จ (ออเดอร์: ${orderId})`);
-  await db.addLog(`[Email Service]: แจ้งเตือนเลขพัสดุจำลองส่งตรงหาอีเมลลูกค้า: ${orders[idx].email}`);
+// Manager approves payment slip → manager_approved
+app.post('/api/orders/:id/manager-approve', async (req, res) => {
+  const orderId = req.params.id;
+  const orders = await db.getOrders();
+  const idx = orders.findIndex(o => o.id === orderId);
+  if (idx === -1) return res.status(404).json({ error: 'Order not found.' });
+  if (orders[idx].status !== 'pending_review') {
+    return res.status(400).json({ error: 'ออเดอร์นี้ไม่ได้อยู่ในสถานะรอตรวจสลิป' });
+  }
+  await db.updateOrderStatus(orderId, 'manager_approved');
+  await db.addLog(`[PAYMENT REVIEW]: Manager อนุมัติสลิปการชำระเงิน (ออเดอร์: ${orderId}) — รอ Admin ยืนยันขั้นสุดท้าย`);
+  await db.addLog(`[LINE Notify]: แจ้ง Admin สลิปถูกตรวจสอบแล้ว รอการยืนยัน → ออเดอร์ ${orderId}`);
+  return res.json({ success: true });
+});
 
+// Manager rejects payment slip → cancelled
+app.post('/api/orders/:id/manager-reject', async (req, res) => {
+  const orderId = req.params.id;
+  const { note } = req.body;
+  const orders = await db.getOrders();
+  const idx = orders.findIndex(o => o.id === orderId);
+  if (idx === -1) return res.status(404).json({ error: 'Order not found.' });
+  if (orders[idx].status !== 'pending_review') {
+    return res.status(400).json({ error: 'ออเดอร์นี้ไม่ได้อยู่ในสถานะรอตรวจสลิป' });
+  }
+
+  // Restore stock
+  const products = await db.getProducts();
+  for (const item of orders[idx].items) {
+    const prod = products.find(p => p.id === item.id);
+    if (prod) await db.updateProduct(item.id, { stock: prod.stock + item.quantity });
+  }
+
+  await db.updateOrderStatus(orderId, 'cancelled');
+  await db.addLog(`[PAYMENT REVIEW]: Manager ปฏิเสธสลิป (ออเดอร์: ${orderId}) เหตุผล: ${note || 'ไม่ระบุ'} — คืนสต็อกสินค้าแล้ว`);
+  await db.addLog(`[Email Service]: แจ้งลูกค้า ${orders[idx].email} ว่าสลิปถูกปฏิเสธ เหตุผล: ${note || 'กรุณาส่งสลิปใหม่'}`);
+  return res.json({ success: true });
+});
+
+// Admin gives final confirmation → confirmed
+app.post('/api/orders/:id/admin-confirm', async (req, res) => {
+  const orderId = req.params.id;
+  const orders = await db.getOrders();
+  const idx = orders.findIndex(o => o.id === orderId);
+  if (idx === -1) return res.status(404).json({ error: 'Order not found.' });
+  if (orders[idx].status !== 'manager_approved') {
+    return res.status(400).json({ error: 'ออเดอร์นี้ยังไม่ผ่านการอนุมัติจาก Manager' });
+  }
+  await db.updateOrderStatus(orderId, 'confirmed');
+  await db.addLog(`[PAYMENT REVIEW]: Admin ยืนยันขั้นสุดท้าย (ออเดอร์: ${orderId}) — พร้อมจัดส่งสินค้า`);
+  await db.addLog(`[Email Service]: แจ้งลูกค้า ${orders[idx].email} ว่าการชำระเงินได้รับการยืนยันแล้ว`);
   return res.json({ success: true });
 });
 

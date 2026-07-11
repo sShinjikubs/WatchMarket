@@ -114,16 +114,16 @@ export default function Checkout() {
             border: '1px solid var(--glass-border)', borderRadius: '20px', maxWidth: '480px',
             boxShadow: '0 8px 40px rgba(0,0,0,0.4)'
           }}>
-            <div style={{ fontSize: '5rem', marginBottom: '1rem', animation: 'pulse 1s' }}>🎉</div>
-            <h2 style={{ color: '#51cf66', fontSize: '1.8rem', marginBottom: '0.5rem' }}>สั่งซื้อสำเร็จ!</h2>
+            <div style={{ fontSize: '5rem', marginBottom: '1rem', animation: 'pulse 1s' }}>⏳</div>
+            <h2 style={{ color: 'var(--accent-gold)', fontSize: '1.8rem', marginBottom: '0.5rem' }}>ส่งหลักฐานสำเร็จ!</h2>
             <p style={{ color: 'var(--text-muted)', marginBottom: '1.5rem', lineHeight: 1.6 }}>
-              ขอบคุณสำหรับการสั่งซื้อนาฬิกาจาก WatchMart<br />
-              ทีมงานจะดำเนินการส่งสินค้าให้คุณโดยเร็วที่สุด
+              ระบบได้รับหลักฐานการชำระเงินของท่านแล้ว<br />
+              กำลังอยู่ระหว่างการตรวจสอบความถูกต้องโดย Manager & Admin
             </p>
             {orderId && (
-              <div style={{ background: 'rgba(81,207,102,0.08)', border: '1px solid rgba(81,207,102,0.3)', borderRadius: '10px', padding: '1rem', marginBottom: '2rem' }}>
+              <div style={{ background: 'rgba(255,169,77,0.08)', border: '1px solid rgba(255,169,77,0.3)', borderRadius: '10px', padding: '1rem', marginBottom: '2rem' }}>
                 <div style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>หมายเลขออเดอร์ของคุณ</div>
-                <div style={{ fontWeight: 'bold', fontSize: '1.1rem', color: '#51cf66', fontFamily: 'monospace' }}>{orderId}</div>
+                <div style={{ fontWeight: 'bold', fontSize: '1.1rem', color: 'var(--accent-gold)', fontFamily: 'monospace' }}>{orderId}</div>
               </div>
             )}
             <button
