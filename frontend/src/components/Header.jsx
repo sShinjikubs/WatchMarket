@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Link, useNavigate, useLocation, useSearchParams } from 'react-router-dom';
-import { useAuth, useLanguage } from '../App';
+import { useAuth, useLanguage, useTheme } from '../App';
 import { useCart } from '../CartContext';
 import { api } from '../api';
 
@@ -232,6 +232,7 @@ export default function Header({ showCart, cartCount: cartCountProp, onCartClick
   };
 
   const { lang, changeLang, t } = useLanguage();
+  const { theme, toggleTheme } = useTheme();
 
   const [showNotifications, setShowNotifications] = useState(false);
   const [showHelp, setShowHelp] = useState(false);
@@ -254,7 +255,7 @@ export default function Header({ showCart, cartCount: cartCountProp, onCartClick
   const isActive = (path) => location.pathname === path ? 'active' : '';
 
   return (
-    <header style={{ display: 'flex', flexDirection: 'column', padding: 0, borderBottom: '1px solid var(--glass-border)', background: 'rgba(11, 12, 16, 0.92)', backdropFilter: 'blur(20px)', zIndex: 1000, position: 'fixed', top: 0, left: 0, width: '100%' }}>
+    <header style={{ display: 'flex', flexDirection: 'column', padding: 0, borderBottom: '1px solid var(--glass-border)', background: 'var(--header-bg)', backdropFilter: 'blur(20px)', zIndex: 1000, position: 'fixed', top: 0, left: 0, width: '100%' }}>
       {/* Sliding Settings Drawer Backdrop Overlay */}
       {showDrawer && (
         <div 
@@ -280,7 +281,7 @@ export default function Header({ showCart, cartCount: cartCountProp, onCartClick
         left: showDrawer ? 0 : '-320px',
         width: '300px',
         height: '100vh',
-        background: 'rgba(11, 12, 16, 0.98)',
+        background: 'var(--drawer-bg)',
         backdropFilter: 'blur(25px)',
         borderRight: '1px solid var(--glass-border)',
         boxShadow: '10px 0 30px rgba(0, 0, 0, 0.6)',
@@ -351,13 +352,13 @@ export default function Header({ showCart, cartCount: cartCountProp, onCartClick
               <Icons.Globe style={{ color: 'var(--accent-gold)' }} />
               <span>{lang === 'th' ? 'ภาษา' : 'Language'}</span>
             </label>
-            <div style={{ display: 'flex', background: 'rgba(255,255,255,0.02)', borderRadius: '8px', padding: '2px', border: '1px solid var(--glass-border)' }}>
+            <div style={{ display: 'flex', background: 'var(--input-bg)', borderRadius: '8px', padding: '2px', border: '1px solid var(--glass-border)' }}>
               <button 
                 onClick={() => { if (lang !== 'th') toggleLanguage(); }}
                 style={{
                   flex: 1,
                   background: lang === 'th' ? 'var(--accent-gold)' : 'none',
-                  color: lang === 'th' ? '#0f172a' : 'var(--text-light)',
+                  color: lang === 'th' ? '#0b0c10' : 'var(--text-light)',
                   border: 'none',
                   borderRadius: '6px',
                   padding: '0.45rem',
@@ -374,7 +375,7 @@ export default function Header({ showCart, cartCount: cartCountProp, onCartClick
                 style={{
                   flex: 1,
                   background: lang === 'en' ? 'var(--accent-gold)' : 'none',
-                  color: lang === 'en' ? '#0f172a' : 'var(--text-light)',
+                  color: lang === 'en' ? '#0b0c10' : 'var(--text-light)',
                   border: 'none',
                   borderRadius: '6px',
                   padding: '0.45rem',
@@ -385,6 +386,50 @@ export default function Header({ showCart, cartCount: cartCountProp, onCartClick
                 }}
               >
                 English (EN)
+              </button>
+            </div>
+          </div>
+
+          {/* Theme Settings */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
+            <label style={{ fontSize: '0.72rem', textTransform: 'uppercase', color: 'var(--text-muted)', fontWeight: 'bold', letterSpacing: '0.8px', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+              <span style={{ color: 'var(--accent-gold)' }}>◑</span>
+              <span>{lang === 'th' ? 'ธีม' : 'Theme'}</span>
+            </label>
+            <div style={{ display: 'flex', background: 'var(--input-bg)', borderRadius: '8px', padding: '2px', border: '1px solid var(--glass-border)' }}>
+              <button 
+                onClick={() => { if (theme !== 'dark') toggleTheme(); }}
+                style={{
+                  flex: 1,
+                  background: theme === 'dark' ? 'var(--accent-gold)' : 'none',
+                  color: theme === 'dark' ? '#0b0c10' : 'var(--text-light)',
+                  border: 'none',
+                  borderRadius: '6px',
+                  padding: '0.45rem',
+                  fontSize: '0.8rem',
+                  fontWeight: 'bold',
+                  cursor: 'pointer',
+                  transition: 'all 0.2s'
+                }}
+              >
+                {lang === 'th' ? 'มืด' : 'Dark'}
+              </button>
+              <button 
+                onClick={() => { if (theme !== 'light') toggleTheme(); }}
+                style={{
+                  flex: 1,
+                  background: theme === 'light' ? 'var(--accent-gold)' : 'none',
+                  color: theme === 'light' ? '#0b0c10' : 'var(--text-light)',
+                  border: 'none',
+                  borderRadius: '6px',
+                  padding: '0.45rem',
+                  fontSize: '0.8rem',
+                  fontWeight: 'bold',
+                  cursor: 'pointer',
+                  transition: 'all 0.2s'
+                }}
+              >
+                {lang === 'th' ? 'สว่าง' : 'Light'}
               </button>
             </div>
           </div>
@@ -709,7 +754,7 @@ export default function Header({ showCart, cartCount: cartCountProp, onCartClick
                 onClick={() => setDropdownOpen((o) => !o)}
                 aria-label="User Profile"
               >
-                <div className="profile-avatar">
+                <div className="profile-avatar" style={user?.avatar ? { backgroundImage: `url(${user.avatar})`, backgroundSize: 'cover', backgroundPosition: 'center', color: 'transparent' } : {}}>
                   {(user?.username ?? user?.name ?? '?').charAt(0).toUpperCase()}
                 </div>
               </button>
@@ -760,7 +805,7 @@ export default function Header({ showCart, cartCount: cartCountProp, onCartClick
           justifyContent: 'center'
         }} onClick={() => setShowHelp(false)}>
           <div style={{
-            background: '#151c2c',
+            background: 'var(--modal-bg)',
             border: '1px solid var(--glass-border)',
             borderRadius: '12px',
             width: '450px',
@@ -810,7 +855,7 @@ export default function Header({ showCart, cartCount: cartCountProp, onCartClick
           justifyContent: 'center'
         }} onClick={() => setShowRoleInfo(false)}>
           <div style={{
-            background: '#151c2c',
+            background: 'var(--modal-bg)',
             border: '1px solid var(--glass-border)',
             borderRadius: '12px',
             width: '400px',

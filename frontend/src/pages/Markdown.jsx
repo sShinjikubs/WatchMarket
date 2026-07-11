@@ -75,7 +75,7 @@ export default function MarkdownViewer() {
                 primaryTextColor: '#fff',
                 primaryBorderColor: '#c5a880',
                 lineColor: '#c5a880',
-                secondaryColor: '#151c2c',
+                secondaryColor: 'var(--modal-bg)',
                 tertiaryColor: '#0f172a'
               },
               securityLevel: 'loose',

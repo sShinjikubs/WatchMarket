@@ -253,11 +253,14 @@ export default function Storefront() {
               HOT ITEM OF THE WEEK
             </span>
             <h1 style={{
-              fontSize: '2.2rem',
-              fontWeight: 900,
+              fontSize: '2.8rem',
+              fontWeight: 800,
+              fontFamily: 'Oswald, sans-serif',
+              textTransform: 'uppercase',
               color: 'var(--text-light)',
               lineHeight: 1.1,
               margin: 0,
+              letterSpacing: '2px',
               textShadow: '0 4px 10px rgba(0,0,0,0.5)'
             }}>
               {HERO_SLIDES[currentSlide].title}<br />

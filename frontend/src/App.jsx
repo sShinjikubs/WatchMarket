@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState } from 'react';
+import React, { createContext, useContext, useState, useEffect } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import Login from './pages/Login';
 import Register from './pages/Register';
@@ -13,6 +13,38 @@ import Checkout from './pages/Checkout';
 import MyOrders from './pages/MyOrders';
 import { CartProvider } from './CartContext';
 import CartDrawer from './components/CartDrawer';
+import { api } from './api';
+
+// ─── Theme Context ───────────────────────────────────────────────────────────
+export const ThemeContext = createContext(null);
+
+export function useTheme() {
+  return useContext(ThemeContext);
+}
+
+export function ThemeProvider({ children }) {
+  const [theme, setThemeState] = useState(() => {
+    const stored = localStorage.getItem('watchmart_theme');
+    if (stored) return stored;
+    return window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
+  });
+
+  useEffect(() => {
+    document.documentElement.setAttribute('data-theme', theme);
+  }, [theme]);
+
+  const toggleTheme = () => {
+    const newTheme = theme === 'dark' ? 'light' : 'dark';
+    setThemeState(newTheme);
+    localStorage.setItem('watchmart_theme', newTheme);
+  };
+
+  return (
+    <ThemeContext.Provider value={{ theme, toggleTheme }}>
+      {children}
+    </ThemeContext.Provider>
+  );
+}
 
 // ─── Language Context ────────────────────────────────────────────────────────
 export const LanguageContext = createContext(null);
@@ -131,14 +163,36 @@ function AuthProvider({ children }) {
     setUser(userData);
   };
 
+  const updateUser = (patch) => {
+    setUser(prev => {
+      const updated = { ...prev, ...patch };
+      localStorage.setItem('watchmart_logged_in_user', JSON.stringify(updated));
+      return updated;
+    });
+  };
+
   const logout = () => {
     localStorage.removeItem('watchmart_logged_in_user');
     localStorage.removeItem('watchmart_db_seller_registered');
     setUser(null);
   };
 
+  // Fetch avatar on mount if missing from localStorage
+  useEffect(() => {
+    if (user && user.username) {
+      api.getProfile(user.username).then(async (res) => {
+        if (res.ok) {
+          const profile = await res.json();
+          if (profile.avatar !== undefined && profile.avatar !== user.avatar) {
+            updateUser({ avatar: profile.avatar });
+          }
+        }
+      }).catch(() => {});
+    }
+  }, [user?.username]); // Only run when username changes/mounts
+
   return (
-    <AuthContext.Provider value={{ user, login, logout }}>
+    <AuthContext.Provider value={{ user, login, logout, updateUser }}>
       {children}
     </AuthContext.Provider>
   );
@@ -178,8 +232,9 @@ function ManagerRouteWrapper() {
 // ─── App Router ──────────────────────────────────────────────────────────────
 export default function App() {
   return (
-    <LanguageProvider>
-      <AuthProvider>
+    <ThemeProvider>
+      <LanguageProvider>
+        <AuthProvider>
         <CartProvider>
           <BrowserRouter>
             {/* Global Cart Drawer — rendered once across all pages */}
@@ -210,7 +265,8 @@ export default function App() {
             </Routes>
           </BrowserRouter>
         </CartProvider>
-      </AuthProvider>
-    </LanguageProvider>
+        </AuthProvider>
+      </LanguageProvider>
+    </ThemeProvider>
   );
 }

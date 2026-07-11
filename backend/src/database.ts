@@ -368,6 +368,8 @@ export const db = {
         )
       `);
 
+      await client.query('ALTER TABLE profiles ADD COLUMN IF NOT EXISTS avatar TEXT');
+
       // 3. Products Table
       await client.query(`
         CREATE TABLE IF NOT EXISTS products (
@@ -612,7 +614,7 @@ export const db = {
   },
 
   getProfiles: async (): Promise<Record<string, Profile>> => {
-    const res = await pool.query('SELECT username, firstname, lastname, email, phone, address FROM profiles');
+    const res = await pool.query('SELECT username, firstname, lastname, email, phone, address, avatar FROM profiles');
     const profiles: Record<string, Profile> = {};
     res.rows.forEach(row => {
       profiles[row.username] = {
@@ -620,30 +622,49 @@ export const db = {
         lastname: row.lastname,
         email: row.email,
         phone: row.phone,
-        address: row.address
+        address: row.address,
+        avatar: row.avatar
       };
     });
     return profiles;
   },
 
   getProfile: async (username: string): Promise<Profile | null> => {
-    const res = await pool.query('SELECT firstname, lastname, email, phone, address FROM profiles WHERE username = $1', [username]);
+    const res = await pool.query('SELECT firstname, lastname, email, phone, address, avatar FROM profiles WHERE username = $1', [username]);
     if (res.rows.length === 0) return null;
     return res.rows[0];
   },
 
   saveProfile: async (username: string, profile: Profile): Promise<void> => {
-    await pool.query(
-      `INSERT INTO profiles (username, firstname, lastname, email, phone, address)
-       VALUES ($1, $2, $3, $4, $5, $6)
-       ON CONFLICT (username) DO UPDATE SET
-         firstname = EXCLUDED.firstname,
-         lastname = EXCLUDED.lastname,
-         email = EXCLUDED.email,
-         phone = EXCLUDED.phone,
-         address = EXCLUDED.address`,
-      [username, profile.firstname, profile.lastname, profile.email, profile.phone, profile.address]
-    );
+    // If avatar is not undefined, we update it. If it is undefined, we keep the existing one.
+    // So we use COALESCE for avatar when undefined is passed. Wait, if it's undefined, we can't easily use COALESCE if we just pass null from JS because we want to distinguish '' (delete) from undefined (ignore).
+    // Let's check if profile.avatar is undefined.
+    if (profile.avatar !== undefined) {
+      await pool.query(
+        `INSERT INTO profiles (username, firstname, lastname, email, phone, address, avatar)
+         VALUES ($1, $2, $3, $4, $5, $6, $7)
+         ON CONFLICT (username) DO UPDATE SET
+           firstname = EXCLUDED.firstname,
+           lastname = EXCLUDED.lastname,
+           email = EXCLUDED.email,
+           phone = EXCLUDED.phone,
+           address = EXCLUDED.address,
+           avatar = EXCLUDED.avatar`,
+        [username, profile.firstname, profile.lastname, profile.email, profile.phone, profile.address, profile.avatar]
+      );
+    } else {
+      await pool.query(
+        `INSERT INTO profiles (username, firstname, lastname, email, phone, address)
+         VALUES ($1, $2, $3, $4, $5, $6)
+         ON CONFLICT (username) DO UPDATE SET
+           firstname = EXCLUDED.firstname,
+           lastname = EXCLUDED.lastname,
+           email = EXCLUDED.email,
+           phone = EXCLUDED.phone,
+           address = EXCLUDED.address`,
+        [username, profile.firstname, profile.lastname, profile.email, profile.phone, profile.address]
+      );
+    }
   },
 
   saveProfiles: async (profiles: Record<string, Profile>): Promise<void> => {

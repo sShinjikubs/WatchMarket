@@ -46,65 +46,88 @@ export default function Register() {
   };
 
   return (
-    <div className="auth-page">
-      <div className="auth-card glass-card" style={{ maxWidth: '480px' }}>
-        <div className="brand-logo" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.5rem', marginBottom: '1.2rem' }}>
-          <img src="/images/logo.jpg" alt="WatchMart Logo" style={{ height: '70px', borderRadius: '12px', border: '1px solid var(--glass-border)', objectFit: 'contain' }} />
-          <div style={{ fontSize: '1.8rem', fontWeight: 'bold' }}>Watch<span>Mart</span></div>
+    <div className="login-split-layout">
+      {/* Left Side: Brand Imagery */}
+      <div 
+        className="login-left-side"
+        style={{ backgroundImage: 'url("/images/SEIKO/SEIKO PROSPEX MONSTER CMU 60th Anniversary Limited Edition หน้า.webp")' }}
+      >
+        <div className="login-left-overlay"></div>
+        <div className="login-left-content">
+          <div className="login-logo">
+            Watch<span>Mart</span>
+          </div>
         </div>
-        <h1 className="auth-title">สมัครสมาชิก</h1>
-        <p className="auth-subtitle">สร้างบัญชีผู้ใช้ใหม่</p>
+        <div className="login-slogan">
+          <h1>Join The Legacy</h1>
+          <p>Create your account and unlock access to the world's most prestigious timepieces.</p>
+          <div className="login-brands-tags">
+            <span>SEIKO</span>
+            <span>|</span>
+            <span>TAG HEUER</span>
+            <span>|</span>
+            <span>LUMINOX</span>
+          </div>
+        </div>
+      </div>
 
-        {error && <div className="error-message">{error}</div>}
-        {success && <div className="success-message">{success}</div>}
+      {/* Right Side: Register Form */}
+      <div className="login-right-side" style={{ padding: '2rem 3rem' }}>
+        <div className="login-form-container" style={{ maxWidth: '450px' }}>
+          <h2 className="login-title-minimal">สมัครสมาชิก</h2>
+          
+          {error && <div className="error-message" style={{ marginBottom: '1.5rem', background: 'rgba(239, 68, 68, 0.1)', color: '#ef4444', border: '1px solid #ef4444', padding: '0.8rem', borderRadius: '4px', fontSize: '0.9rem' }}>{error}</div>}
+          {success && <div className="success-message" style={{ marginBottom: '1.5rem', background: 'rgba(16, 185, 129, 0.1)', color: '#10b981', border: '1px solid #10b981', padding: '0.8rem', borderRadius: '4px', fontSize: '0.9rem' }}>{success}</div>}
 
-        <form onSubmit={handleSubmit} className="auth-form">
-          <div className="form-row">
-            <div className="form-group">
-              <label className="form-label">ชื่อจริง</label>
-              <input className="form-input" placeholder="ชื่อจริง" value={form.firstname} onChange={set('firstname')} required />
+          <form onSubmit={handleSubmit}>
+            <div style={{ display: 'flex', gap: '1rem' }}>
+              <div className="login-input-group" style={{ flex: 1, marginBottom: '1.5rem' }}>
+                <label>ชื่อจริง</label>
+                <input type="text" placeholder="ชื่อจริง" value={form.firstname} onChange={set('firstname')} required autoFocus />
+              </div>
+              <div className="login-input-group" style={{ flex: 1, marginBottom: '1.5rem' }}>
+                <label>นามสกุล</label>
+                <input type="text" placeholder="นามสกุล" value={form.lastname} onChange={set('lastname')} required />
+              </div>
             </div>
-            <div className="form-group">
-              <label className="form-label">นามสกุล</label>
-              <input className="form-input" placeholder="นามสกุล" value={form.lastname} onChange={set('lastname')} required />
+
+            <div className="login-input-group" style={{ marginBottom: '1.5rem' }}>
+              <label>ชื่อผู้ใช้</label>
+              <input type="text" placeholder="Username" value={form.username} onChange={set('username')} required />
             </div>
+
+            <div className="login-input-group" style={{ marginBottom: '1.5rem' }}>
+              <label>อีเมล</label>
+              <input type="email" placeholder="Email@example.com" value={form.email} onChange={set('email')} required />
+            </div>
+
+            <div className="login-input-group" style={{ marginBottom: '1.5rem' }}>
+              <label>เบอร์โทรศัพท์</label>
+              <input type="text" placeholder="08X-XXX-XXXX" value={form.phone} onChange={set('phone')} />
+            </div>
+
+            <div style={{ display: 'flex', gap: '1rem' }}>
+              <div className="login-input-group" style={{ flex: 1, marginBottom: '1.5rem' }}>
+                <label>รหัสผ่าน</label>
+                <input type="password" placeholder="อย่างน้อย 6 ตัวอักษร" value={form.password} onChange={set('password')} required minLength={6} />
+              </div>
+              <div className="login-input-group" style={{ flex: 1, marginBottom: '1.5rem' }}>
+                <label>ยืนยันรหัสผ่าน</label>
+                <input type="password" placeholder="กรอกรหัสผ่านอีกครั้ง" value={form.confirmPassword} onChange={set('confirmPassword')} required />
+              </div>
+            </div>
+
+            <button type="submit" className="login-btn-full" disabled={loading} style={{ marginTop: '0.5rem' }}>
+              {loading ? 'กำลังสมัคร...' : 'สมัครสมาชิก'}
+            </button>
+          </form>
+
+          <div className="login-form-footer">
+            มีบัญชีแล้ว?{' '}
+            <a href="/login" onClick={(e) => { e.preventDefault(); navigate('/login'); }}>
+              เข้าสู่ระบบ
+            </a>
           </div>
-
-          <div className="form-group">
-            <label className="form-label">ชื่อผู้ใช้</label>
-            <input className="form-input" placeholder="username" value={form.username} onChange={set('username')} required />
-          </div>
-
-          <div className="form-group">
-            <label className="form-label">อีเมล</label>
-            <input type="email" className="form-input" placeholder="email@example.com" value={form.email} onChange={set('email')} required />
-          </div>
-
-          <div className="form-group">
-            <label className="form-label">เบอร์โทรศัพท์</label>
-            <input className="form-input" placeholder="08X-XXX-XXXX" value={form.phone} onChange={set('phone')} />
-          </div>
-
-          <div className="form-group">
-            <label className="form-label">รหัสผ่าน</label>
-            <input type="password" className="form-input" placeholder="อย่างน้อย 6 ตัวอักษร" value={form.password} onChange={set('password')} required minLength={6} />
-          </div>
-
-          <div className="form-group">
-            <label className="form-label">ยืนยันรหัสผ่าน</label>
-            <input type="password" className="form-input" placeholder="กรอกรหัสผ่านอีกครั้ง" value={form.confirmPassword} onChange={set('confirmPassword')} required />
-          </div>
-
-          <button type="submit" className="btn btn-primary w-full" disabled={loading}>
-            {loading ? 'กำลังสมัคร...' : 'สมัครสมาชิก'}
-          </button>
-        </form>
-
-        <div className="auth-footer">
-          มีบัญชีแล้ว?{' '}
-          <a href="/login" onClick={(e) => { e.preventDefault(); navigate('/login'); }}>
-            เข้าสู่ระบบ
-          </a>
         </div>
       </div>
     </div>

@@ -39,7 +39,7 @@ export default function CartDrawer() {
           width: '360px',
           maxWidth: '90vw',
           height: '100vh',
-          background: 'rgba(11, 12, 16, 0.98)',
+          background: 'var(--drawer-bg)',
           backdropFilter: 'blur(20px)',
           borderLeft: '1px solid var(--glass-border)',
           boxShadow: '-10px 0 30px rgba(0,0,0,0.5)',

@@ -3,11 +3,13 @@ import { useAuth } from '../App';
 import { api } from '../api';
 import Header from '../components/Header';
 import { Icons } from '../components/Icons';
+import { useRef } from 'react';
 
 export default function Profile() {
-  const { user } = useAuth();
+  const { user, updateUser } = useAuth();
   const [form, setForm] = useState({ firstname: '', lastname: '', email: '', phone: '', address: '' });
   const [notification, setNotification] = useState(null);
+  const fileInputRef = useRef(null);
 
   const showNotif = (msg, ok = true) => {
     setNotification({ msg, ok });
@@ -35,10 +37,60 @@ export default function Profile() {
   const handleSave = async (e) => {
     e.preventDefault();
     try {
-      const res = await api.saveProfile(user.username, form);
+      const payload = { ...form, avatar: user.avatar }; // Preserve avatar if not modified
+      const res = await api.saveProfile(user.username, payload);
       if (res.ok) showNotif('บันทึกข้อมูลโปรไฟล์สำเร็จ!');
       else showNotif('บันทึกข้อมูลไม่สำเร็จ', false);
     } catch (_) { showNotif('เซิร์ฟเวอร์ขัดข้อง', false); }
+  };
+
+  const handleAvatarChange = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    if (!file.type.startsWith('image/')) {
+      showNotif('กรุณาอัปโหลดไฟล์รูปภาพเท่านั้น', false);
+      return;
+    }
+    
+    // ~2MB limit (2 * 1024 * 1024 bytes)
+    if (file.size > 2097152) {
+      showNotif('ขนาดไฟล์ต้องไม่เกิน 2MB', false);
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = async (ev) => {
+      const dataUrl = ev.target.result;
+      try {
+        const payload = { ...form, avatar: dataUrl };
+        const res = await api.saveProfile(user.username, payload);
+        if (res.ok) {
+          updateUser({ avatar: dataUrl });
+          showNotif('อัปโหลดรูปโปรไฟล์สำเร็จ!');
+        } else {
+          showNotif('อัปโหลดไม่สำเร็จ', false);
+        }
+      } catch {
+        showNotif('เกิดข้อผิดพลาดในการเชื่อมต่อเซิร์ฟเวอร์', false);
+      }
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const handleDeleteAvatar = async () => {
+    try {
+      const payload = { ...form, avatar: '' }; // Send empty string to clear
+      const res = await api.saveProfile(user.username, payload);
+      if (res.ok) {
+        updateUser({ avatar: '' }); // Update context to reflect deletion
+        showNotif('ลบรูปโปรไฟล์สำเร็จ!');
+      } else {
+        showNotif('ลบรูปโปรไฟล์ไม่สำเร็จ', false);
+      }
+    } catch {
+      showNotif('เกิดข้อผิดพลาดในการเชื่อมต่อเซิร์ฟเวอร์', false);
+    }
   };
 
   return (
@@ -91,9 +143,25 @@ export default function Profile() {
           <div className="glass-card">
             <h2 className="card-title">ข้อมูลบัญชี</h2>
             <div style={{ display: 'flex', alignItems: 'center', gap: '1.2rem', marginBottom: '1.5rem' }}>
-              <div style={{ width: '64px', height: '64px', borderRadius: '50%', background: 'var(--accent-gold)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.8rem', fontWeight: 'bold', color: '#000' }}>
-                {user?.username?.charAt(0).toUpperCase()}
+              
+              <div style={{ position: 'relative' }}>
+                <input type="file" accept="image/*" hidden ref={fileInputRef} onChange={handleAvatarChange} />
+                <div 
+                  onClick={() => fileInputRef.current?.click()}
+                  style={{ 
+                    width: '64px', height: '64px', borderRadius: '50%', background: 'var(--accent-gold)', 
+                    display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.8rem', 
+                    fontWeight: 'bold', color: '#000', cursor: 'pointer', overflow: 'hidden',
+                    backgroundImage: user?.avatar ? `url(${user.avatar})` : 'none',
+                    backgroundSize: 'cover', backgroundPosition: 'center',
+                    border: '2px solid var(--accent-gold)'
+                  }}
+                  title="คลิกเพื่อเปลี่ยนรูปโปรไฟล์"
+                >
+                  {!user?.avatar && user?.username?.charAt(0).toUpperCase()}
+                </div>
               </div>
+
               <div>
                 <div style={{ fontWeight: 'bold', fontSize: '1.1rem' }}>{user?.username}</div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', color: 'var(--text-muted)', fontSize: '0.85rem', marginTop: '0.2rem' }}>
@@ -114,6 +182,11 @@ export default function Profile() {
                     </>
                   )}
                 </div>
+                {user?.avatar && (
+                  <button onClick={handleDeleteAvatar} style={{ background: 'none', border: 'none', color: '#ef5350', fontSize: '0.8rem', cursor: 'pointer', marginTop: '0.5rem', padding: 0 }}>
+                    ลบรูปโปรไฟล์
+                  </button>
+                )}
               </div>
             </div>
           </div>

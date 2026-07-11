@@ -79,13 +79,13 @@ app.post('/api/auth/register', async (req, res) => {
 app.get('/api/auth/profile/:username', async (req, res) => {
   const username = req.params.username;
   const profile = await db.getProfile(username);
-  return res.json(profile || { firstname: '', lastname: '', email: '', phone: '', address: '' });
+  return res.json(profile || { firstname: '', lastname: '', email: '', phone: '', address: '', avatar: '' });
 });
 
 app.post('/api/auth/profile/:username', async (req, res) => {
   const username = req.params.username;
-  const { firstname, lastname, email, phone, address } = req.body;
-  await db.saveProfile(username, { firstname, lastname, email, phone, address });
+  const { firstname, lastname, email, phone, address, avatar } = req.body;
+  await db.saveProfile(username, { firstname, lastname, email, phone, address, avatar });
 
   await db.addLog(`[PROFILE]: อัปเดตข้อมูลโปรไฟล์ของ ${username} เรียบร้อย`);
   return res.json({ success: true, message: 'บันทึกข้อมูลโปรไฟล์สำเร็จ' });

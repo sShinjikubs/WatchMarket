@@ -36,66 +36,82 @@ export default function Login() {
   };
 
   return (
-    <div className="auth-page">
-      <div className="auth-card glass-card">
-        <div className="brand-logo" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.5rem', marginBottom: '1.2rem' }}>
-          <img src="/images/logo.jpg" alt="WatchMart Logo" style={{ height: '70px', borderRadius: '12px', border: '1px solid var(--glass-border)', objectFit: 'contain' }} />
-          <div style={{ fontSize: '1.8rem', fontWeight: 'bold' }}>Watch<span>Mart</span></div>
+    <div className="login-split-layout">
+      {/* Left Side: Brand Imagery */}
+      <div 
+        className="login-left-side"
+        style={{ backgroundImage: 'url("/images/TAG Heuer/TAG Heuer Formula 1 Chronograph  Front.avif")' }}
+      >
+        <div className="login-left-overlay"></div>
+        <div className="login-left-content">
+          <div className="login-logo">
+            Watch<span>Mart</span>
+          </div>
         </div>
-        <h1 className="auth-title">เข้าสู่ระบบ</h1>
-        <p className="auth-subtitle">ยินดีต้อนรับกลับมา</p>
-
-        {error && <div className="error-message">{error}</div>}
-
-        <form onSubmit={handleSubmit} className="auth-form">
-          <div className="form-group">
-            <label className="form-label">เข้าสู่ระบบเป็น</label>
-            <select
-              className="form-select"
-              value={role}
-              onChange={(e) => setRole(e.target.value)}
-            >
-              <option value="user">👤 Customer / Seller</option>
-              <option value="admin">👑 Admin</option>
-              <option value="manager">📊 Manager</option>
-            </select>
+        <div className="login-slogan">
+          <h1>Crafting Time</h1>
+          <p>Discover the finest luxury timepieces. Precision, elegance, and mastery in every second.</p>
+          <div className="login-brands-tags">
+            <span>TAG HEUER</span>
+            <span>|</span>
+            <span>SEIKO</span>
+            <span>|</span>
+            <span>LUMINOX</span>
           </div>
+        </div>
+      </div>
 
-          <div className="form-group">
-            <label className="form-label">ชื่อผู้ใช้</label>
-            <input
-              type="text"
-              className="form-input"
-              placeholder="กรอกชื่อผู้ใช้"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-              required
-              autoFocus
-            />
+      {/* Right Side: Login Form */}
+      <div className="login-right-side">
+        <div className="login-form-container">
+          <h2 className="login-title-minimal">เข้าสู่ระบบ</h2>
+          
+          {error && <div className="error-message" style={{ marginBottom: '1.5rem', background: 'rgba(239, 68, 68, 0.1)', color: '#ef4444', border: '1px solid #ef4444', padding: '0.8rem', borderRadius: '4px', fontSize: '0.9rem' }}>{error}</div>}
+
+          <form onSubmit={handleSubmit}>
+            <div className="login-input-group">
+              <label>เข้าสู่ระบบเป็น</label>
+              <select value={role} onChange={(e) => setRole(e.target.value)}>
+                <option value="user">👤 Customer / Seller</option>
+                <option value="admin">👑 Admin</option>
+                <option value="manager">📊 Manager</option>
+              </select>
+            </div>
+
+            <div className="login-input-group">
+              <label>ชื่อผู้ใช้</label>
+              <input
+                type="text"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                placeholder="กรอกชื่อผู้ใช้"
+                required
+                autoFocus
+              />
+            </div>
+
+            <div className="login-input-group">
+              <label>รหัสผ่าน</label>
+              <input
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="กรอกรหัสผ่าน"
+                required
+              />
+            </div>
+
+            <button type="submit" className="login-btn-full" disabled={loading}>
+              {loading ? 'กำลังเข้าสู่ระบบ...' : 'เข้าสู่ระบบ'}
+            </button>
+          </form>
+
+          <div className="login-form-footer">
+            ยังไม่มีบัญชี?{' '}
+            <a href="/register" onClick={(e) => { e.preventDefault(); navigate('/register'); }}>
+              สมัครสมาชิก
+            </a>
           </div>
-
-          <div className="form-group">
-            <label className="form-label">รหัสผ่าน</label>
-            <input
-              type="password"
-              className="form-input"
-              placeholder="กรอกรหัสผ่าน"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-            />
-          </div>
-
-          <button type="submit" className="btn btn-primary w-full" disabled={loading}>
-            {loading ? 'กำลังเข้าสู่ระบบ...' : 'เข้าสู่ระบบ'}
-          </button>
-        </form>
-
-        <div className="auth-footer">
-          ยังไม่มีบัญชี?{' '}
-          <a href="/register" onClick={(e) => { e.preventDefault(); navigate('/register'); }}>
-            สมัครสมาชิก
-          </a>
         </div>
       </div>
     </div>
