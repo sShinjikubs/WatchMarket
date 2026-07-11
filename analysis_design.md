@@ -145,37 +145,69 @@ graph TB
 ### 4.1 ตาราง Users
 ```sql
 CREATE TABLE users (
-    id SERIAL PRIMARY KEY,
-    username VARCHAR(50) UNIQUE NOT NULL,
-    email VARCHAR(100) UNIQUE NOT NULL,
-    password_hash VARCHAR(255) NOT NULL,
+    username VARCHAR(50) PRIMARY KEY,
+    password VARCHAR(255) NOT NULL,
+    role VARCHAR(20) NOT NULL DEFAULT 'user',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 ```
 
-### 4.2 ตาราง Products
+### 4.2 ตาราง Profiles
+```sql
+CREATE TABLE profiles (
+    username VARCHAR(50) PRIMARY KEY REFERENCES users(username) ON DELETE CASCADE,
+    firstname VARCHAR(50),
+    lastname VARCHAR(50),
+    email VARCHAR(100),
+    phone VARCHAR(20),
+    address TEXT
+);
+```
+
+### 4.3 ตาราง Products (รองรับการเก็บคะแนนและรูปภาพนาฬิกา)
 ```sql
 CREATE TABLE products (
-    id SERIAL PRIMARY KEY,
+    id VARCHAR(50) PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
     brand VARCHAR(50) NOT NULL,
-    description TEXT,
-    price DECIMAL(10, 2) NOT NULL,
+    category VARCHAR(50) NOT NULL,
+    price NUMERIC(12, 2) NOT NULL,
     stock INT NOT NULL DEFAULT 0,
-    image_url VARCHAR(255),
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    color VARCHAR(50),
+    stroke_color VARCHAR(50),
+    is_gold_face BOOLEAN DEFAULT FALSE,
+    image VARCHAR(255),
+    image_back VARCHAR(255)
 );
 ```
 
-### 4.3 ตาราง Orders
+### 4.4 ตาราง Orders (รองรับการจัดเก็บสลิปชำระเงินภายหลังและ 2-Step Verification)
 ```sql
 CREATE TABLE orders (
-    id SERIAL PRIMARY KEY,
-    user_id INT REFERENCES users(id),
-    total_price DECIMAL(10, 2) NOT NULL,
-    status VARCHAR(20) DEFAULT 'Pending', -- Pending, Paid, Shipped, Cancelled
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    id VARCHAR(50) PRIMARY KEY,
+    user_id VARCHAR(50) NOT NULL,
+    items JSONB NOT NULL,
+    total NUMERIC(12, 2) NOT NULL,
+    email VARCHAR(100) NOT NULL,
+    address TEXT NOT NULL,
+    payment VARCHAR(50) NOT NULL,
+    status VARCHAR(20) NOT NULL, -- pending_payment, pending_review, manager_approved, confirmed, shipped, cancelled
+    date VARCHAR(50) NOT NULL,
+    slip TEXT
 );
+```
+
+### 4.5 ตาราง Reviews
+```sql
+CREATE TABLE reviews (
+    id SERIAL PRIMARY KEY,
+    product_id VARCHAR(50) NOT NULL REFERENCES products(id) ON DELETE CASCADE,
+    username VARCHAR(50) NOT NULL REFERENCES users(username) ON DELETE CASCADE,
+    rating INT NOT NULL CHECK (rating >= 1 AND rating <= 5),
+    comment TEXT NOT NULL,
+    date VARCHAR(50) NOT NULL
+);
+```
 
 ---
 
@@ -183,34 +215,34 @@ CREATE TABLE orders (
 เพื่อแสดงโครงสร้าง ลำดับการทำงาน และความสัมพันธ์ของระบบ **WatchMart** ให้ชัดเจนยิ่งขึ้นตามแนวทางวิศวกรรมซอฟต์แวร์
 
 ### 5.1 Use Case Diagram (แผนภาพแสดงการทำงานของผู้ใช้)
-แผนภาพ Use Case แสดงขอบเขตของระบบ (System Boundary) และปฏิสัมพันธ์ระหว่างนักช้อป (User), พนักงาน (Employee) และผู้ดูแลระบบ (Admin)
+แผนภาพ Use Case แสดงขอบเขตของระบบ (System Boundary) และปฏิสัมพันธ์ระหว่างนักช้อป (User), พนักงาน/ผู้จัดการ (Manager) และผู้ดูแลระบบ (Admin)
 
 ```mermaid
 graph TD
     %% Define Actors
     UserActor["👤 ผู้ซื้อ (User)"]
-    EmpActor["🛍️ พนักงาน (Employee)"]
+    ManagerActor["🛍️ ผู้จัดการ (Manager)"]
     AdminActor["👑 ผู้ดูแลระบบ (Admin)"]
 
     subgraph WatchMart_System ["💼 ระบบ WatchMart Platform"]
         UC_Login["เข้าสู่ระบบ (Login)"]
         UC_Search["ค้นหาและกรองนาฬิกา (Search & Filter)"]
         UC_Cart["จัดการตะกร้าสินค้า (Manage Cart)"]
-        UC_Checkout["สั่งซื้อและชำระเงิน (Checkout)"]
-        UC_Track["ติดตามสถานะจัดส่ง (Track Order)"]
+        UC_Checkout["สั่งซื้อสินค้า (Checkout)"]
+        UC_UploadSlip["แนบสลิปหลักฐานชำระเงินภายหลัง 24 ชม. (Upload Slip)"]
+        UC_Track["ติดตามสถานะจัดส่งและใบสั่งซื้อ (Track Orders)"]
+        UC_Notif["รับแจ้งเตือนการยืนยันสินค้า/ตรวจสลิป (Notification)"]
 
         UC_Verify["ยืนยันตัวตนพนักงาน (Employee Verify)"]
         UC_AddWatch["ลงรายการนาฬิกาเข้าคลัง (Add Watch to Stock)"]
 
         UC_Inspect["ตรวจสอบและอนุมัติสินค้า (Inspect & Approve)"]
-        UC_ManageOrder["จัดการรายการสั่งซื้อ (Manage Orders)"]
+        UC_VerifySlip["ตรวจสอบสลิปและอนุมัติขั้นแรก (Verify Slip)"]
+        UC_FinalConfirm["ยืนยันออเดอร์ขั้นสุดท้าย (Final Confirm Order)"]
         UC_PriceAudit["ตรวจสอบราคากลาง (Price Audit)"]
         UC_Chat["ให้บริการแชทช่วยเหลือ (Support Chat)"]
         UC_Blacklist["จัดการบัญชีดำ (Blacklist Management)"]
-
-        %% Include relation
-        UC_Checkout -.->|"<<include>>"| UC_Login
-        UC_AddWatch -.->|"<<include>>"| UC_Verify
+        UC_Logs["ตรวจสอบระบบประวัติการทำงาน (System Logs)"]
     end
 
     %% User Connections
@@ -218,20 +250,28 @@ graph TD
     UserActor --> UC_Search
     UserActor --> UC_Cart
     UserActor --> UC_Checkout
+    UserActor --> UC_UploadSlip
     UserActor --> UC_Track
+    UserActor --> UC_Notif
 
-    %% Employee Connections
-    EmpActor --> UC_Login
-    EmpActor --> UC_Verify
-    EmpActor --> UC_AddWatch
+    %% Manager Connections
+    ManagerActor --> UC_Login
+    ManagerActor --> UC_Verify
+    ManagerActor --> UC_AddWatch
+    ManagerActor --> UC_VerifySlip
 
     %% Admin Connections
     AdminActor --> UC_Login
     AdminActor --> UC_Inspect
-    AdminActor --> UC_ManageOrder
+    AdminActor --> UC_FinalConfirm
     AdminActor --> UC_PriceAudit
     AdminActor --> UC_Chat
     AdminActor --> UC_Blacklist
+    AdminActor --> UC_Logs
+
+    %% Include relation
+    UC_Checkout -.->|"<<include>>"| UC_Login
+    UC_AddWatch -.->|"<<include>>"| UC_Verify
 ```
 
 ### 5.2 Class Diagram (แผนภาพคลาสโครงสร้างข้อมูล)
