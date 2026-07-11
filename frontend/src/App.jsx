@@ -7,7 +7,6 @@ import Profile from './pages/Profile';
 import Seller from './pages/Seller';
 import Admin from './pages/Admin';
 import Manager from './pages/Manager';
-import Staff from './pages/Staff';
 import MarkdownViewer from './pages/Markdown';
 import ProductDetail from './pages/ProductDetail';
 import Checkout from './pages/Checkout';
@@ -187,7 +186,6 @@ export default function App() {
 
               {/* Manager + Admin only */}
               <Route path="/manager" element={<RequireRole roles={['manager', 'admin']}><Manager /></RequireRole>} />
-              <Route path="/staff" element={<RequireRole roles={['manager', 'admin']}><Staff /></RequireRole>} />
 
               {/* Admin only */}
               <Route path="/admin" element={<RequireRole roles={['admin']}><Admin /></RequireRole>} />

@@ -236,7 +236,6 @@ export default function Header({ showCart, cartCount: cartCountProp, onCartClick
               {(user?.role === 'manager' || user?.role === 'admin') && (
                 <>
                   <li><Link to="/manager" className={isActive('/manager')} style={{ fontSize: '0.88rem', textDecoration: 'none', color: location.pathname === '/manager' ? 'var(--accent-gold)' : 'var(--text-light)' }}>📊 {t('manager')}</Link></li>
-                  <li><Link to="/staff" className={isActive('/staff')} style={{ fontSize: '0.88rem', textDecoration: 'none', color: location.pathname === '/staff' ? 'var(--accent-gold)' : 'var(--text-light)' }}>🧑‍💼 {t('staff')}</Link></li>
                 </>
               )}
             </ul>

@@ -191,6 +191,12 @@ export default function Manager() {
     else showNotif('ลบไม่สำเร็จ', false);
   };
 
+  const shipOrder = async (id) => {
+    const res = await api.shipOrder(id);
+    if (res.ok) { showNotif('จัดส่งพัสดุสำเร็จ!'); refreshData(); }
+    else showNotif('อัปเดตสถานะล้มเหลว', false);
+  };
+
   // Stats
   const totalSales = orders.filter((o) => o.status !== 'cancelled').reduce((s, o) => s + o.total, 0);
 
@@ -246,51 +252,8 @@ export default function Manager() {
           </div>
         </div>
 
-        {/* CRUD Product Form + Table */}
+        {/* Inventory Table */}
         <div className="content-grid two-col">
-          <div className="glass-card">
-            <h2 className="card-title" id="form-action-title">{editingProduct ? `✏️ แก้ไข: ${productForm.name}` : '➕ เพิ่มสินค้าใหม่'}</h2>
-            <form onSubmit={handleProductSubmit} className="form-stack" id="product-form">
-              <div className="form-group">
-                <label className="form-label">ชื่อสินค้า</label>
-                <input className="form-input" value={productForm.name} onChange={setForm('name')} required id="prod-name" />
-              </div>
-              <div className="form-group">
-                <label className="form-label">แบรนด์</label>
-                <input className="form-input" value={productForm.brand} onChange={setForm('brand')} required id="prod-brand" />
-              </div>
-              <div className="form-group">
-                <label className="form-label">หมวดหมู่</label>
-                <select className="form-select" value={productForm.category} onChange={setForm('category')} id="prod-category">
-                  <option value="classic">Classic</option>
-                  <option value="sport">Sport</option>
-                  <option value="elegant">Elegant</option>
-                </select>
-              </div>
-              <div className="form-group">
-                <label className="form-label">ราคา (บาท)</label>
-                <input type="number" className="form-input" value={productForm.price} onChange={setForm('price')} required id="prod-price" />
-              </div>
-              <div className="form-group">
-                <label className="form-label">สต็อก (เรือน)</label>
-                <input type="number" className="form-input" value={productForm.stock} onChange={setForm('stock')} required id="prod-stock" />
-              </div>
-              <div className="form-group">
-                <label className="form-label">รูปภาพหน้าปัด (เช่น /images/LUMINOX/name.webp)</label>
-                <input className="form-input" value={productForm.image} onChange={setForm('image')} id="prod-image" />
-              </div>
-              <div className="form-group">
-                <label className="form-label">รูปภาพฝาหลัง (เช่น /images/LUMINOX/name_back.webp)</label>
-                <input className="form-input" value={productForm.imageBack} onChange={setForm('imageBack')} id="prod-image-back" />
-              </div>
-              <div className="btn-group">
-                <button type="submit" className="btn btn-primary" id="btn-submit-form">
-                  {editingProduct ? 'อัปเดตข้อมูล' : 'บันทึกข้อมูลสินค้า'}
-                </button>
-                {editingProduct && <button type="button" className="btn btn-secondary" onClick={resetForm}>ยกเลิก</button>}
-              </div>
-            </form>
-          </div>
 
           {/* Inventory Table */}
           <div className="glass-card">
@@ -351,50 +314,55 @@ export default function Manager() {
           </div>
         </div>
 
-        {/* Audit History */}
-        <div className="glass-card">
-          <h2 className="card-title">🔍 Product Audit History</h2>
-          <input
-            className="search-input"
-            style={{ marginBottom: '1rem', width: '100%', maxWidth: '400px' }}
-            placeholder="ค้นหา ID หรือชื่อสินค้า..."
-            value={auditSearch}
-            onChange={(e) => setAuditSearch(e.target.value)}
-            id="audit-search-input"
-          />
-          <div className="audit-history-grid" id="audit-history-list">
-            {filteredAudit.length === 0 ? (
-              <p style={{ color: 'var(--text-muted)' }}>ไม่พบข้อมูล</p>
-            ) : filteredAudit.map((a) => (
-              <div key={a.id} className="audit-card">
-                <div className="audit-card-title">⌚ {a.brand} {a.name} (ID: {a.id})</div>
-                <div><strong>ราคา:</strong> ฿ {a.price?.toLocaleString()} | <strong>หมวด:</strong> {a.category?.toUpperCase()}</div>
-                <div style={{ marginTop: '0.5rem', fontWeight: 'bold', color: 'var(--text-muted)' }}>Log ประวัติ:</div>
-                <div className="audit-log-list">{a.history.map((line, i) => <div key={i}>• {line}</div>)}</div>
-              </div>
-            ))}
-          </div>
-        </div>
+
 
         {/* Orders Table */}
         <div className="glass-card">
-          <h2 className="card-title">🧾 รายการใบสั่งซื้อทั้งหมด</h2>
+          <h2 className="card-title">🧾 รายการใบสั่งซื้อและการจัดส่ง</h2>
           <div className="table-responsive">
             <table className="data-table">
-              <thead><tr><th>Order ID</th><th>ยอดรวม</th><th>สถานะ</th><th>ช่องทาง</th></tr></thead>
+              <thead>
+                <tr>
+                  <th>Order ID</th>
+                  <th>สินค้า / ที่อยู่</th>
+                  <th>ยอดรวม</th>
+                  <th>สถานะ</th>
+                  <th>ช่องทาง</th>
+                  <th>ดำเนินการ</th>
+                </tr>
+              </thead>
               <tbody id="manager-orders-table">
                 {orders.length === 0 ? (
-                  <tr><td colSpan={4} style={{ textAlign: 'center', color: 'var(--text-muted)' }}>ไม่มีประวัติ</td></tr>
+                  <tr><td colSpan={6} style={{ textAlign: 'center', color: 'var(--text-muted)' }}>ไม่มีรายการใบสั่งซื้อ</td></tr>
                 ) : orders.map((ord) => (
                   <tr key={ord.id}>
                     <td><strong>{ord.id}</strong></td>
-                    <td>฿ {ord.total?.toLocaleString()}</td>
-                    <td><span className={`badge ${ord.status === 'paid' ? 'badge-paid' : ord.status === 'shipped' ? 'badge-shipped' : 'badge-cancelled'}`}>
-                      {ord.status === 'paid' ? 'เตรียมจ่าย' : ord.status === 'shipped' ? 'ส่งแล้ว' : 'ยกเลิก'}
-                    </span></td>
+                    <td>
+                      <div style={{ fontSize: '0.85rem' }}>{ord.items?.map((i) => `${i.name} (${i.quantity} เรือน)`).join(', ')}</div>
+                      <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '0.2rem' }}>
+                        ผู้ซื้อ: {ord.email} | ที่อยู่: {ord.address}
+                      </div>
+                    </td>
+                    <td><strong>฿ {ord.total?.toLocaleString()}</strong></td>
+                    <td>
+                      <span className={`badge ${ord.status === 'paid' ? 'badge-paid' : ord.status === 'shipped' ? 'badge-shipped' : 'badge-cancelled'}`}>
+                        {ord.status === 'paid' ? 'เตรียมส่ง' : ord.status === 'shipped' ? 'ส่งแล้ว' : 'ยกเลิก'}
+                      </span>
+                    </td>
                     <td>
                       <small style={{ color: 'var(--text-muted)', fontFamily: 'monospace' }}>{ord.payment?.toUpperCase()}</small>
                       {ord.slip && <><br /><button className="btn btn-secondary" style={{ padding: '0.15rem 0.4rem', fontSize: '0.75rem', marginTop: '0.3rem' }} onClick={() => { const w = window.open(); w.document.write(`<img src="${ord.slip}" style="max-width:100%">`); }}>📄 ดูสลิป</button></>}
+                    </td>
+                    <td>
+                      {ord.status === 'paid' ? (
+                        <button className="btn btn-primary" style={{ padding: '0.25rem 0.6rem', fontSize: '0.8rem' }} onClick={() => shipOrder(ord.id)}>
+                          จัดส่ง 🚚
+                        </button>
+                      ) : ord.status === 'shipped' ? (
+                        <span style={{ color: '#4ade80', fontSize: '0.8rem', fontWeight: 700 }}>✔️ นำจ่ายแล้ว</span>
+                      ) : (
+                        <span style={{ color: 'var(--text-muted)', fontSize: '0.8rem' }}>ยกเลิกแล้ว</span>
+                      )}
                     </td>
                   </tr>
                 ))}
