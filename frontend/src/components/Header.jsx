@@ -543,7 +543,7 @@ export default function Header({ showCart, cartCount: cartCountProp, onCartClick
               onChange={handleSearchChange}
               style={{
                 width: '100%',
-                background: 'rgba(255,255,255,0.04)',
+                background: 'var(--input-bg)',
                 border: '1px solid var(--glass-border)',
                 borderRight: 'none',
                 color: 'var(--text-light)',

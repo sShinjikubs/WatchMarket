@@ -218,6 +218,7 @@ export default function Storefront() {
 
       <main className="main-content">
         {/* Slider Hero Section */}
+        {!search && (
         <section style={{
           position: 'relative',
           width: '100%',
@@ -257,7 +258,7 @@ export default function Storefront() {
               fontWeight: 800,
               fontFamily: 'Oswald, sans-serif',
               textTransform: 'uppercase',
-              color: 'var(--text-light)',
+              color: '#fff',
               lineHeight: 1.1,
               margin: 0,
               letterSpacing: '2px',
@@ -328,9 +329,9 @@ export default function Storefront() {
               top: '50%',
               left: '1rem',
               transform: 'translateY(-50%)',
-              background: 'rgba(255,255,255,0.04)',
-              border: '1px solid rgba(255,255,255,0.1)',
-              color: 'var(--text-light)',
+              background: 'rgba(255,255,255,0.1)',
+              border: '1px solid rgba(255,255,255,0.2)',
+              color: '#fff',
               width: '36px',
               height: '36px',
               borderRadius: '50%',
@@ -353,9 +354,9 @@ export default function Storefront() {
               top: '50%',
               right: '1rem',
               transform: 'translateY(-50%)',
-              background: 'rgba(255,255,255,0.04)',
-              border: '1px solid rgba(255,255,255,0.1)',
-              color: 'var(--text-light)',
+              background: 'rgba(255,255,255,0.1)',
+              border: '1px solid rgba(255,255,255,0.2)',
+              color: '#fff',
               width: '36px',
               height: '36px',
               borderRadius: '50%',
@@ -399,9 +400,10 @@ export default function Storefront() {
             ))}
           </div>
         </section>
+        )}
 
         {/* Recommended Products Section */}
-        {recommendedProducts.length > 0 && (
+        {!search && recommendedProducts.length > 0 && (
           <section id="recommended" className="products-section" style={{ borderBottom: '1px solid rgba(255,255,255,0.05)', paddingBottom: '3rem', marginBottom: '2rem' }}>
             <div className="section-header">
               <div>
@@ -449,7 +451,7 @@ export default function Storefront() {
         )}
 
         {/* New Arrivals Section */}
-        {newArrivalsProducts.length > 0 && (
+        {!search && newArrivalsProducts.length > 0 && (
           <section id="new-arrivals" className="products-section" style={{ borderBottom: '1px solid rgba(255,255,255,0.05)', paddingBottom: '3rem', marginBottom: '2rem' }}>
             <div className="section-header">
               <div>
@@ -497,7 +499,7 @@ export default function Storefront() {
         )}
 
         {/* Special Promotions Section */}
-        {promotionProducts.length > 0 && (
+        {!search && promotionProducts.length > 0 && (
           <section id="promotions" className="products-section" style={{ borderBottom: '1px solid rgba(255,255,255,0.05)', paddingBottom: '3rem', marginBottom: '2rem' }}>
             <div className="section-header">
               <div>
@@ -554,7 +556,7 @@ export default function Storefront() {
         {/* Product Filters */}
         <section className="products-section">
           <div className="section-header">
-            <h2 className="section-title">สินค้าทั้งหมด</h2>
+            <h2 className="section-title">{search ? `ผลการค้นหาสำหรับ "${search}"` : 'สินค้าทั้งหมด'}</h2>
             <div className="filter-controls">
               {[{ key: 'all', label: 'ทั้งหมด' }, { key: 'Luminox', label: 'LUMINOX' }, { key: 'Seiko', label: 'SEIKO' }, { key: 'TAG Heuer', label: 'TAG HEUER' }].map(({ key, label }) => (
                 <button

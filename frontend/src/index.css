@@ -68,7 +68,7 @@ header {
     left: 0;
     width: 100%;
     z-index: 1000;
-    background: rgba(11, 12, 16, 0.8);
+    background: var(--header-bg);
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
     border-bottom: 1px solid var(--glass-border);
@@ -246,7 +246,7 @@ nav ul li a:hover, nav ul li a.active {
 /* Products Section */
 .products-section {
     padding: 6rem 5%;
-    background-color: #0d0e12;
+    background-color: transparent;
 }
 
 .section-header {
