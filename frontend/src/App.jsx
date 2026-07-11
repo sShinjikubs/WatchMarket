@@ -169,6 +169,11 @@ function GuestOnly({ children }) {
   return <Navigate to="/" replace />;
 }
 
+function ManagerRouteWrapper() {
+  const { user } = useAuth();
+  return user?.role === 'admin' ? <Admin /> : <Manager />;
+}
+
 // ─── App Router ──────────────────────────────────────────────────────────────
 export default function App() {
   return (
@@ -191,7 +196,7 @@ export default function App() {
               <Route path="/checkout" element={<RequireAuth><Checkout /></RequireAuth>} />
 
               {/* Manager + Admin only */}
-              <Route path="/manager" element={<RequireRole roles={['manager', 'admin']}><Manager /></RequireRole>} />
+              <Route path="/manager" element={<RequireRole roles={['manager', 'admin']}><ManagerRouteWrapper /></RequireRole>} />
 
               {/* Admin only */}
               <Route path="/admin" element={<RequireRole roles={['admin']}><Admin /></RequireRole>} />
