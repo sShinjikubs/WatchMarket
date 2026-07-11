@@ -242,9 +242,9 @@ app.post('/api/orders', async (req, res) => {
     email,
     address,
     payment,
-    // COD is confirmed instantly. PromptPay & Bank Transfer start at pending_review
-    status: payment === 'cod' ? 'confirmed' : 'pending_review',
-    date: new Date().toLocaleString(),
+    // COD is confirmed instantly. PromptPay & Bank Transfer start at pending_review if slip is attached, otherwise pending_payment
+    status: payment === 'cod' ? 'confirmed' : (slip ? 'pending_review' : 'pending_payment'),
+    date: new Date().toISOString(),
     slip: payment !== 'cod' ? slip : null
   };
 
@@ -252,15 +252,53 @@ app.post('/api/orders', async (req, res) => {
 
   await db.addLog(`[ORDER]: บันทึกออเดอร์ใหม่ (ID: ${newOrder.id}) สถานะ: ${newOrder.status}`);
   if (payment === 'promptpay') {
-    await db.addLog(`[PAYMENT]: PromptPay QR Code ชำระเสร็จสิ้น — รอ Manager ตรวจสลิปก่อนยืนยัน`);
+    if (newOrder.status === 'pending_review') {
+      await db.addLog(`[PAYMENT]: PromptPay QR Code ชำระเสร็จสิ้น — รอ Manager ตรวจสลิป`);
+    } else {
+      await db.addLog(`[PAYMENT]: รอชำระเงินภายใน 24 ชม. ผ่าน PromptPay QR (ออเดอร์: ${newOrder.id})`);
+    }
   } else if (payment === 'bank_transfer') {
-    await db.addLog(`[PAYMENT]: ได้รับสลิปโอนเงิน — รอ Manager ตรวจสอบความถูกต้อง`);
+    if (newOrder.status === 'pending_review') {
+      await db.addLog(`[PAYMENT]: ได้รับสลิปโอนเงิน — รอ Manager ตรวจสอบความถูกต้อง`);
+    } else {
+      await db.addLog(`[PAYMENT]: รอชำระเงินภายใน 24 ชม. ผ่านธนาคาร (ออเดอร์: ${newOrder.id})`);
+    }
   } else {
     await db.addLog(`[PAYMENT]: COD ยืนยันทันที — ชำระเงินเมื่อรับสินค้า`);
   }
-  await db.addLog(`[LINE Notify]: แจ้ง Manager มีออเดอร์ใหม่รอตรวจสลิป → ออเดอร์ ${newOrder.id} ยอด ฿${totalPrice.toLocaleString()}`);
+  
+  if (newOrder.status === 'pending_review') {
+    await db.addLog(`[LINE Notify]: แจ้ง Manager มีออเดอร์ใหม่รอตรวจสลิป → ออเดอร์ ${newOrder.id} ยอด ฿${totalPrice.toLocaleString()}`);
+  }
 
   return res.status(201).json(newOrder);
+});
+
+app.post('/api/orders/:id/submit-slip', async (req, res) => {
+  const orderId = req.params.id;
+  const { slip } = req.body;
+  if (!slip) {
+    return res.status(400).json({ error: 'กรุณาแนบสลิปการโอนเงิน' });
+  }
+
+  try {
+    const orders = await db.getOrders();
+    const ord = orders.find(o => o.id === orderId);
+    if (!ord) {
+      return res.status(404).json({ error: 'ไม่พบออเดอร์นี้ในระบบ' });
+    }
+    if (ord.status !== 'pending_payment') {
+      return res.status(400).json({ error: 'ออเดอร์นี้ไม่ได้อยู่ในสถานะรอชำระเงิน' });
+    }
+
+    await db.updateOrderSlip(orderId, slip, 'pending_review');
+    await db.addLog(`[PAYMENT]: ลูกค้าแนบสลิปการชำระเงินเรียบร้อยสำหรับออเดอร์ ${orderId} — รอ Manager ตรวจสอบ`);
+    await db.addLog(`[LINE Notify]: แจ้ง Manager มีการอัปโหลดสลิปใหม่ → ออเดอร์ ${orderId} ยอด ฿${ord.total.toLocaleString()}`);
+    return res.json({ success: true });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ error: 'เกิดข้อผิดพลาดกับเซิร์ฟเวอร์' });
+  }
 });
 
 app.post('/api/orders/:id/cancel', async (req, res) => {

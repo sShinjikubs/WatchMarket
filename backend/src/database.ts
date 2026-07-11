@@ -672,6 +672,10 @@ export const db = {
     await pool.query('UPDATE orders SET status = $1 WHERE id = $2', [status, id]);
   },
 
+  updateOrderSlip: async (id: string, slip: string, status: string): Promise<void> => {
+    await pool.query('UPDATE orders SET slip = $1, status = $2 WHERE id = $3', [slip, status, id]);
+  },
+
   getPendingWatches: async (): Promise<PendingWatch[]> => {
     const res = await pool.query(
       `SELECT id, brand, model, CAST(price AS FLOAT) as price, proposed_banding as "proposedBanding",

@@ -10,6 +10,7 @@ import Manager from './pages/Manager';
 import MarkdownViewer from './pages/Markdown';
 import ProductDetail from './pages/ProductDetail';
 import Checkout from './pages/Checkout';
+import MyOrders from './pages/MyOrders';
 import { CartProvider } from './CartContext';
 import CartDrawer from './components/CartDrawer';
 
@@ -194,6 +195,7 @@ export default function App() {
               <Route path="/product/:id" element={<RequireAuth><ProductDetail /></RequireAuth>} />
               <Route path="/profile" element={<RequireAuth><Profile /></RequireAuth>} />
               <Route path="/checkout" element={<RequireAuth><Checkout /></RequireAuth>} />
+              <Route path="/my-orders" element={<RequireAuth><MyOrders /></RequireAuth>} />
 
               {/* Manager + Admin only */}
               <Route path="/manager" element={<RequireRole roles={['manager', 'admin']}><ManagerRouteWrapper /></RequireRole>} />

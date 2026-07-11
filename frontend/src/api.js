@@ -38,6 +38,7 @@ export const api = {
   managerRejectOrder: (id, note) => request('POST', `/api/orders/${id}/manager-reject`, { note }),
   adminConfirmOrder: (id) => request('POST', `/api/orders/${id}/admin-confirm`),
   getPaymentQR: (amount) => request('GET', `/api/payment/qr?amount=${amount}`),
+  submitSlip: (id, slip) => request('POST', `/api/orders/${id}/submit-slip`, { slip }),
 
   // Pending Watches
   getPendingWatches: () => request('GET', '/api/pending-watches'),

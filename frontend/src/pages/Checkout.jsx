@@ -73,10 +73,6 @@ export default function Checkout() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if ((form.payment === 'promptpay' || form.payment === 'bank_transfer') && !slipBase64) {
-      showNotif('โปรดแนบสลิปการโอนเงิน', false);
-      return;
-    }
     setSubmitting(true);
     try {
       const res = await api.createOrder({
@@ -85,7 +81,7 @@ export default function Checkout() {
         email: form.email,
         address: form.address,
         payment: form.payment,
-        slip: slipBase64,
+        slip: slipBase64 || null,
       });
       if (res.ok) {
         const data = await res.json();
@@ -105,6 +101,46 @@ export default function Checkout() {
 
   // ─── Success Screen ────────────────────────────────────────────────────────
   if (orderSuccess) {
+    let title = "สั่งซื้อสำเร็จ! 🎉";
+    let icon = "🛍️";
+    let desc = (
+      <>
+        ระบบได้รับคำสั่งซื้อของท่านเรียบร้อยแล้ว<br />
+        ขอบพระคุณที่ไว้วางใจเลือกซื้อสินค้ากับ WatchMart
+      </>
+    );
+
+    if (form.payment === 'promptpay' || form.payment === 'bank_transfer') {
+      if (slipBase64) {
+        title = "ส่งหลักฐานสำเร็จ! ⏳";
+        icon = "⏳";
+        desc = (
+          <>
+            ระบบได้รับหลักฐานการชำระเงินของท่านแล้ว<br />
+            กำลังอยู่ระหว่างการตรวจสอบความถูกต้องโดย Manager & Admin
+          </>
+        );
+      } else {
+        title = "สั่งซื้อสำเร็จ! 💸";
+        icon = "💸";
+        desc = (
+          <>
+            กรุณาชำระเงินและแนบสลิปการโอนเงิน**ภายใน 24 ชั่วโมง**<br />
+            โดยท่านสามารถแนบสลิปได้ที่หน้า <strong>"ประวัติใบสั่งซื้อของฉัน"</strong>
+          </>
+        );
+      }
+    } else if (form.payment === 'cod') {
+      title = "สั่งซื้อสำเร็จ! 📦";
+      icon = "📦";
+      desc = (
+        <>
+          เรากำลังเตรียมจัดส่งสินค้าของท่าน<br />
+          กรุณาชำระเงินสดปลายทางเมื่อพัสดุจัดส่งถึงมือท่าน
+        </>
+      );
+    }
+
     return (
       <div className="page-wrapper">
         <Header />
@@ -114,11 +150,10 @@ export default function Checkout() {
             border: '1px solid var(--glass-border)', borderRadius: '20px', maxWidth: '480px',
             boxShadow: '0 8px 40px rgba(0,0,0,0.4)'
           }}>
-            <div style={{ fontSize: '5rem', marginBottom: '1rem', animation: 'pulse 1s' }}>⏳</div>
-            <h2 style={{ color: 'var(--accent-gold)', fontSize: '1.8rem', marginBottom: '0.5rem' }}>ส่งหลักฐานสำเร็จ!</h2>
+            <div style={{ fontSize: '5rem', marginBottom: '1rem' }}>{icon}</div>
+            <h2 style={{ color: 'var(--accent-gold)', fontSize: '1.8rem', marginBottom: '0.5rem' }}>{title}</h2>
             <p style={{ color: 'var(--text-muted)', marginBottom: '1.5rem', lineHeight: 1.6 }}>
-              ระบบได้รับหลักฐานการชำระเงินของท่านแล้ว<br />
-              กำลังอยู่ระหว่างการตรวจสอบความถูกต้องโดย Manager & Admin
+              {desc}
             </p>
             {orderId && (
               <div style={{ background: 'rgba(255,169,77,0.08)', border: '1px solid rgba(255,169,77,0.3)', borderRadius: '10px', padding: '1rem', marginBottom: '2rem' }}>
@@ -260,7 +295,7 @@ export default function Checkout() {
               {/* Slip upload */}
               {(form.payment === 'promptpay' || form.payment === 'bank_transfer') && (
                 <div className="form-group">
-                  <label className="form-label">แนบสลิปการโอนเงิน *</label>
+                  <label className="form-label">แนบสลิปการโอนเงิน (ไม่บังคับ — แนบภายหลังได้จากประวัติสั่งซื้อภายใน 24 ชม.)</label>
                   <input
                     type="file"
                     className="form-input"

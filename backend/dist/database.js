@@ -646,6 +646,9 @@ exports.db = {
     updateOrderStatus: async (id, status) => {
         await pool.query('UPDATE orders SET status = $1 WHERE id = $2', [status, id]);
     },
+    updateOrderSlip: async (id, slip, status) => {
+        await pool.query('UPDATE orders SET slip = $1, status = $2 WHERE id = $3', [slip, status, id]);
+    },
     getPendingWatches: async () => {
         const res = await pool.query(`SELECT id, brand, model, CAST(price AS FLOAT) as price, proposed_banding as "proposedBanding",
               dial_color as "dialColor", description, seller_name as "sellerName", seller_email as "sellerEmail",

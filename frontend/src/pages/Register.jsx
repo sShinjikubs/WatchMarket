@@ -6,7 +6,7 @@ export default function Register() {
   const navigate = useNavigate();
   const [form, setForm] = useState({
     username: '', email: '', password: '', confirmPassword: '',
-    firstName: '', lastName: '', phone: '',
+    firstname: '', lastname: '', phone: '',
   });
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
@@ -27,8 +27,8 @@ export default function Register() {
         username: form.username,
         email: form.email,
         password: form.password,
-        firstName: form.firstName,
-        lastName: form.lastName,
+        firstname: form.firstname,
+        lastname: form.lastname,
         phone: form.phone,
       });
       const data = await res.json();
@@ -62,11 +62,11 @@ export default function Register() {
           <div className="form-row">
             <div className="form-group">
               <label className="form-label">ชื่อจริง</label>
-              <input className="form-input" placeholder="ชื่อจริง" value={form.firstName} onChange={set('firstName')} required />
+              <input className="form-input" placeholder="ชื่อจริง" value={form.firstname} onChange={set('firstname')} required />
             </div>
             <div className="form-group">
               <label className="form-label">นามสกุล</label>
-              <input className="form-input" placeholder="นามสกุล" value={form.lastName} onChange={set('lastName')} required />
+              <input className="form-input" placeholder="นามสกุล" value={form.lastname} onChange={set('lastname')} required />
             </div>
           </div>
 

@@ -189,7 +189,7 @@ export default function Admin() {
       if (editingProduct) {
         res = await api.updateProduct(editingProduct, payload);
       } else {
-        res = await api.saveProduct(payload);
+        res = await api.addProduct(payload);
       }
 
       if (res.ok) {
@@ -557,9 +557,10 @@ export default function Admin() {
                       </td>
                       <td><strong>฿ {ord.total?.toLocaleString()}</strong></td>
                       <td>
+                        {ord.status === 'pending_payment' && <span className="badge" style={{ background: 'rgba(255,165,0,0.18)', color: '#ffa94d', border: '1px solid #ffa94d55' }}>รอชำระเงิน</span>}
                         {ord.status === 'pending_review' && <span className="badge" style={{ background: 'rgba(255,165,0,0.18)', color: '#ffa94d', border: '1px solid #ffa94d55' }}>รอ Manager ตรวจ</span>}
                         {ord.status === 'manager_approved' && <span className="badge" style={{ background: 'rgba(59,130,246,0.18)', color: '#60a5fa', border: '1px solid #60a5fa55' }}>ผ่าน Manager แล้ว</span>}
-                        {ord.status === 'confirmed' && <span className="badge badge-paid">ยืนยันแล้ว</span>}
+                        {ord.status === 'confirmed' && <span className="badge badge-paid">เตรียมส่ง (ยืนยันแล้ว)</span>}
                         {ord.status === 'shipped' && <span className="badge badge-shipped">ส่งแล้ว</span>}
                         {ord.status === 'cancelled' && <span className="badge badge-cancelled">ยกเลิก</span>}
                         {ord.status === 'paid' && <span className="badge badge-paid">เตรียมส่ง</span>}
@@ -574,15 +575,17 @@ export default function Admin() {
                             <img src={ord.slip} alt="สลิป" style={{ width: '100%', display: 'block' }} />
                           </div>
                         )}
-                        {ord.status === 'manager_approved' ? (
+                        {ord.status === 'pending_payment' ? (
+                          <span style={{ color: '#ffa94d', fontSize: '0.8rem' }}>รอชำระเงิน</span>
+                        ) : ord.status === 'pending_review' ? (
+                          <span style={{ color: '#ffa94d', fontSize: '0.8rem' }}>รอการตรวจสอบจาก Manager</span>
+                        ) : ord.status === 'manager_approved' ? (
                           <button className="btn btn-primary" style={{ padding: '0.25rem 0.6rem', fontSize: '0.8rem', background: 'linear-gradient(135deg, var(--accent-gold), #b58900)', border: 'none', color: '#000', fontWeight: 'bold' }} onClick={() => confirmOrder(ord.id)}>
                             ยืนยันขั้นสุดท้าย
                           </button>
-                        ) : ord.status === 'pending_review' ? (
-                          <span style={{ color: '#ffa94d', fontSize: '0.8rem' }}>รอการตรวจสอบจาก Manager</span>
                         ) : ord.status === 'confirmed' || ord.status === 'paid' ? (
                           <span style={{ color: '#51cf66', fontSize: '0.8rem', display: 'inline-flex', alignItems: 'center', gap: '0.2rem' }}>
-                            <Icons.Check /><span>ยืนยันแล้ว</span>
+                            <Icons.Check /><span>ยืนยันชำระเงินแล้ว</span>
                           </span>
                         ) : ord.status === 'shipped' ? (
                           <span style={{ color: '#4ade80', fontSize: '0.8rem', fontWeight: 700, display: 'inline-flex', alignItems: 'center', gap: '0.2rem' }}>

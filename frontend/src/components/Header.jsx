@@ -94,6 +94,9 @@ export default function Header({ showCart, cartCount: cartCountProp, onCartClick
   const [searchParams, setSearchParams] = useSearchParams();
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const dropdownRef = useRef(null);
+  const [notifOpen, setNotifOpen] = useState(false);
+  const notifRef = useRef(null);
+  const [orders, setOrders] = useState([]);
 
   // Use CartContext count by default; fall back to prop if explicitly provided
   const displayCartCount = ctxCartCount;
@@ -104,10 +107,92 @@ export default function Header({ showCart, cartCount: cartCountProp, onCartClick
       if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
         setDropdownOpen(false);
       }
+      if (notifRef.current && !notifRef.current.contains(e.target)) {
+        setNotifOpen(false);
+      }
     }
     document.addEventListener('mousedown', handleOutsideClick);
     return () => document.removeEventListener('mousedown', handleOutsideClick);
   }, []);
+
+  useEffect(() => {
+    if (!user) return;
+    const fetchOrders = () => {
+      api.getOrders().then(async (res) => {
+        if (res.ok) setOrders(await res.json());
+      }).catch(() => {});
+    };
+    fetchOrders();
+    const interval = setInterval(fetchOrders, 10000);
+    return () => clearInterval(interval);
+  }, [user]);
+
+  const getNotifications = () => {
+    const list = [];
+    if (!user) return list;
+
+    if (user.role === 'admin') {
+      orders.forEach(ord => {
+        if (ord.status === 'manager_approved') {
+          list.push({
+            id: `admin-confirm-${ord.id}`,
+            text: `ออเดอร์ ${ord.id} ผ่านการตรวจสลิปแล้ว รอคุณยืนยันขั้นสุดท้าย`,
+            time: ord.date,
+            link: '/manager'
+          });
+        }
+      });
+    } else if (user.role === 'manager') {
+      orders.forEach(ord => {
+        if (ord.status === 'pending_review') {
+          list.push({
+            id: `manager-review-${ord.id}`,
+            text: `มีออเดอร์ใหม่ ${ord.id} รอตรวจสอบสลิปชำระเงิน`,
+            time: ord.date,
+            link: '/manager'
+          });
+        }
+      });
+    } else {
+      // Regular user/buyer
+      const myOrders = orders.filter(o => o.userId === user.username);
+      myOrders.forEach(ord => {
+        if (ord.status === 'manager_approved') {
+          list.push({
+            id: `user-m-approve-${ord.id}`,
+            text: `ออเดอร์ ${ord.id} ผ่านการตรวจสอบสลิปจาก Manager แล้ว (รอ Admin ยืนยัน)`,
+            time: ord.date,
+            link: '/my-orders'
+          });
+        } else if (ord.status === 'confirmed') {
+          list.push({
+            id: `user-confirm-${ord.id}`,
+            text: `ออเดอร์ ${ord.id} ได้รับการยืนยันการชำระเงินจาก Admin แล้ว (เตรียมจัดส่ง)`,
+            time: ord.date,
+            link: '/my-orders'
+          });
+        } else if (ord.status === 'shipped') {
+          list.push({
+            id: `user-shipped-${ord.id}`,
+            text: `ออเดอร์ ${ord.id} จัดส่งสินค้าเรียบร้อยแล้ว!`,
+            time: ord.date,
+            link: '/my-orders'
+          });
+        } else if (ord.status === 'cancelled' && ord.slip) {
+          list.push({
+            id: `user-cancelled-${ord.id}`,
+            text: `ออเดอร์ ${ord.id} ปฏิเสธสลิปการชำระเงิน โปรดส่งสลิปใหม่`,
+            time: ord.date,
+            link: '/my-orders'
+          });
+        }
+      });
+    }
+    
+    return list.sort((a, b) => new Date(b.time).getTime() - new Date(a.time).getTime());
+  };
+
+  const notificationsList = getNotifications();
 
   const handleLogout = async () => {
     try {
@@ -510,6 +595,112 @@ export default function Header({ showCart, cartCount: cartCountProp, onCartClick
             </button>
           )}
 
+          {/* Notifications Icon & Dropdown */}
+          {user && (
+            <div style={{ position: 'relative', display: 'inline-flex', alignItems: 'center' }} ref={notifRef}>
+              <button 
+                onClick={() => setNotifOpen(!notifOpen)}
+                style={{
+                  border: 'none',
+                  color: 'var(--text-light)',
+                  cursor: 'pointer',
+                  position: 'relative',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  width: '34px',
+                  height: '34px',
+                  borderRadius: '50%',
+                  background: notifOpen ? 'rgba(255,255,255,0.08)' : 'transparent',
+                  transition: 'background 0.2s',
+                  marginRight: '0.5rem'
+                }}
+              >
+                <Icons.Bell style={{ width: '18px', height: '18px', color: notificationsList.length > 0 ? 'var(--accent-gold)' : 'var(--text-muted)' }} />
+                {notificationsList.length > 0 && (
+                  <span style={{
+                    position: 'absolute',
+                    top: '4px',
+                    right: '4px',
+                    background: '#ef4444',
+                    color: '#fff',
+                    borderRadius: '50%',
+                    width: '14px',
+                    height: '14px',
+                    fontSize: '0.68rem',
+                    fontWeight: 'bold',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center'
+                  }}>
+                    {notificationsList.length}
+                  </span>
+                )}
+              </button>
+
+              {notifOpen && (
+                <div style={{
+                  position: 'absolute',
+                  top: '42px',
+                  right: 0,
+                  width: '320px',
+                  background: 'rgba(21, 28, 44, 0.98)',
+                  backdropFilter: 'blur(25px)',
+                  border: '1px solid var(--glass-border)',
+                  borderRadius: '12px',
+                  boxShadow: '0 10px 30px rgba(0,0,0,0.5)',
+                  padding: '1rem',
+                  zIndex: 1010,
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: '0.6rem'
+                }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid rgba(255,255,255,0.08)', paddingBottom: '0.5rem', marginBottom: '0.4rem' }}>
+                    <span style={{ fontWeight: 'bold', color: 'var(--text-primary)', fontSize: '0.9rem' }}>🔔 {lang === 'th' ? 'การแจ้งเตือน' : 'Notifications'}</span>
+                    <span style={{ fontSize: '0.75rem', color: 'var(--accent-gold)' }}>{notificationsList.length} {lang === 'th' ? 'รายการใหม่' : 'new'}</span>
+                  </div>
+
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', maxHeight: '250px', overflowY: 'auto' }}>
+                    {notificationsList.length === 0 ? (
+                      <div style={{ padding: '1.5rem', textAlign: 'center', color: 'var(--text-muted)', fontSize: '0.8rem' }}>
+                        {lang === 'th' ? 'ไม่มีการแจ้งเตือนใหม่ในขณะนี้' : 'No new notifications.'}
+                      </div>
+                    ) : notificationsList.map((item) => (
+                      <div 
+                        key={item.id} 
+                        onClick={() => { setNotifOpen(false); navigate(item.link); }}
+                        style={{
+                          background: 'rgba(255,255,255,0.02)',
+                          border: '1px solid rgba(255,255,255,0.03)',
+                          padding: '0.75rem',
+                          borderRadius: '8px',
+                          cursor: 'pointer',
+                          fontSize: '0.78rem',
+                          color: '#f5f5f7',
+                          lineHeight: 1.4,
+                          transition: 'background 0.2s',
+                          textAlign: 'left'
+                        }}
+                      >
+                        <div>{item.text}</div>
+                        <div style={{ fontSize: '0.68rem', color: 'var(--text-muted)', marginTop: '0.3rem', textAlign: 'right' }}>
+                          {(() => {
+                            try {
+                              const d = new Date(item.time);
+                              return isNaN(d.getTime()) ? item.time : d.toLocaleString('th-TH');
+                            } catch (_) {
+                              return item.time;
+                            }
+                          })()}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+
           {/* Profile Dropdown */}
           {user && (
             <div className="user-profile-dropdown-container" id="user-profile-header" ref={dropdownRef}>
@@ -536,6 +727,15 @@ export default function Header({ showCart, cartCount: cartCountProp, onCartClick
                   onClick={() => setDropdownOpen(false)}
                 >
                   {t('myProfile')}
+                </Link>
+                <div className="profile-dropdown-divider" />
+                <Link
+                  to="/my-orders"
+                  className="profile-dropdown-item"
+                  style={{ textDecoration: 'none', display: 'block', textAlign: 'left' }}
+                  onClick={() => setDropdownOpen(false)}
+                >
+                  📦 ประวัติใบสั่งซื้อของฉัน
                 </Link>
                 <div className="profile-dropdown-divider" />
                 <button className="profile-dropdown-item signout-btn" onClick={handleLogout}>

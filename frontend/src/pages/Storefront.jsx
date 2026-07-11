@@ -158,14 +158,7 @@ export default function Storefront() {
     }
   };
 
-  const cancelOrder = async (id) => {
-    if (!confirm(`ยกเลิกออเดอร์ "${id}" ใช่หรือไม่?`)) return;
-    const res = await api.cancelOrder(id);
-    if (res.ok) { showNotif('ยกเลิกสำเร็จ'); refreshData(); }
-    else showNotif('ยกเลิกไม่สำเร็จ', false);
-  };
 
-  const myOrders = orders.filter((o) => o.userId === user?.username);
 
   return (
     <div className="page-wrapper">
@@ -596,39 +589,7 @@ export default function Storefront() {
           </div>
         </section>
 
-        {/* My Orders */}
-        <section className="orders-section">
-          <h2 className="section-title">ประวัติใบสั่งซื้อของฉัน</h2>
-          <div id="customer-orders-list">
-            {myOrders.length === 0 ? (
-              <p style={{ color: 'var(--text-muted)' }}>ไม่มีรายการคำสั่งซื้อในขณะนี้</p>
-            ) : myOrders.map((ord) => (
-              <div key={ord.id} className="order-card">
-                <div className="order-card-header">
-                  <div>
-                    <strong>Order ID: {ord.id}</strong><br />
-                    <small style={{ color: 'var(--text-muted)' }}>{ord.date}</small>
-                  </div>
-                  <span className={`badge ${ord.status === 'paid' ? 'badge-paid' : ord.status === 'shipped' ? 'badge-shipped' : 'badge-cancelled'}`}>
-                    {ord.status === 'paid' ? 'ชำระเงินแล้ว' : ord.status === 'shipped' ? 'จัดส่งแล้ว' : 'ยกเลิก'}
-                  </span>
-                </div>
-                <div style={{ marginTop: '0.8rem', fontSize: '0.95rem' }}>
-                  <strong>รายการสินค้า:</strong> {ord.items.map((i) => `${i.name} (${i.quantity} เรือน)`).join(', ')}<br />
-                  <strong>ราคารวม:</strong> ฿ {ord.total?.toLocaleString()}
-                </div>
-                <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginTop: '0.4rem' }}>
-                  <strong>ที่อยู่:</strong> {ord.address} | <strong>วิธีชำระ:</strong> {ord.payment?.toUpperCase()}
-                </div>
-                {ord.status === 'paid' && (
-                  <button className="btn btn-danger" style={{ marginTop: '0.8rem', padding: '0.35rem 0.8rem', fontSize: '0.8rem' }} onClick={() => cancelOrder(ord.id)}>
-                    ยกเลิกออเดอร์
-                  </button>
-                )}
-              </div>
-            ))}
-          </div>
-        </section>
+
 
         {(user?.role === 'admin' || user?.role === 'manager') && <SystemLogger />}
       </main>

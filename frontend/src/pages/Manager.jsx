@@ -454,9 +454,10 @@ export default function Manager() {
                     </td>
                     <td><strong>฿ {ord.total?.toLocaleString()}</strong></td>
                     <td>
-                      {ord.status === 'pending_review' && <span className="badge" style={{ background: 'rgba(255,165,0,0.18)', color: '#ffa94d', border: '1px solid #ffa94d55' }}>รอตรวจสลิป</span>}
+                      {ord.status === 'pending_payment' && <span className="badge" style={{ background: 'rgba(255,165,0,0.18)', color: '#ffa94d', border: '1px solid #ffa94d55' }}>รอชำระเงิน</span>}
+                      {ord.status === 'pending_review' && <span className="badge" style={{ background: 'rgba(59,130,246,0.18)', color: '#60a5fa', border: '1px solid #60a5fa55' }}>รอตรวจสลิป</span>}
                       {ord.status === 'manager_approved' && <span className="badge" style={{ background: 'rgba(59,130,246,0.18)', color: '#60a5fa', border: '1px solid #60a5fa55' }}>รอ Admin ยืนยัน</span>}
-                      {ord.status === 'confirmed' && <span className="badge badge-paid">ยืนยันแล้ว</span>}
+                      {ord.status === 'confirmed' && <span className="badge badge-paid">เตรียมส่ง (ยืนยันแล้ว)</span>}
                       {ord.status === 'shipped' && <span className="badge badge-shipped">ส่งแล้ว</span>}
                       {ord.status === 'cancelled' && <span className="badge badge-cancelled">ยกเลิก</span>}
                       {ord.status === 'paid' && <span className="badge badge-paid">เตรียมส่ง</span>}
@@ -470,6 +471,9 @@ export default function Manager() {
                         <div style={{ marginBottom: '0.4rem', borderRadius: '8px', overflow: 'hidden', border: '1px solid var(--glass-border)', maxWidth: '180px' }}>
                           <img src={ord.slip} alt="สลิป" style={{ width: '100%', display: 'block' }} />
                         </div>
+                      )}
+                      {ord.status === 'pending_payment' && (
+                        <span style={{ color: '#ffa94d', fontSize: '0.8rem' }}>ลูกค้ายกยอดรอโอนเงิน (ภายใน 24 ชม.)</span>
                       )}
                       {ord.status === 'pending_review' && (
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
