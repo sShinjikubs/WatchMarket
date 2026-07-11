@@ -4,6 +4,7 @@ import { useAuth, useLanguage } from '../App';
 import { useCart } from '../CartContext';
 import { api } from '../api';
 import Header from '../components/Header';
+import { Icons } from '../components/Icons';
 import SystemLogger from '../components/SystemLogger';
 
 const HERO_SLIDES = [
@@ -236,7 +237,7 @@ export default function Storefront() {
               letterSpacing: '1px',
               textTransform: 'uppercase'
             }}>
-              🔥 HOT ITEM OF THE WEEK
+              HOT ITEM OF THE WEEK
             </span>
             <h1 style={{
               fontSize: '2.2rem',
@@ -274,7 +275,7 @@ export default function Storefront() {
                 if (matched) navigate(`/product/${matched.id}`);
               }}
             >
-              ดูข้อมูลสินค้าข้อมือ ⌚
+              ดูข้อมูลสินค้าข้อมือ
             </button>
           </div>
 
@@ -388,19 +389,22 @@ export default function Storefront() {
           <section id="recommended" className="products-section" style={{ borderBottom: '1px solid rgba(255,255,255,0.05)', paddingBottom: '3rem', marginBottom: '2rem' }}>
             <div className="section-header">
               <div>
-                <h2 className="section-title" style={{ margin: 0 }}>⭐️ {t('recommended')}</h2>
+                <h2 className="section-title" style={{ margin: 0, display: 'inline-flex', alignItems: 'center', gap: '0.4rem' }}>
+                  <Icons.Star style={{ color: 'var(--accent-gold)' }} />
+                  <span>{t('recommended')}</span>
+                </h2>
                 <p style={{ color: 'var(--text-muted)', fontSize: '0.85rem', marginTop: '0.3rem' }}>นาฬิกาหรูคัดสรรระดับพรีเมียมที่เป็นที่นิยมที่สุด</p>
               </div>
             </div>
             <div className="products-grid">
               {recommendedProducts.map((p) => (
                 <div key={p.id} className="product-card" onClick={() => navigate(`/product/${p.id}`)} style={{ cursor: 'pointer', position: 'relative' }}>
-                  <span style={{ position: 'absolute', top: '10px', left: '10px', background: 'var(--accent-gold)', color: '#0f172a', fontSize: '0.7rem', fontWeight: 'bold', padding: '0.2rem 0.5rem', borderRadius: '4px', zIndex: 10 }}>RECOMMENDED ⭐</span>
+                  <span style={{ position: 'absolute', top: '10px', left: '10px', background: 'var(--accent-gold)', color: '#0f172a', fontSize: '0.7rem', fontWeight: 'bold', padding: '0.2rem 0.5rem', borderRadius: '4px', zIndex: 10 }}>RECOMMENDED</span>
                   <div className="product-card-preview">
                     {p.image ? (
                       <img src={p.image} alt={p.name} style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center', display: 'block' }} />
                     ) : (
-                      <span style={{ fontSize: '3rem' }}>⌚</span>
+                      <Icons.Watch style={{ width: '48px', height: '48px', color: 'rgba(255,255,255,0.15)' }} />
                     )}
                   </div>
                   <div className="product-card-details">
@@ -418,7 +422,7 @@ export default function Storefront() {
                       disabled={p.stock === 0}
                       onClick={(e) => { e.stopPropagation(); handleAddToCart(p); }}
                     >
-                      {p.stock === 0 ? 'สินค้าหมดชั่วคราว' : 'ใส่ตะกร้าสินค้า 🛒'}
+                      {p.stock === 0 ? 'สินค้าหมดชั่วคราว' : 'ใส่ตะกร้าสินค้า'}
                     </button>
                   </div>
                 </div>
@@ -432,19 +436,22 @@ export default function Storefront() {
           <section id="new-arrivals" className="products-section" style={{ borderBottom: '1px solid rgba(255,255,255,0.05)', paddingBottom: '3rem', marginBottom: '2rem' }}>
             <div className="section-header">
               <div>
-                <h2 className="section-title" style={{ margin: 0 }}>🆕 {t('newArrivals')}</h2>
+                <h2 className="section-title" style={{ margin: 0, display: 'inline-flex', alignItems: 'center', gap: '0.4rem' }}>
+                  <Icons.Sparkle style={{ color: 'var(--accent-gold)' }} />
+                  <span>{t('newArrivals')}</span>
+                </h2>
                 <p style={{ color: 'var(--text-muted)', fontSize: '0.85rem', marginTop: '0.3rem' }}>นาฬิกาดีไซน์ใหม่ล่าสุดที่อัปเดตลงระบบ</p>
               </div>
             </div>
             <div className="products-grid">
               {newArrivalsProducts.map((p) => (
                 <div key={p.id} className="product-card" onClick={() => navigate(`/product/${p.id}`)} style={{ cursor: 'pointer', position: 'relative' }}>
-                  <span style={{ position: 'absolute', top: '10px', left: '10px', background: '#3b82f6', color: '#fff', fontSize: '0.7rem', fontWeight: 'bold', padding: '0.2rem 0.5rem', borderRadius: '4px', zIndex: 10 }}>NEW ARRIVAL 🆕</span>
+                  <span style={{ position: 'absolute', top: '10px', left: '10px', background: '#3b82f6', color: '#fff', fontSize: '0.7rem', fontWeight: 'bold', padding: '0.2rem 0.5rem', borderRadius: '4px', zIndex: 10 }}>NEW ARRIVAL</span>
                   <div className="product-card-preview">
                     {p.image ? (
                       <img src={p.image} alt={p.name} style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center', display: 'block' }} />
                     ) : (
-                      <span style={{ fontSize: '3rem' }}>⌚</span>
+                      <Icons.Watch style={{ width: '48px', height: '48px', color: 'rgba(255,255,255,0.15)' }} />
                     )}
                   </div>
                   <div className="product-card-details">
@@ -462,7 +469,7 @@ export default function Storefront() {
                       disabled={p.stock === 0}
                       onClick={(e) => { e.stopPropagation(); handleAddToCart(p); }}
                     >
-                      {p.stock === 0 ? 'สินค้าหมดชั่วคราว' : 'ใส่ตะกร้าสินค้า 🛒'}
+                      {p.stock === 0 ? 'สินค้าหมดชั่วคราว' : 'ใส่ตะกร้าสินค้า'}
                     </button>
                   </div>
                 </div>
@@ -476,19 +483,22 @@ export default function Storefront() {
           <section id="promotions" className="products-section" style={{ borderBottom: '1px solid rgba(255,255,255,0.05)', paddingBottom: '3rem', marginBottom: '2rem' }}>
             <div className="section-header">
               <div>
-                <h2 className="section-title" style={{ margin: 0 }}>🏷️ {t('promotions')}</h2>
+                <h2 className="section-title" style={{ margin: 0, display: 'inline-flex', alignItems: 'center', gap: '0.4rem' }}>
+                  <Icons.Tag style={{ color: 'var(--accent-gold)' }} />
+                  <span>{t('promotions')}</span>
+                </h2>
                 <p style={{ color: 'var(--text-muted)', fontSize: '0.85rem', marginTop: '0.3rem' }}>โปรโมชั่นลดสูงสุดถึง 15% วันนี้เท่านั้น</p>
               </div>
             </div>
             <div className="products-grid">
               {promotionProducts.map((p) => (
                 <div key={p.id} className="product-card" onClick={() => navigate(`/product/${p.id}`)} style={{ cursor: 'pointer', position: 'relative' }}>
-                  <span style={{ position: 'absolute', top: '10px', left: '10px', background: '#ef4444', color: '#fff', fontSize: '0.7rem', fontWeight: 'bold', padding: '0.2rem 0.5rem', borderRadius: '4px', zIndex: 10 }}>SALE -15% 🏷️</span>
+                  <span style={{ position: 'absolute', top: '10px', left: '10px', background: '#ef4444', color: '#fff', fontSize: '0.7rem', fontWeight: 'bold', padding: '0.2rem 0.5rem', borderRadius: '4px', zIndex: 10 }}>SALE -15%</span>
                   <div className="product-card-preview">
                     {p.image ? (
                       <img src={p.image} alt={p.name} style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center', display: 'block' }} />
                     ) : (
-                      <span style={{ fontSize: '3rem' }}>⌚</span>
+                      <Icons.Watch style={{ width: '48px', height: '48px', color: 'rgba(255,255,255,0.15)' }} />
                     )}
                   </div>
                   <div className="product-card-details">
@@ -513,7 +523,7 @@ export default function Storefront() {
                       disabled={p.stock === 0}
                       onClick={(e) => { e.stopPropagation(); handleAddToCart(p); }}
                     >
-                      {p.stock === 0 ? 'สินค้าหมดชั่วคราว' : 'ใส่ตะกร้าสินค้า 🛒'}
+                      {p.stock === 0 ? 'สินค้าหมดชั่วคราว' : 'ใส่ตะกร้าสินค้า'}
                     </button>
                   </div>
                 </div>
@@ -578,7 +588,7 @@ export default function Storefront() {
                     disabled={p.stock === 0}
                     onClick={(e) => { e.stopPropagation(); handleAddToCart(p); }}
                   >
-                    {p.stock === 0 ? 'สินค้าหมดชั่วคราว' : 'ใส่ตะกร้าสินค้า 🛒'}
+                    {p.stock === 0 ? 'สินค้าหมดชั่วคราว' : 'ใส่ตะกร้าสินค้า'}
                   </button>
                 </div>
               </div>

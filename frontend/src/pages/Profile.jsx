@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useAuth } from '../App';
 import { api } from '../api';
 import Header from '../components/Header';
-import SystemLogger from '../components/SystemLogger';
+import { Icons } from '../components/Icons';
 
 export default function Profile() {
   const { user } = useAuth();
@@ -36,7 +36,7 @@ export default function Profile() {
     e.preventDefault();
     try {
       const res = await api.saveProfile(user.username, form);
-      if (res.ok) showNotif('บันทึกข้อมูลโปรไฟล์สำเร็จ! 🎉');
+      if (res.ok) showNotif('บันทึกข้อมูลโปรไฟล์สำเร็จ!');
       else showNotif('บันทึกข้อมูลไม่สำเร็จ', false);
     } catch (_) { showNotif('เซิร์ฟเวอร์ขัดข้อง', false); }
   };
@@ -48,7 +48,10 @@ export default function Profile() {
 
       <main className="main-content">
         <div className="page-header">
-          <h1 className="page-title">👤 โปรไฟล์ของฉัน</h1>
+          <h1 className="page-title" style={{ display: 'inline-flex', alignItems: 'center', gap: '0.6rem' }}>
+            <Icons.User style={{ color: 'var(--accent-gold)', width: '24px', height: '24px' }} />
+            <span>โปรไฟล์ของฉัน</span>
+          </h1>
           <p className="page-subtitle">จัดการข้อมูลส่วนตัวและที่อยู่จัดส่ง</p>
         </div>
 
@@ -78,7 +81,10 @@ export default function Profile() {
                 <label className="form-label">ที่อยู่จัดส่ง</label>
                 <textarea className="form-input" rows={4} value={form.address} onChange={set('address')} id="prof-address" placeholder="บ้านเลขที่ ถนน แขวง/ตำบล เขต/อำเภอ จังหวัด รหัสไปรษณีย์" />
               </div>
-              <button type="submit" className="btn btn-primary">💾 บันทึกข้อมูล</button>
+              <button type="submit" className="btn btn-primary" style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem' }}>
+                <Icons.Check />
+                <span>บันทึกข้อมูล</span>
+              </button>
             </form>
           </div>
 
@@ -90,12 +96,26 @@ export default function Profile() {
               </div>
               <div>
                 <div style={{ fontWeight: 'bold', fontSize: '1.1rem' }}>{user?.username}</div>
-                <div style={{ color: 'var(--text-muted)', fontSize: '0.85rem', marginTop: '0.2rem' }}>
-                  {user?.role === 'admin' ? '👑 Administrator' : user?.role === 'manager' ? '📊 Manager' : '👤 Customer'}
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', color: 'var(--text-muted)', fontSize: '0.85rem', marginTop: '0.2rem' }}>
+                  {user?.role === 'admin' ? (
+                    <>
+                      <Icons.Crown style={{ color: 'var(--accent-gold)' }} />
+                      <span>Administrator</span>
+                    </>
+                  ) : user?.role === 'manager' ? (
+                    <>
+                      <Icons.Chart style={{ color: 'var(--accent-gold)' }} />
+                      <span>Manager</span>
+                    </>
+                  ) : (
+                    <>
+                      <Icons.User style={{ color: 'var(--accent-gold)' }} />
+                      <span>Customer</span>
+                    </>
+                  )}
                 </div>
               </div>
             </div>
-            <SystemLogger />
           </div>
         </div>
       </main>

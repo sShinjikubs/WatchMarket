@@ -4,6 +4,7 @@ import { useAuth } from '../App';
 import { useCart } from '../CartContext';
 import { api } from '../api';
 import Header from '../components/Header';
+import { Icons } from '../components/Icons';
 
 export default function Checkout() {
   const { user } = useAuth();
@@ -192,13 +193,13 @@ export default function Checkout() {
 
             {/* Payment Method */}
             <div style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid var(--glass-border)', borderRadius: '16px', padding: '1.8rem' }}>
-              <h3 style={{ fontSize: '1.1rem', marginBottom: '1.2rem', color: 'var(--accent-gold)' }}>💰 วิธีชำระเงิน</h3>
+              <h3 style={{ fontSize: '1.1rem', marginBottom: '1.2rem', color: 'var(--accent-gold)' }}>วิธีชำระเงิน</h3>
 
               <div style={{ display: 'flex', flexDirection: 'column', gap: '0.8rem', marginBottom: '1.5rem' }}>
                 {[
-                  { value: 'promptpay', label: '📱 PromptPay QR Code', desc: 'สแกน QR แล้วแนบสลิป' },
-                  { value: 'bank_transfer', label: '🏦 โอนเงินผ่านธนาคาร', desc: 'โอนแล้วแนบสลิปยืนยัน' },
-                  { value: 'cod', label: '📦 ชำระเงินปลายทาง (COD)', desc: 'ชำระเงินเมื่อรับสินค้า' },
+                  { value: 'promptpay', label: 'PromptPay QR Code', desc: 'สแกน QR แล้วแนบสลิป' },
+                  { value: 'bank_transfer', label: 'โอนเงินผ่านธนาคาร', desc: 'โอนแล้วแนบสลิปยืนยัน' },
+                  { value: 'cod', label: 'ชำระเงินปลายทาง (COD)', desc: 'ชำระเงินเมื่อรับสินค้า' },
                 ].map(({ value, label, desc }) => (
                   <label
                     key={value}
@@ -229,11 +230,14 @@ export default function Checkout() {
               {/* QR Code for PromptPay */}
               {form.payment === 'promptpay' && (
                 <div style={{ textAlign: 'center', marginBottom: '1.5rem', padding: '1.5rem', background: 'white', borderRadius: '12px', display: 'inline-block', width: '100%', boxSizing: 'border-box' }}>
-                  <div style={{ color: '#0c4a60', fontWeight: 'bold', fontSize: '1.1rem', marginBottom: '0.8rem' }}>🔲 PromptPay QR Code</div>
+                  <div style={{ color: '#0c4a60', fontWeight: 'bold', fontSize: '1.1rem', marginBottom: '0.8rem' }}>PromptPay QR Code</div>
                   
                   {loadingQR ? (
                     <div style={{ height: '160px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#666' }}>
-                      ⏳ กำลังสร้าง QR Code...
+                      <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem' }}>
+                        <Icons.Loading style={{ color: '#0c4a60' }} />
+                        <span>กำลังสร้าง QR Code...</span>
+                      </span>
                     </div>
                   ) : qrCode ? (
                     <img 
@@ -278,21 +282,33 @@ export default function Checkout() {
               disabled={submitting}
               style={{ padding: '1rem', fontSize: '1.05rem', fontWeight: 700 }}
             >
-              {submitting ? '⏳ กำลังดำเนินการ...' : 'ยืนยันการสั่งซื้อ ✅'}
+              {submitting ? (
+                <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem', justifyContent: 'center', width: '100%' }}>
+                  <Icons.Loading />
+                  <span>กำลังดำเนินการ...</span>
+                </span>
+              ) : (
+                <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem', justifyContent: 'center', width: '100%' }}>
+                  <Icons.Check />
+                  <span>ยืนยันการสั่งซื้อ</span>
+                </span>
+              )}
             </button>
           </form>
 
           {/* RIGHT: Order Summary */}
           <div style={{ position: 'sticky', top: '100px' }}>
             <div style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid var(--glass-border)', borderRadius: '16px', padding: '1.8rem' }}>
-              <h3 style={{ fontSize: '1.1rem', marginBottom: '1.2rem', color: 'var(--accent-gold)' }}>🧾 สรุปคำสั่งซื้อ</h3>
+              <h3 style={{ fontSize: '1.1rem', marginBottom: '1.2rem', color: 'var(--accent-gold)' }}>สรุปคำสั่งซื้อ</h3>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', marginBottom: '1.5rem' }}>
                 {cart.map((item) => (
                   <div key={item.id} style={{ display: 'flex', gap: '0.8rem', alignItems: 'center' }}>
                     {item.image ? (
                       <img src={item.image} alt={item.name} style={{ width: '50px', height: '50px', objectFit: 'cover', borderRadius: '8px', flexShrink: 0 }} />
                     ) : (
-                      <div style={{ width: '50px', height: '50px', background: 'rgba(197,168,128,0.1)', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>⌚</div>
+                      <div style={{ width: '50px', height: '50px', background: 'rgba(197,168,128,0.1)', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                        <Icons.Watch style={{ width: '22px', height: '22px', color: 'var(--accent-gold)' }} />
+                      </div>
                     )}
                     <div style={{ flex: 1, minWidth: 0 }}>
                       <div style={{ fontSize: '0.85rem', fontWeight: 600, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{item.name}</div>

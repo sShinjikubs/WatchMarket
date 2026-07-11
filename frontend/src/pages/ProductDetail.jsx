@@ -4,6 +4,7 @@ import { useAuth } from '../App';
 import { useCart } from '../CartContext';
 import { api } from '../api';
 import Header from '../components/Header';
+import { Icons } from '../components/Icons';
 
 // ─── Watch SVG Preview (larger) ──────────────────────────────────────────────
 function WatchPreview({ color, strokeColor, size = 260 }) {
@@ -108,7 +109,7 @@ export default function ProductDetail() {
     const ok = addToCart(product, quantity);
     if (ok) {
       setAddedToCart(true);
-      showNotif(`เพิ่ม "${product.name}" × ${quantity} เข้าตะกร้าแล้ว! 🛒`);
+      showNotif(`เพิ่ม "${product.name}" × ${quantity} เข้าตะกร้าแล้ว!`);
       setTimeout(() => setAddedToCart(false), 2000);
     } else {
       showNotif('สินค้าในคลังหมดแล้ว!', false);
@@ -349,7 +350,17 @@ export default function ProductDetail() {
                 onClick={handleAddToCart}
                 disabled={product.stock === 0}
               >
-                {addedToCart ? '✅ เพิ่มแล้ว!' : '🛒 เพิ่มในตะกร้า'}
+                {addedToCart ? (
+                  <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem' }}>
+                    <Icons.Check style={{ color: '#0f172a' }} />
+                    <span>เพิ่มแล้ว!</span>
+                  </span>
+                ) : (
+                  <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem' }}>
+                    <Icons.Cart />
+                    <span>เพิ่มในตะกร้า</span>
+                  </span>
+                )}
               </button>
               <button
                 className="btn btn-primary pd-btn-buy"
@@ -362,16 +373,16 @@ export default function ProductDetail() {
 
             {/* Voucher / Shop info */}
             <div className="pd-shop-info">
-              <div className="pd-shop-row">
-                <span>🏪</span>
+              <div className="pd-shop-row" style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
+                <Icons.Info style={{ color: 'var(--accent-gold)' }} />
                 <span><strong>WatchMart Official Store</strong> — Premium Watch Marketplace</span>
               </div>
-              <div className="pd-shop-row">
-                <span>📦</span>
+              <div className="pd-shop-row" style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
+                <Icons.Package style={{ color: 'var(--accent-gold)' }} />
                 <span>Product ID: <code style={{ color: 'var(--accent-gold)', fontFamily: 'monospace' }}>{product.id}</code></span>
               </div>
-              <div className="pd-shop-row">
-                <span>⚙️</span>
+              <div className="pd-shop-row" style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
+                <Icons.Settings style={{ color: 'var(--accent-gold)' }} />
                 <span>หมวด: <strong>{product.category?.toUpperCase()}</strong></span>
               </div>
             </div>
@@ -380,7 +391,7 @@ export default function ProductDetail() {
 
         {/* Bottom — Description */}
         <div className="glass-card" style={{ marginTop: '2rem' }}>
-          <h2 className="card-title">📋 รายละเอียดสินค้า</h2>
+          <h2 className="card-title">รายละเอียดสินค้า</h2>
           <div className="pd-description">
             <p>
               <strong>{product.brand} {product.name}</strong> เป็นนาฬิกาหรูระดับ{' '}
@@ -448,7 +459,7 @@ export default function ProductDetail() {
                   </div>
                   
                   <button type="submit" className="btn btn-primary" style={{ alignSelf: 'flex-start', padding: '0.6rem 1.5rem' }}>
-                    ส่งรีวิว 📨
+                    ส่งรีวิว
                   </button>
                 </form>
               ) : (
@@ -460,8 +471,9 @@ export default function ProductDetail() {
 
             {/* Reviews List */}
             <div>
-              <h3 style={{ fontSize: '1.1rem', marginBottom: '1rem', color: 'var(--text-light)' }}>
-                ⭐ รีวิวทั้งหมดจากลูกค้า
+              <h3 style={{ fontSize: '1.1rem', marginBottom: '1rem', color: 'var(--text-light)', display: 'inline-flex', alignItems: 'center', gap: '0.4rem' }}>
+                <Icons.Star style={{ color: 'var(--accent-gold)' }} />
+                <span>รีวิวทั้งหมดจากลูกค้า</span>
               </h3>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', maxHeight: '400px', overflowY: 'auto', paddingRight: '0.5rem' }}>
                 {reviews.length === 0 ? (

@@ -4,6 +4,88 @@ import { useAuth, useLanguage } from '../App';
 import { useCart } from '../CartContext';
 import { api } from '../api';
 
+const Icons = {
+  Settings: (props) => (
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ display: 'inline-block', verticalAlign: 'middle' }} {...props}>
+      <circle cx="12" cy="12" r="3"/>
+      <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+    </svg>
+  ),
+  User: (props) => (
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ display: 'inline-block', verticalAlign: 'middle' }} {...props}>
+      <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+      <circle cx="12" cy="7" r="4"/>
+    </svg>
+  ),
+  Globe: (props) => (
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ display: 'inline-block', verticalAlign: 'middle' }} {...props}>
+      <circle cx="12" cy="12" r="10"/>
+      <line x1="2" y1="12" x2="22" y2="12"/>
+      <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
+    </svg>
+  ),
+  Bell: (props) => (
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ display: 'inline-block', verticalAlign: 'middle' }} {...props}>
+      <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+      <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+    </svg>
+  ),
+  Help: (props) => (
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ display: 'inline-block', verticalAlign: 'middle' }} {...props}>
+      <circle cx="12" cy="12" r="10"/>
+      <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/>
+      <line x1="12" y1="17" x2="12.01" y2="17"/>
+    </svg>
+  ),
+  Phone: (props) => (
+    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ display: 'inline-block', verticalAlign: 'middle' }} {...props}>
+      <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
+    </svg>
+  ),
+  Sparkle: (props) => (
+    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ display: 'inline-block', verticalAlign: 'middle' }} {...props}>
+      <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+    </svg>
+  ),
+  Crown: (props) => (
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ display: 'inline-block', verticalAlign: 'middle' }} {...props}>
+      <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+    </svg>
+  ),
+  Chart: (props) => (
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ display: 'inline-block', verticalAlign: 'middle' }} {...props}>
+      <line x1="18" y1="20" x2="18" y2="10"/>
+      <line x1="12" y1="20" x2="12" y2="4"/>
+      <line x1="6" y1="20" x2="6" y2="14"/>
+    </svg>
+  ),
+  Book: (props) => (
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ display: 'inline-block', verticalAlign: 'middle' }} {...props}>
+      <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
+      <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
+    </svg>
+  ),
+  Edit: (props) => (
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ display: 'inline-block', verticalAlign: 'middle' }} {...props}>
+      <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+      <path d="M18.5 2.5a2.121 2.121 0 1 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+    </svg>
+  ),
+  Cart: (props) => (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ display: 'inline-block', verticalAlign: 'middle' }} {...props}>
+      <circle cx="9" cy="21" r="1"/>
+      <circle cx="20" cy="21" r="1"/>
+      <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>
+    </svg>
+  ),
+  Search: (props) => (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ display: 'inline-block', verticalAlign: 'middle' }} {...props}>
+      <circle cx="11" cy="11" r="8"/>
+      <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+    </svg>
+  )
+};
+
 export default function Header({ showCart, cartCount: cartCountProp, onCartClick }) {
   const { user, logout } = useAuth();
   const { cartCount: ctxCartCount, toggleCart } = useCart();
@@ -76,8 +158,8 @@ export default function Header({ showCart, cartCount: cartCountProp, onCartClick
   };
 
   const roleLabel =
-    user?.role === 'admin' ? `👑 ${t('admin')}` :
-    user?.role === 'manager' ? `📊 ${t('manager')}` : `👤 ${t('role')} ${t('home')}`;
+    user?.role === 'admin' ? t('admin') :
+    user?.role === 'manager' ? t('manager') : `${t('role')}${t('home')}`;
 
   const roleDescription = 
     user?.role === 'admin' ? 'สิทธิ์การเข้าถึง: Admin (ผู้ดูแลระบบสูงสุด สามารถจัดการผู้ใช้งาน จัดการฐานข้อมูล และเข้าถึงหน้ารายงานสรุปโครงงานได้)' :
@@ -145,8 +227,9 @@ export default function Header({ showCart, cartCount: cartCountProp, onCartClick
           
           {/* Role Settings */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
-            <label style={{ fontSize: '0.72rem', textTransform: 'uppercase', color: 'var(--text-muted)', fontWeight: 'bold', letterSpacing: '0.8px' }}>
-              ⚙️ {lang === 'th' ? 'สลับบทบาทผู้ใช้' : 'Switch Role (Mock)'}
+            <label style={{ fontSize: '0.72rem', textTransform: 'uppercase', color: 'var(--text-muted)', fontWeight: 'bold', letterSpacing: '0.8px', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+              <Icons.Settings style={{ color: 'var(--accent-gold)' }} />
+              <span>{lang === 'th' ? 'สลับบทบาทผู้ใช้' : 'Switch Role (Mock)'}</span>
             </label>
             <button 
               onClick={() => { setShowRoleInfo(true); setShowDrawer(false); }}
@@ -167,15 +250,21 @@ export default function Header({ showCart, cartCount: cartCountProp, onCartClick
               }}
               className="hover-gold-bg-light"
             >
-              <span>{roleLabel}</span>
-              <span style={{ fontSize: '0.75rem' }}>✏️</span>
+              <span style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                {user?.role === 'admin' ? <Icons.Crown style={{ color: 'var(--accent-gold)' }} /> :
+                 user?.role === 'manager' ? <Icons.Chart style={{ color: 'var(--accent-gold)' }} /> :
+                 <Icons.User style={{ color: 'var(--accent-gold)' }} />}
+                {roleLabel}
+              </span>
+              <Icons.Edit style={{ color: 'var(--accent-gold)', width: '12px', height: '12px' }} />
             </button>
           </div>
 
           {/* Language Settings */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
-            <label style={{ fontSize: '0.72rem', textTransform: 'uppercase', color: 'var(--text-muted)', fontWeight: 'bold', letterSpacing: '0.8px' }}>
-              🌐 {lang === 'th' ? 'ภาษา' : 'Language'}
+            <label style={{ fontSize: '0.72rem', textTransform: 'uppercase', color: 'var(--text-muted)', fontWeight: 'bold', letterSpacing: '0.8px', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+              <Icons.Globe style={{ color: 'var(--accent-gold)' }} />
+              <span>{lang === 'th' ? 'ภาษา' : 'Language'}</span>
             </label>
             <div style={{ display: 'flex', background: 'rgba(255,255,255,0.02)', borderRadius: '8px', padding: '2px', border: '1px solid var(--glass-border)' }}>
               <button 
@@ -234,11 +323,15 @@ export default function Header({ showCart, cartCount: cartCountProp, onCartClick
               }}
               className="hover-gold-text"
             >
-              🔔 {t('notifications')}
+              <Icons.Bell style={{ color: 'var(--accent-gold)' }} />
+              <span>{t('notifications')}</span>
             </button>
             {showNotifications && (
               <div style={{ background: 'rgba(255,255,255,0.02)', padding: '0.75rem', borderRadius: '8px', fontSize: '0.78rem', color: 'var(--text-muted)', display: 'flex', flexDirection: 'column', gap: '0.45rem', border: '1px solid rgba(255,255,255,0.04)' }}>
-                <div style={{ color: 'var(--text-light)' }}>🎉 {lang === 'th' ? 'ยินดีต้อนรับสู่ WatchMart! ระบบออนไลน์สมบูรณ์แบบ' : 'Welcome to WatchMart! Fully functional system.'}</div>
+                <div style={{ color: 'var(--text-light)', display: 'flex', alignItems: 'center', gap: '0.3rem' }}>
+                  <Icons.Sparkle style={{ color: 'var(--accent-gold)', width: '10px', height: '10px' }} />
+                  <span>{lang === 'th' ? 'ยินดีต้อนรับสู่ WatchMart! ระบบออนไลน์สมบูรณ์แบบ' : 'Welcome to WatchMart! Fully functional system.'}</span>
+                </div>
                 <div>📦 {lang === 'th' ? 'ฐานข้อมูล PostgreSQL (Neon) เชื่อมต่อใช้งานสำเร็จ' : 'PostgreSQL DB (Neon) connected successfully.'}</div>
               </div>
             )}
@@ -260,14 +353,21 @@ export default function Header({ showCart, cartCount: cartCountProp, onCartClick
               }}
               className="hover-gold-text"
             >
-              ❓ {t('help')}
+              <Icons.Help style={{ color: 'var(--accent-gold)' }} />
+              <span>{t('help')}</span>
             </button>
           </div>
 
           {/* Contact & Project Info */}
           <div style={{ marginTop: 'auto', borderTop: '1px solid rgba(255,255,255,0.06)', paddingTop: '1.2rem', display: 'flex', flexDirection: 'column', gap: '0.4rem', fontSize: '0.75rem', color: 'var(--text-muted)' }}>
-            <div>{lang === 'th' ? '📞 ศูนย์บริการลูกค้า: 02-123-4567' : '📞 Call Center: 02-123-4567'}</div>
-            <div>{lang === 'th' ? '✨ โครงงาน CSI204 ระดับพรีเมียม' : '✨ Premium CSI204 Project'}</div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+              <Icons.Phone style={{ color: 'var(--accent-gold)' }} />
+              <span>{lang === 'th' ? 'ศูนย์บริการลูกค้า: 02-123-4567' : 'Call Center: 02-123-4567'}</span>
+            </div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+              <Icons.Sparkle style={{ color: 'var(--accent-gold)' }} />
+              <span>{lang === 'th' ? 'โครงงาน CSI204 ระดับพรีเมียม' : 'Premium CSI204 Project'}</span>
+            </div>
           </div>
 
         </div>
@@ -342,7 +442,7 @@ export default function Header({ showCart, cartCount: cartCountProp, onCartClick
                 transition: 'all 0.2s',
               }}
             >
-              🔍
+              <Icons.Search style={{ width: '15px', height: '15px' }} />
             </button>
           </form>
           {/* Small Keywords Tag Row - SEIKO and LUMINOX only (Classic/Sport deleted) */}
@@ -377,13 +477,28 @@ export default function Header({ showCart, cartCount: cartCountProp, onCartClick
               <li><a href="#promotions" onClick={handleScrollTo('promotions')} style={{ fontSize: '0.88rem', textDecoration: 'none', color: 'var(--text-light)', transition: 'color 0.2s' }} className="hover-gold-text">{t('promotions')}</a></li>
               {user?.role === 'admin' && (
                 <>
-                  <li><Link to="/admin" className={isActive('/admin')} style={{ fontSize: '0.88rem', textDecoration: 'none', color: location.pathname === '/admin' ? 'var(--accent-gold)' : 'var(--text-light)' }}>👑 {t('admin')}</Link></li>
-                  <li><Link to="/docs" className={isActive('/docs')} style={{ fontSize: '0.88rem', textDecoration: 'none', color: location.pathname === '/docs' ? 'var(--accent-gold)' : 'var(--text-light)' }}>📖 {t('docs')}</Link></li>
+                  <li>
+                    <Link to="/admin" className={isActive('/admin')} style={{ fontSize: '0.88rem', textDecoration: 'none', color: location.pathname === '/admin' ? 'var(--accent-gold)' : 'var(--text-light)', display: 'inline-flex', alignItems: 'center', gap: '0.3rem' }}>
+                      <Icons.Crown style={{ width: '13px', height: '13px' }} />
+                      <span>{t('admin')}</span>
+                    </Link>
+                  </li>
+                  <li>
+                    <Link to="/docs" className={isActive('/docs')} style={{ fontSize: '0.88rem', textDecoration: 'none', color: location.pathname === '/docs' ? 'var(--accent-gold)' : 'var(--text-light)', display: 'inline-flex', alignItems: 'center', gap: '0.3rem' }}>
+                      <Icons.Book style={{ width: '13px', height: '13px' }} />
+                      <span>{t('docs')}</span>
+                    </Link>
+                  </li>
                 </>
               )}
               {(user?.role === 'manager' || user?.role === 'admin') && (
                 <>
-                  <li><Link to="/manager" className={isActive('/manager')} style={{ fontSize: '0.88rem', textDecoration: 'none', color: location.pathname === '/manager' ? 'var(--accent-gold)' : 'var(--text-light)' }}>📊 {t('manager')}</Link></li>
+                  <li>
+                    <Link to="/manager" className={isActive('/manager')} style={{ fontSize: '0.88rem', textDecoration: 'none', color: location.pathname === '/manager' ? 'var(--accent-gold)' : 'var(--text-light)', display: 'inline-flex', alignItems: 'center', gap: '0.3rem' }}>
+                      <Icons.Chart style={{ width: '13px', height: '13px' }} />
+                      <span>{t('manager')}</span>
+                    </Link>
+                  </li>
                 </>
               )}
             </ul>
@@ -391,8 +506,8 @@ export default function Header({ showCart, cartCount: cartCountProp, onCartClick
 
           {/* Cart Icon */}
           {user?.role === 'user' && (
-            <button className="cart-icon-btn" onClick={handleCartClick} aria-label="Shopping Cart" style={{ margin: 0 }}>
-              🛒
+            <button className="cart-icon-btn" onClick={handleCartClick} aria-label="Shopping Cart" style={{ margin: 0, display: 'inline-flex', alignItems: 'center', gap: '0.3rem' }}>
+              <Icons.Cart style={{ width: '16px', height: '16px' }} />
               <span className="cart-badge" id="cart-counter">{displayCartCount || 0}</span>
             </button>
           )}
