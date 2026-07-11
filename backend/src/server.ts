@@ -117,7 +117,7 @@ app.get('/api/products', async (req, res) => {
 });
 
 app.post('/api/products', async (req, res) => {
-  const { name, brand, category, price, stock, color, strokeColor } = req.body;
+  const { name, brand, category, price, stock, color, strokeColor, image, imageBack } = req.body;
   if (!name || !brand || !category || isNaN(price) || isNaN(stock)) {
     return res.status(400).json({ error: 'Invalid product properties.' });
   }
@@ -130,7 +130,9 @@ app.post('/api/products', async (req, res) => {
     price: Number(price),
     stock: Number(stock),
     color: color || "#2d3748",
-    strokeColor: strokeColor || "#c5a880"
+    strokeColor: strokeColor || "#c5a880",
+    image: image || "",
+    imageBack: imageBack || ""
   };
 
   await db.addProduct(newProduct);
@@ -141,7 +143,7 @@ app.post('/api/products', async (req, res) => {
 
 app.put('/api/products/:id', async (req, res) => {
   const prodId = req.params.id;
-  const { name, brand, category, price, stock, color, strokeColor } = req.body;
+  const { name, brand, category, price, stock, color, strokeColor, image, imageBack } = req.body;
 
   const products = await db.getProducts();
   const exists = products.some(p => p.id === prodId);
@@ -150,9 +152,9 @@ app.put('/api/products/:id', async (req, res) => {
     return res.status(404).json({ error: 'Product not found.' });
   }
 
-  await db.updateProduct(prodId, { name, brand, category, price, stock, color, strokeColor });
+  await db.updateProduct(prodId, { name, brand, category, price, stock, color, strokeColor, image, imageBack });
   await db.addLog(`[INVENTORY]: ผู้จัดการทำการอัปเดตข้อมูลนาฬิกา: ${name} (ID: ${prodId})`);
-  return res.json({ id: prodId, name, brand, category, price, stock, color, strokeColor });
+  return res.json({ id: prodId, name, brand, category, price, stock, color, strokeColor, image, imageBack });
 });
 
 app.delete('/api/products/:id', async (req, res) => {

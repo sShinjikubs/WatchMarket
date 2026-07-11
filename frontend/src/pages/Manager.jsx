@@ -124,6 +124,9 @@ export default function Manager() {
   const [orders, setOrders] = useState([]);
   const [pendingWatches, setPendingWatches] = useState([]);
   const [notification, setNotification] = useState(null);
+  const [auditSearch, setAuditSearch] = useState('');
+  const [editingProduct, setEditingProduct] = useState(null);
+  const [productForm, setProductForm] = useState({ name: '', brand: '', category: 'classic', price: '', stock: '', image: '', imageBack: '' });
   const barRef = useRef(null);
   const trendRef = useRef(null);
 
@@ -150,13 +153,52 @@ export default function Manager() {
     }
   }, [products, orders]);
 
+  const setForm = (f) => (e) => setProductForm((prev) => ({ ...prev, [f]: e.target.value }));
+
+  const startEdit = (prod) => {
+    setEditingProduct(prod.id);
+    setProductForm({
+      name: prod.name,
+      brand: prod.brand,
+      category: prod.category,
+      price: prod.price,
+      stock: prod.stock,
+      image: prod.image || '',
+      imageBack: prod.imageBack || ''
+    });
+  };
+
+  const resetForm = () => {
+    setEditingProduct(null);
+    setProductForm({ name: '', brand: '', category: 'classic', price: '', stock: '', image: '', imageBack: '' });
+  };
+
+  const handleProductSubmit = async (e) => {
+    e.preventDefault();
+    const payload = { ...productForm, price: parseFloat(productForm.price), stock: parseInt(productForm.stock) };
+    try {
+      const res = editingProduct ? await api.updateProduct(editingProduct, payload) : await api.addProduct(payload);
+      if (res.ok) {
+        showNotif(editingProduct ? 'อัปเดตสำเร็จ!' : 'เพิ่มสินค้าสำเร็จ!');
+        refreshData(); resetForm();
+      } else { const d = await res.json(); showNotif(d.error || 'บันทึกไม่สำเร็จ', false); }
+    } catch (_) { showNotif('เซิร์ฟเวอร์ขัดข้อง', false); }
+  };
+
+  const handleDelete = async (id) => {
+    const prod = products.find((p) => p.id === id);
+    if (!confirm(`ลบ "${prod?.name}"?`)) return;
+    const res = await api.deleteProduct(id);
+    if (res.ok) { showNotif('ลบสำเร็จ', false); refreshData(); }
+    else showNotif('ลบไม่สำเร็จ', false);
+  };
+
   const shipOrder = async (id) => {
     const res = await api.shipOrder(id);
     if (res.ok) { showNotif('จัดส่งพัสดุสำเร็จ!'); refreshData(); }
     else showNotif('อัปเดตสถานะล้มเหลว', false);
   };
 
-  // Stats
   const totalSales = orders.filter((o) => o.status !== 'cancelled').reduce((s, o) => s + o.total, 0);
 
   // Audit
@@ -179,7 +221,7 @@ export default function Manager() {
 
       <main className="main-content">
         <div className="page-header">
-          <h1 className="page-title">📊 Management Dashboard</h1>
+          <h1 className="page-title">📊 Manager Dashboard</h1>
           <p className="page-subtitle">บริหารสินค้าคงคลัง วิเคราะห์ยอดขาย และตรวจสอบราคา</p>
         </div>
 
@@ -202,8 +244,43 @@ export default function Manager() {
           </div>
         </div>
 
-        {/* Inventory Table */}
+        {/* CRUD Product Form + Table */}
         <div className="content-grid two-col">
+          <div className="glass-card">
+            <h2 className="card-title" id="form-action-title">{editingProduct ? `✏️ แก้ไข: ${productForm.name}` : '➕ เพิ่มสินค้าใหม่'}</h2>
+            <form onSubmit={handleProductSubmit} className="form-stack" id="product-form">
+              <div className="form-group">
+                <label className="form-label">ชื่อสินค้า</label>
+                <input className="form-input" value={productForm.name} onChange={setForm('name')} required id="prod-name" />
+              </div>
+              <div className="form-group">
+                <label className="form-label">แบรนด์</label>
+                <input className="form-input" value={productForm.brand} onChange={setForm('brand')} required id="prod-brand" />
+              </div>
+              <div className="form-group">
+                <label className="form-label">ราคา (บาท)</label>
+                <input type="number" className="form-input" value={productForm.price} onChange={setForm('price')} required id="prod-price" />
+              </div>
+              <div className="form-group">
+                <label className="form-label">สต็อก (เรือน)</label>
+                <input type="number" className="form-input" value={productForm.stock} onChange={setForm('stock')} required id="prod-stock" />
+              </div>
+              <div className="form-group">
+                <label className="form-label">รูปภาพหน้าปัด (เช่น /images/LUMINOX/name.webp)</label>
+                <input className="form-input" value={productForm.image} onChange={setForm('image')} id="prod-image" />
+              </div>
+              <div className="form-group">
+                <label className="form-label">รูปภาพฝาหลัง (เช่น /images/LUMINOX/name_back.webp)</label>
+                <input className="form-input" value={productForm.imageBack} onChange={setForm('imageBack')} id="prod-image-back" />
+              </div>
+              <div className="btn-group">
+                <button type="submit" className="btn btn-primary" id="btn-submit-form">
+                  {editingProduct ? 'อัปเดตข้อมูล' : 'บันทึกข้อมูลสินค้า'}
+                </button>
+                {editingProduct && <button type="button" className="btn btn-secondary" onClick={resetForm}>ยกเลิก</button>}
+              </div>
+            </form>
+          </div>
 
           {/* Inventory Table */}
           <div className="glass-card">
@@ -211,11 +288,11 @@ export default function Manager() {
             <div className="table-responsive">
               <table className="data-table">
                 <thead>
-                  <tr><th>⌚</th><th>สินค้า</th><th>ราคา</th><th>สต็อก</th></tr>
+                  <tr><th>⌚</th><th>สินค้า</th><th>ราคา</th><th>สต็อก</th><th>จัดการ</th></tr>
                 </thead>
                 <tbody id="manager-inventory-table">
                   {products.length === 0 ? (
-                    <tr><td colSpan={4} style={{ textAlign: 'center', color: 'var(--text-muted)' }}>ไม่มีสินค้าในคลัง</td></tr>
+                    <tr><td colSpan={5} style={{ textAlign: 'center', color: 'var(--text-muted)' }}>ไม่มีสินค้าในคลัง</td></tr>
                   ) : products.map((p) => (
                     <tr key={p.id}>
                       <td style={{ textAlign: 'center' }}>
@@ -228,6 +305,12 @@ export default function Manager() {
                       <td><strong>{p.name}</strong><br /><span style={{ color: 'var(--text-muted)', fontSize: '0.8rem' }}>{p.brand}</span></td>
                       <td><strong>฿ {p.price?.toLocaleString()}</strong></td>
                       <td><span style={{ fontWeight: 700, color: p.stock <= 3 ? '#ff6b6b' : '#f5f5f7' }}>{p.stock} เรือน</span>{p.stock <= 3 && <><br /><small style={{ color: '#ff6b6b' }}>⚠️ ใกล้หมด</small></>}</td>
+                      <td>
+                        <div className="btn-group">
+                          <button className="btn btn-secondary" style={{ padding: '0.3rem 0.6rem', fontSize: '0.8rem' }} onClick={() => startEdit(p)}>แก้ไข</button>
+                          <button className="btn btn-danger" style={{ padding: '0.3rem 0.6rem', fontSize: '0.8rem' }} onClick={() => handleDelete(p.id)}>ลบ</button>
+                        </div>
+                      </td>
                     </tr>
                   ))}
                 </tbody>
@@ -235,8 +318,6 @@ export default function Manager() {
             </div>
           </div>
         </div>
-
-
 
         {/* Orders Table */}
         <div className="glass-card">
