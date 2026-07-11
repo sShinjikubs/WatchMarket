@@ -36,6 +36,52 @@ const HERO_SLIDES = [
   }
 ];
 
+function TransparentWatchImage({ src, alt, style, className }) {
+  const [processedSrc, setProcessedSrc] = useState(src);
+
+  useEffect(() => {
+    if (!src) return;
+    const img = new Image();
+    img.crossOrigin = "anonymous";
+    img.src = src;
+    img.onload = () => {
+      try {
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+        if (!ctx) {
+          setProcessedSrc(src);
+          return;
+        }
+        canvas.width = img.width;
+        canvas.height = img.height;
+        ctx.drawImage(img, 0, 0);
+
+        const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+        const data = imgData.data;
+
+        for (let i = 0; i < data.length; i += 4) {
+          const r = data[i];
+          const g = data[i + 1];
+          const b = data[i + 2];
+          
+          if (r > 240 && g > 240 && b > 240) {
+            data[i + 3] = 0;
+          }
+        }
+        ctx.putImageData(imgData, 0, 0);
+        setProcessedSrc(canvas.toDataURL());
+      } catch (err) {
+        setProcessedSrc(src);
+      }
+    };
+    img.onerror = () => {
+      setProcessedSrc(src);
+    };
+  }, [src]);
+
+  return <img src={processedSrc} alt={alt} style={style} className={className} />;
+}
+
 export default function Storefront() {
   const { user } = useAuth();
   const { t } = useLanguage();
@@ -214,30 +260,17 @@ export default function Storefront() {
             position: 'relative',
             zIndex: 5
           }}>
-            <div style={{
-              width: '260px',
-              height: '260px',
-              borderRadius: '50%',
-              backgroundColor: '#ffffff',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              boxShadow: '0 10px 25px rgba(0,0,0,0.5), inset 0 0 15px rgba(0,0,0,0.05)',
-              border: `4px solid ${HERO_SLIDES[currentSlide].accent}`,
-              overflow: 'hidden',
-              transition: 'all 0.5s ease-in-out'
-            }}>
-              <img 
-                src={HERO_SLIDES[currentSlide].image} 
-                alt={HERO_SLIDES[currentSlide].title} 
-                style={{
-                  maxHeight: '220px',
-                  maxWidth: '220px',
-                  objectFit: 'contain',
-                  transition: 'all 0.5s ease-in-out'
-                }}
-              />
-            </div>
+            <TransparentWatchImage 
+              src={HERO_SLIDES[currentSlide].image} 
+              alt={HERO_SLIDES[currentSlide].title} 
+              style={{
+                maxHeight: '300px',
+                maxWidth: '100%',
+                objectFit: 'contain',
+                filter: 'drop-shadow(0 20px 30px rgba(0,0,0,0.85))',
+                transition: 'all 0.5s ease-in-out'
+              }}
+            />
           </div>
 
           {/* Slider Arrow Controls */}
