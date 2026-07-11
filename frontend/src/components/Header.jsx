@@ -54,6 +54,16 @@ export default function Header({ showCart, cartCount: cartCountProp, onCartClick
     }
   };
 
+  const handleScrollTo = (id) => (e) => {
+    e.preventDefault();
+    if (location.pathname === '/') {
+      const el = document.getElementById(id);
+      if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    } else {
+      navigate(`/#${id}`);
+    }
+  };
+
   const { lang, changeLang, t } = useLanguage();
 
   const [showNotifications, setShowNotifications] = useState(false);
@@ -155,13 +165,12 @@ export default function Header({ showCart, cartCount: cartCountProp, onCartClick
       {/* 2. MAIN HEADER BAR */}
       <div className="header-main-bar" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0.8rem 5%', gap: '2rem', width: '100%', boxSizing: 'border-box' }}>
         {/* Logo */}
-        <Link to="/" style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', textDecoration: 'none', flexShrink: 0 }}>
-          <img src="/images/logo.jpg" alt="WatchMart Logo" style={{ height: '42px', borderRadius: '6px', border: '1px solid var(--glass-border)', objectFit: 'contain' }} />
-          <span className="logo" style={{ fontSize: '1.4rem', fontWeight: 'bold', textDecoration: 'none' }}>Watch<span>Mart</span></span>
+        <Link to="/" style={{ display: 'flex', alignItems: 'center', textDecoration: 'none', flexShrink: 0 }}>
+          <img src="/images/logo.jpg" alt="WatchMart Logo" style={{ height: '46px', borderRadius: '8px', border: '1px solid var(--glass-border)', objectFit: 'contain' }} />
         </Link>
 
         {/* Center: Search Bar & Keywords */}
-        <div style={{ flex: 1, maxWidth: '550px', display: 'flex', flexDirection: 'column', gap: '0.35rem' }}>
+        <div style={{ flex: 1, maxWidth: '650px', display: 'flex', flexDirection: 'column', gap: '0.35rem' }}>
           <form onSubmit={handleSearchSubmit} style={{ display: 'flex', width: '100%', position: 'relative' }}>
             <input
               name="search"
@@ -230,6 +239,9 @@ export default function Header({ showCart, cartCount: cartCountProp, onCartClick
           <nav>
             <ul style={{ display: 'flex', listStyle: 'none', gap: '1.2rem', margin: 0, padding: 0 }}>
               <li><Link to="/" className={isActive('/')} style={{ fontSize: '0.88rem', textDecoration: 'none', color: location.pathname === '/' ? 'var(--accent-gold)' : 'var(--text-light)' }}>{t('home')}</Link></li>
+              <li><a href="#recommended" onClick={handleScrollTo('recommended')} style={{ fontSize: '0.88rem', textDecoration: 'none', color: 'var(--text-light)', transition: 'color 0.2s' }} className="hover-gold-text">{t('recommended')}</a></li>
+              <li><a href="#new-arrivals" onClick={handleScrollTo('new-arrivals')} style={{ fontSize: '0.88rem', textDecoration: 'none', color: 'var(--text-light)', transition: 'color 0.2s' }} className="hover-gold-text">{t('newArrivals')}</a></li>
+              <li><a href="#promotions" onClick={handleScrollTo('promotions')} style={{ fontSize: '0.88rem', textDecoration: 'none', color: 'var(--text-light)', transition: 'color 0.2s' }} className="hover-gold-text">{t('promotions')}</a></li>
               {user?.role === 'admin' && (
                 <>
                   <li><Link to="/admin" className={isActive('/admin')} style={{ fontSize: '0.88rem', textDecoration: 'none', color: location.pathname === '/admin' ? 'var(--accent-gold)' : 'var(--text-light)' }}>👑 {t('admin')}</Link></li>
