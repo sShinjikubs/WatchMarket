@@ -69,6 +69,7 @@ export default function Header({ showCart, cartCount: cartCountProp, onCartClick
   const [showNotifications, setShowNotifications] = useState(false);
   const [showHelp, setShowHelp] = useState(false);
   const [showRoleInfo, setShowRoleInfo] = useState(false);
+  const [showDrawer, setShowDrawer] = useState(false);
 
   const toggleLanguage = () => {
     changeLang(lang === 'th' ? 'en' : 'th');
@@ -87,87 +88,219 @@ export default function Header({ showCart, cartCount: cartCountProp, onCartClick
 
   return (
     <header style={{ display: 'flex', flexDirection: 'column', padding: 0, borderBottom: '1px solid var(--glass-border)', background: 'rgba(11, 12, 16, 0.92)', backdropFilter: 'blur(20px)', zIndex: 1000, position: 'fixed', top: 0, left: 0, width: '100%' }}>
-      {/* 1. TOP MINI BAR (Shopee-style top bar) */}
-      <div className="header-top-bar" style={{ display: 'flex', justifyContent: 'space-between', padding: '0.4rem 5%', borderBottom: '1px solid rgba(255,255,255,0.03)', fontSize: '0.78rem', color: 'var(--text-muted)', width: '100%', boxSizing: 'border-box' }}>
-        <div style={{ display: 'flex', gap: '1.2rem' }}>
-          <span>{lang === 'th' ? '📞 ศูนย์บริการลูกค้า: 02-123-4567' : '📞 Call Center: 02-123-4567'}</span>
-          <span>{lang === 'th' ? '✨ โครงงาน CSI204 ระดับพรีเมียม' : '✨ Premium CSI204 Project'}</span>
+      {/* Sliding Settings Drawer Backdrop Overlay */}
+      {showDrawer && (
+        <div 
+          onClick={() => setShowDrawer(false)}
+          style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            width: '100vw',
+            height: '100vh',
+            background: 'rgba(0, 0, 0, 0.65)',
+            backdropFilter: 'blur(5px)',
+            zIndex: 9999,
+            transition: 'opacity 0.3s ease'
+          }}
+        />
+      )}
+
+      {/* Sliding Settings Drawer Panel */}
+      <div style={{
+        position: 'fixed',
+        top: 0,
+        left: showDrawer ? 0 : '-320px',
+        width: '300px',
+        height: '100vh',
+        background: 'rgba(11, 12, 16, 0.98)',
+        backdropFilter: 'blur(25px)',
+        borderRight: '1px solid var(--glass-border)',
+        boxShadow: '10px 0 30px rgba(0, 0, 0, 0.6)',
+        zIndex: 10000,
+        transition: 'left 0.35s cubic-bezier(0.16, 1, 0.3, 1)',
+        padding: '2rem 1.5rem',
+        display: 'flex',
+        flexDirection: 'column',
+        gap: '1.8rem',
+        boxSizing: 'border-box'
+      }}>
+        {/* Drawer Header */}
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid rgba(255,255,255,0.08)', paddingBottom: '1rem' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
+            <img src="/images/logo.jpg" alt="WatchMart Logo" style={{ height: '32px', borderRadius: '4px', border: '1px solid var(--glass-border)' }} />
+            <span style={{ fontSize: '1.2rem', fontWeight: 'bold', color: 'var(--accent-gold)', letterSpacing: '0.5px' }}>WatchMart</span>
+          </div>
+          <button 
+            onClick={() => setShowDrawer(false)}
+            style={{ background: 'none', border: 'none', color: 'var(--text-muted)', fontSize: '1.2rem', cursor: 'pointer', padding: '0.2rem' }}
+            className="hover-gold-text"
+          >
+            ✕
+          </button>
         </div>
-        <div style={{ display: 'flex', gap: '1.2rem', alignItems: 'center', position: 'relative' }}>
-          {/* Notifications Button */}
-          <span 
-            style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.2rem', transition: 'color 0.2s' }}
-            className="hover-gold-text"
-            onClick={() => setShowNotifications(!showNotifications)}
-          >
-            🔔 {t('notifications')}
-          </span>
 
-          {/* Help Button */}
-          <span 
-            style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.2rem', transition: 'color 0.2s' }}
-            className="hover-gold-text"
-            onClick={() => setShowHelp(true)}
-          >
-            ❓ {t('help')}
-          </span>
+        {/* Drawer Body - Settings */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '1.6rem', flex: 1, overflowY: 'auto' }}>
+          
+          {/* Role Settings */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
+            <label style={{ fontSize: '0.72rem', textTransform: 'uppercase', color: 'var(--text-muted)', fontWeight: 'bold', letterSpacing: '0.8px' }}>
+              ⚙️ {lang === 'th' ? 'สลับบทบาทผู้ใช้' : 'Switch Role (Mock)'}
+            </label>
+            <button 
+              onClick={() => { setShowRoleInfo(true); setShowDrawer(false); }}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                background: 'rgba(255,255,255,0.03)',
+                border: '1px solid var(--accent-gold)',
+                borderRadius: '8px',
+                padding: '0.65rem 0.8rem',
+                color: 'var(--accent-gold)',
+                fontSize: '0.82rem',
+                fontWeight: 'bold',
+                cursor: 'pointer',
+                width: '100%',
+                transition: 'all 0.2s'
+              }}
+              className="hover-gold-bg-light"
+            >
+              <span>{roleLabel}</span>
+              <span style={{ fontSize: '0.75rem' }}>✏️</span>
+            </button>
+          </div>
 
-          {/* Language Toggle Button */}
-          <span 
-            style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.2rem', color: 'var(--accent-gold)', fontWeight: 'bold' }}
-            className="hover-gold-text"
-            onClick={toggleLanguage}
-          >
-            🌐 {lang === 'th' ? 'English (EN)' : 'ไทย (TH)'}
-          </span>
-
-          {/* Role Info Badge */}
-          <span 
-            style={{ color: 'var(--accent-gold)', fontWeight: 'bold', cursor: 'pointer', border: '1px dashed var(--accent-gold)', padding: '1px 6px', borderRadius: '4px' }}
-            onClick={() => setShowRoleInfo(true)}
-          >
-            {roleLabel}
-          </span>
-
-          {/* Notifications Floating Dropdown */}
-          {showNotifications && (
-            <div style={{
-              position: 'absolute',
-              top: '1.5rem',
-              right: '12rem',
-              background: '#151c2c',
-              border: '1px solid var(--glass-border)',
-              borderRadius: '8px',
-              width: '280px',
-              boxShadow: '0 10px 25px rgba(0,0,0,0.5)',
-              padding: '0.8rem',
-              zIndex: 1100,
-              display: 'flex',
-              flexDirection: 'column',
-              gap: '0.6rem',
-              textAlign: 'left'
-            }}>
-              <div style={{ fontWeight: 'bold', borderBottom: '1px solid rgba(255,255,255,0.08)', paddingBottom: '0.4rem', color: 'var(--accent-gold)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <span>🔔 {t('notifications')}</span>
-                <span style={{ cursor: 'pointer', fontSize: '0.8rem', color: 'var(--text-muted)' }} onClick={() => setShowNotifications(false)}>✕</span>
-              </div>
-              <div style={{ fontSize: '0.78rem', color: 'var(--text-light)', borderBottom: '1px solid rgba(255,255,255,0.05)', paddingBottom: '0.4rem' }}>
-                🎉 {lang === 'th' ? 'ยินดีต้อนรับสู่ WatchMart! ระบบออนไลน์สมบูรณ์แบบ' : 'Welcome to WatchMart! Fully functional system.'}
-              </div>
-              <div style={{ fontSize: '0.78rem', color: 'var(--text-light)' }}>
-                📦 {lang === 'th' ? 'ฐานข้อมูล PostgreSQL (Neon) เชื่อมต่อใช้งานสำเร็จ' : 'PostgreSQL DB (Neon) connected successfully.'}
-              </div>
+          {/* Language Settings */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
+            <label style={{ fontSize: '0.72rem', textTransform: 'uppercase', color: 'var(--text-muted)', fontWeight: 'bold', letterSpacing: '0.8px' }}>
+              🌐 {lang === 'th' ? 'ภาษา' : 'Language'}
+            </label>
+            <div style={{ display: 'flex', background: 'rgba(255,255,255,0.02)', borderRadius: '8px', padding: '2px', border: '1px solid var(--glass-border)' }}>
+              <button 
+                onClick={() => { if (lang !== 'th') toggleLanguage(); }}
+                style={{
+                  flex: 1,
+                  background: lang === 'th' ? 'var(--accent-gold)' : 'none',
+                  color: lang === 'th' ? '#0f172a' : 'var(--text-light)',
+                  border: 'none',
+                  borderRadius: '6px',
+                  padding: '0.45rem',
+                  fontSize: '0.8rem',
+                  fontWeight: 'bold',
+                  cursor: 'pointer',
+                  transition: 'all 0.2s'
+                }}
+              >
+                ไทย (TH)
+              </button>
+              <button 
+                onClick={() => { if (lang !== 'en') toggleLanguage(); }}
+                style={{
+                  flex: 1,
+                  background: lang === 'en' ? 'var(--accent-gold)' : 'none',
+                  color: lang === 'en' ? '#0f172a' : 'var(--text-light)',
+                  border: 'none',
+                  borderRadius: '6px',
+                  padding: '0.45rem',
+                  fontSize: '0.8rem',
+                  fontWeight: 'bold',
+                  cursor: 'pointer',
+                  transition: 'all 0.2s'
+                }}
+              >
+                English (EN)
+              </button>
             </div>
-          )}
+          </div>
+
+          {/* Help & Notifications */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.8rem', borderTop: '1px solid rgba(255,255,255,0.06)', paddingTop: '1.2rem' }}>
+            <button 
+              onClick={() => { setShowNotifications(!showNotifications); }}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.6rem',
+                background: 'none',
+                border: 'none',
+                color: 'var(--text-light)',
+                fontSize: '0.88rem',
+                cursor: 'pointer',
+                textAlign: 'left',
+                padding: '0.4rem 0',
+                transition: 'color 0.2s'
+              }}
+              className="hover-gold-text"
+            >
+              🔔 {t('notifications')}
+            </button>
+            {showNotifications && (
+              <div style={{ background: 'rgba(255,255,255,0.02)', padding: '0.75rem', borderRadius: '8px', fontSize: '0.78rem', color: 'var(--text-muted)', display: 'flex', flexDirection: 'column', gap: '0.45rem', border: '1px solid rgba(255,255,255,0.04)' }}>
+                <div style={{ color: 'var(--text-light)' }}>🎉 {lang === 'th' ? 'ยินดีต้อนรับสู่ WatchMart! ระบบออนไลน์สมบูรณ์แบบ' : 'Welcome to WatchMart! Fully functional system.'}</div>
+                <div>📦 {lang === 'th' ? 'ฐานข้อมูล PostgreSQL (Neon) เชื่อมต่อใช้งานสำเร็จ' : 'PostgreSQL DB (Neon) connected successfully.'}</div>
+              </div>
+            )}
+
+            <button 
+              onClick={() => { setShowHelp(true); setShowDrawer(false); }}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.6rem',
+                background: 'none',
+                border: 'none',
+                color: 'var(--text-light)',
+                fontSize: '0.88rem',
+                cursor: 'pointer',
+                textAlign: 'left',
+                padding: '0.4rem 0',
+                transition: 'color 0.2s'
+              }}
+              className="hover-gold-text"
+            >
+              ❓ {t('help')}
+            </button>
+          </div>
+
+          {/* Contact & Project Info */}
+          <div style={{ marginTop: 'auto', borderTop: '1px solid rgba(255,255,255,0.06)', paddingTop: '1.2rem', display: 'flex', flexDirection: 'column', gap: '0.4rem', fontSize: '0.75rem', color: 'var(--text-muted)' }}>
+            <div>{lang === 'th' ? '📞 ศูนย์บริการลูกค้า: 02-123-4567' : '📞 Call Center: 02-123-4567'}</div>
+            <div>{lang === 'th' ? '✨ โครงงาน CSI204 ระดับพรีเมียม' : '✨ Premium CSI204 Project'}</div>
+          </div>
+
         </div>
       </div>
 
       {/* 2. MAIN HEADER BAR */}
       <div className="header-main-bar" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0.8rem 5%', gap: '2rem', width: '100%', boxSizing: 'border-box' }}>
-        {/* Logo */}
-        <Link to="/" style={{ display: 'flex', alignItems: 'center', textDecoration: 'none', flexShrink: 0 }}>
-          <img src="/images/logo.jpg" alt="WatchMart Logo" style={{ height: '46px', borderRadius: '8px', border: '1px solid var(--glass-border)', objectFit: 'contain' }} />
-        </Link>
+        {/* Hamburger & Logo Link */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.8rem', flexShrink: 0 }}>
+          <button 
+            onClick={() => setShowDrawer(true)} 
+            style={{
+              background: 'none',
+              border: 'none',
+              color: 'var(--text-light)',
+              fontSize: '1.6rem',
+              cursor: 'pointer',
+              padding: '0.3rem',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              transition: 'color 0.2s',
+              lineHeight: 1
+            }}
+            className="hover-gold-text"
+            aria-label="Toggle settings drawer"
+          >
+            ☰
+          </button>
+          <Link to="/" style={{ display: 'flex', alignItems: 'center', textDecoration: 'none' }}>
+            <img src="/images/logo.jpg" alt="WatchMart Logo" style={{ height: '46px', borderRadius: '8px', border: '1px solid var(--glass-border)', objectFit: 'contain' }} />
+          </Link>
+        </div>
 
         {/* Center: Search Bar & Keywords */}
         <div style={{ flex: 1, maxWidth: '650px', display: 'flex', flexDirection: 'column', gap: '0.35rem' }}>
