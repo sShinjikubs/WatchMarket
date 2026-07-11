@@ -9,19 +9,21 @@ function drawBarChart(canvas, products, orders) {
   const ctx = canvas.getContext('2d');
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-  const categories = { classic: 0, sport: 0, elegant: 0 };
+  const brands = { luminox: 0, seiko: 0, 'tag heuer': 0 };
   orders.filter((o) => o.status !== 'cancelled').forEach((ord) => {
     ord.items.forEach((item) => {
       const prod = products.find((p) => p.id === item.id);
-      const cat = prod ? prod.category : 'classic';
-      if (categories[cat] !== undefined) categories[cat] += item.price * item.quantity;
+      const brand = prod ? prod.brand.toLowerCase() : '';
+      if (brand && brands[brand] !== undefined) {
+        brands[brand] += item.price * item.quantity;
+      }
     });
   });
 
   const data = [
-    { name: 'Classic', value: categories.classic, color: '#c5a880' },
-    { name: 'Sport', value: categories.sport, color: '#ff6b6b' },
-    { name: 'Elegant', value: categories.elegant, color: '#4dabf7' },
+    { name: 'Luminox', value: brands.luminox, color: '#c5a880' },
+    { name: 'Seiko', value: brands.seiko, color: '#ff6b6b' },
+    { name: 'Tag Heuer', value: brands['tag heuer'], color: '#4dabf7' },
   ];
 
   const maxValue = Math.max(...data.map((d) => d.value), 10000);
@@ -122,9 +124,6 @@ export default function Manager() {
   const [orders, setOrders] = useState([]);
   const [pendingWatches, setPendingWatches] = useState([]);
   const [notification, setNotification] = useState(null);
-  const [auditSearch, setAuditSearch] = useState('');
-  const [editingProduct, setEditingProduct] = useState(null);
-  const [productForm, setProductForm] = useState({ name: '', brand: '', category: 'classic', price: '', stock: '', image: '', imageBack: '' });
   const barRef = useRef(null);
   const trendRef = useRef(null);
 
@@ -151,46 +150,6 @@ export default function Manager() {
     }
   }, [products, orders]);
 
-  const setForm = (f) => (e) => setProductForm((prev) => ({ ...prev, [f]: e.target.value }));
-
-  const startEdit = (prod) => {
-    setEditingProduct(prod.id);
-    setProductForm({
-      name: prod.name,
-      brand: prod.brand,
-      category: prod.category,
-      price: prod.price,
-      stock: prod.stock,
-      image: prod.image || '',
-      imageBack: prod.imageBack || ''
-    });
-  };
-
-  const resetForm = () => {
-    setEditingProduct(null);
-    setProductForm({ name: '', brand: '', category: 'classic', price: '', stock: '', image: '', imageBack: '' });
-  };
-
-  const handleProductSubmit = async (e) => {
-    e.preventDefault();
-    const payload = { ...productForm, price: parseFloat(productForm.price), stock: parseInt(productForm.stock) };
-    try {
-      const res = editingProduct ? await api.updateProduct(editingProduct, payload) : await api.addProduct(payload);
-      if (res.ok) {
-        showNotif(editingProduct ? 'อัปเดตสำเร็จ!' : 'เพิ่มสินค้าสำเร็จ!');
-        refreshData(); resetForm();
-      } else { const d = await res.json(); showNotif(d.error || 'บันทึกไม่สำเร็จ', false); }
-    } catch (_) { showNotif('เซิร์ฟเวอร์ขัดข้อง', false); }
-  };
-
-  const handleDelete = async (id) => {
-    const prod = products.find((p) => p.id === id);
-    if (!confirm(`ลบ "${prod?.name}"?`)) return;
-    const res = await api.deleteProduct(id);
-    if (res.ok) { showNotif('ลบสำเร็จ', false); refreshData(); }
-    else showNotif('ลบไม่สำเร็จ', false);
-  };
-
   const shipOrder = async (id) => {
     const res = await api.shipOrder(id);
     if (res.ok) { showNotif('จัดส่งพัสดุสำเร็จ!'); refreshData(); }
@@ -199,15 +158,6 @@ export default function Manager() {
 
   // Stats
   const totalSales = orders.filter((o) => o.status !== 'cancelled').reduce((s, o) => s + o.total, 0);
-
-  // Price Compliance
-  const priceCompliance = products.map((p) => {
-    let range = '', compliant = false;
-    if (p.category === 'classic') { range = 'ต่ำกว่า 25,000'; compliant = p.price < 25000; }
-    else if (p.category === 'sport') { range = '25,000 - 100,000'; compliant = p.price >= 25000 && p.price <= 100000; }
-    else { range = '100,000+'; compliant = p.price >= 100000; }
-    return { ...p, range, compliant };
-  });
 
   // Audit
   const filteredAudit = products
@@ -243,7 +193,7 @@ export default function Manager() {
         {/* Charts */}
         <div className="content-grid two-col">
           <div className="glass-card">
-            <h2 className="card-title">📊 ยอดขายแยกตาม Category</h2>
+            <h2 className="card-title">📊 ยอดขายแยกตามแบรนด์</h2>
             <canvas ref={barRef} id="salesChart" width="460" height="260" style={{ width: '100%' }} />
           </div>
           <div className="glass-card">
@@ -261,11 +211,11 @@ export default function Manager() {
             <div className="table-responsive">
               <table className="data-table">
                 <thead>
-                  <tr><th>⌚</th><th>สินค้า</th><th>หมวด</th><th>ราคา</th><th>สต็อก</th><th>จัดการ</th></tr>
+                  <tr><th>⌚</th><th>สินค้า</th><th>ราคา</th><th>สต็อก</th></tr>
                 </thead>
                 <tbody id="manager-inventory-table">
                   {products.length === 0 ? (
-                    <tr><td colSpan={6} style={{ textAlign: 'center', color: 'var(--text-muted)' }}>ไม่มีสินค้าในคลัง</td></tr>
+                    <tr><td colSpan={4} style={{ textAlign: 'center', color: 'var(--text-muted)' }}>ไม่มีสินค้าในคลัง</td></tr>
                   ) : products.map((p) => (
                     <tr key={p.id}>
                       <td style={{ textAlign: 'center' }}>
@@ -276,41 +226,13 @@ export default function Manager() {
                         )}
                       </td>
                       <td><strong>{p.name}</strong><br /><span style={{ color: 'var(--text-muted)', fontSize: '0.8rem' }}>{p.brand}</span></td>
-                      <td><span className="badge" style={{ background: 'rgba(197,168,128,0.1)', color: 'var(--accent-gold)' }}>{p.category.toUpperCase()}</span></td>
                       <td><strong>฿ {p.price?.toLocaleString()}</strong></td>
                       <td><span style={{ fontWeight: 700, color: p.stock <= 3 ? '#ff6b6b' : '#f5f5f7' }}>{p.stock} เรือน</span>{p.stock <= 3 && <><br /><small style={{ color: '#ff6b6b' }}>⚠️ ใกล้หมด</small></>}</td>
-                      <td>
-                        <div className="btn-group">
-                          <button className="btn btn-secondary" style={{ padding: '0.3rem 0.6rem', fontSize: '0.8rem' }} onClick={() => startEdit(p)}>แก้ไข</button>
-                          <button className="btn btn-danger" style={{ padding: '0.3rem 0.6rem', fontSize: '0.8rem' }} onClick={() => handleDelete(p.id)}>ลบ</button>
-                        </div>
-                      </td>
                     </tr>
                   ))}
                 </tbody>
               </table>
             </div>
-          </div>
-        </div>
-
-        {/* Price Compliance */}
-        <div className="glass-card">
-          <h2 className="card-title">⚖️ Price Compliance Audit</h2>
-          <div className="table-responsive">
-            <table className="data-table">
-              <thead><tr><th>สินค้า</th><th>ราคาปัจจุบัน</th><th>หมวด</th><th>ช่วงราคากลาง</th><th>สถานะ</th></tr></thead>
-              <tbody id="manager-price-compliance-table">
-                {priceCompliance.map((p) => (
-                  <tr key={p.id}>
-                    <td><strong>{p.brand}</strong> {p.name}</td>
-                    <td><strong>฿ {p.price?.toLocaleString()}</strong></td>
-                    <td><span className="badge" style={{ background: 'rgba(197,168,128,0.1)', color: 'var(--accent-gold)' }}>{p.category.toUpperCase()}</span></td>
-                    <td>{p.range}</td>
-                    <td>{p.compliant ? <span className="badge badge-paid">✅ ถูกต้อง</span> : <span className="badge badge-cancelled">⚠️ เบี่ยงเบน</span>}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
           </div>
         </div>
 
