@@ -168,6 +168,34 @@ export default function Storefront() {
 
   return (
     <div className="page-wrapper">
+      <style>{`
+        @keyframes watchEntrance {
+          0% {
+            opacity: 0;
+            transform: translateX(50px) scale(0.8) rotate(15deg);
+          }
+          100% {
+            opacity: 1;
+            transform: translateX(0) scale(1) rotate(0deg);
+          }
+        }
+        @keyframes watchFloat {
+          0% {
+            transform: translateY(0) rotate(0deg);
+          }
+          50% {
+            transform: translateY(-12px) rotate(2.5deg);
+          }
+          100% {
+            transform: translateY(0) rotate(0deg);
+          }
+        }
+        .slider-watch-animated {
+          animation: watchEntrance 0.75s cubic-bezier(0.16, 1, 0.3, 1) forwards,
+                     watchFloat 6s ease-in-out infinite 0.75s;
+          transform-origin: center center;
+        }
+      `}</style>
       {notification && (
         <div className={`notification ${notification.ok ? '' : 'error'}`}>{notification.msg}</div>
       )}
@@ -261,8 +289,10 @@ export default function Storefront() {
             zIndex: 5
           }}>
             <TransparentWatchImage 
+              key={currentSlide}
               src={HERO_SLIDES[currentSlide].image} 
               alt={HERO_SLIDES[currentSlide].title} 
+              className="slider-watch-animated"
               style={{
                 maxHeight: '300px',
                 maxWidth: '100%',
