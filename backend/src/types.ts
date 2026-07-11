@@ -24,6 +24,8 @@ export interface Product {
   isGoldFace?: boolean;
   image?: string;
   imageBack?: string;
+  rating?: number;
+  reviewCount?: number;
 }
 
 export interface CartItem {
