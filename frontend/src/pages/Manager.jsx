@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { api } from '../api';
+import { useAuth } from '../App';
 import Header from '../components/Header';
 import { Icons } from '../components/Icons';
 import SystemLogger from '../components/SystemLogger';
@@ -121,6 +122,7 @@ function drawTrendChart(canvas, orders) {
 
 // ─── Manager Component ────────────────────────────────────────────────────────
 export default function Manager() {
+  const { user } = useAuth();
   const [products, setProducts] = useState([]);
   const [orders, setOrders] = useState([]);
   const [pendingWatches, setPendingWatches] = useState([]);
@@ -254,55 +256,68 @@ export default function Manager() {
           </div>
         </div>
 
-        {/* CRUD Product Form + Table */}
         <div className="content-grid two-col">
-          <div className="glass-card">
-            <h2 className="card-title" id="form-action-title">
-              {editingProduct ? (
-                <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem' }}>
-                  <Icons.Edit style={{ color: 'var(--accent-gold)' }} />
-                  <span>แก้ไข: {productForm.name}</span>
-                </span>
-              ) : (
-                <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem' }}>
-                  <Icons.Plus style={{ color: 'var(--accent-gold)' }} />
-                  <span>เพิ่มสินค้าใหม่</span>
-                </span>
+          {user?.role === 'manager' && !editingProduct ? (
+            <div className="glass-card" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '3rem', minHeight: '350px', textAlign: 'center', color: 'var(--text-muted)' }}>
+              <Icons.Watch style={{ width: '48px', height: '48px', color: 'rgba(255,255,255,0.15)', marginBottom: '1.5rem' }} />
+              <h3 style={{ color: 'var(--accent-gold)', marginBottom: '0.5rem' }}>ระบบจัดการคลังสำหรับผู้จัดการ</h3>
+              <p style={{ fontStyle: 'italic', fontSize: '0.88rem', maxWidth: '300px', lineHeight: 1.5 }}>กรุณากดปุ่ม "แก้ไขสต็อก" ท้ายรายชื่อสินค้าในตารางด้านขวา เพื่อปรับปรุงจำนวนสต็อกสินค้าคงเหลือ</p>
+            </div>
+          ) : (
+            <div className="glass-card">
+              <h2 className="card-title" id="form-action-title">
+                {editingProduct ? (
+                  <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem' }}>
+                    <Icons.Edit style={{ color: 'var(--accent-gold)' }} />
+                    <span>แก้ไข: {productForm.name}</span>
+                  </span>
+                ) : (
+                  <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem' }}>
+                    <Icons.Plus style={{ color: 'var(--accent-gold)' }} />
+                    <span>เพิ่มสินค้าใหม่</span>
+                  </span>
+                )}
+              </h2>
+              {user?.role !== 'admin' && (
+                <div style={{ padding: '0.6rem 0.8rem', background: 'rgba(255,107,107,0.06)', border: '1px solid rgba(255,107,107,0.15)', borderRadius: '8px', color: '#ff6b6b', fontSize: '0.78rem', display: 'flex', alignItems: 'center', gap: '0.4rem', marginBottom: '1.2rem' }}>
+                  <Icons.Info style={{ flexShrink: 0 }} />
+                  <span>สิทธิ์ผู้จัดการ: แก้ไขได้เฉพาะสต็อกสินค้าเท่านั้น ช่องอื่นสามารถแก้ไขได้โดยแอดมิน</span>
+                </div>
               )}
-            </h2>
-            <form onSubmit={handleProductSubmit} className="form-stack" id="product-form">
-              <div className="form-group">
-                <label className="form-label">ชื่อสินค้า</label>
-                <input className="form-input" value={productForm.name} onChange={setForm('name')} required id="prod-name" />
-              </div>
-              <div className="form-group">
-                <label className="form-label">แบรนด์</label>
-                <input className="form-input" value={productForm.brand} onChange={setForm('brand')} required id="prod-brand" />
-              </div>
-              <div className="form-group">
-                <label className="form-label">ราคา (บาท)</label>
-                <input type="number" className="form-input" value={productForm.price} onChange={setForm('price')} required id="prod-price" />
-              </div>
-              <div className="form-group">
-                <label className="form-label">สต็อก (เรือน)</label>
-                <input type="number" className="form-input" value={productForm.stock} onChange={setForm('stock')} required id="prod-stock" />
-              </div>
-              <div className="form-group">
-                <label className="form-label">รูปภาพหน้าปัด (เช่น /images/LUMINOX/name.webp)</label>
-                <input className="form-input" value={productForm.image} onChange={setForm('image')} id="prod-image" />
-              </div>
-              <div className="form-group">
-                <label className="form-label">รูปภาพฝาหลัง (เช่น /images/LUMINOX/name_back.webp)</label>
-                <input className="form-input" value={productForm.imageBack} onChange={setForm('imageBack')} id="prod-image-back" />
-              </div>
-              <div className="btn-group">
-                <button type="submit" className="btn btn-primary" id="btn-submit-form">
-                  {editingProduct ? 'อัปเดตข้อมูล' : 'บันทึกข้อมูลสินค้า'}
-                </button>
-                {editingProduct && <button type="button" className="btn btn-secondary" onClick={resetForm}>ยกเลิก</button>}
-              </div>
-            </form>
-          </div>
+              <form onSubmit={handleProductSubmit} className="form-stack" id="product-form">
+                <div className="form-group">
+                  <label className="form-label">ชื่อสินค้า</label>
+                  <input className="form-input" value={productForm.name} onChange={setForm('name')} required id="prod-name" disabled={user?.role !== 'admin'} />
+                </div>
+                <div className="form-group">
+                  <label className="form-label">แบรนด์</label>
+                  <input className="form-input" value={productForm.brand} onChange={setForm('brand')} required id="prod-brand" disabled={user?.role !== 'admin'} />
+                </div>
+                <div className="form-group">
+                  <label className="form-label">ราคา (บาท)</label>
+                  <input type="number" className="form-input" value={productForm.price} onChange={setForm('price')} required id="prod-price" disabled={user?.role !== 'admin'} />
+                </div>
+                <div className="form-group">
+                  <label className="form-label">สต็อก (เรือน)</label>
+                  <input type="number" className="form-input" value={productForm.stock} onChange={setForm('stock')} required id="prod-stock" />
+                </div>
+                <div className="form-group">
+                  <label className="form-label">รูปภาพหน้าปัด (เช่น /images/LUMINOX/name.webp)</label>
+                  <input className="form-input" value={productForm.image} onChange={setForm('image')} id="prod-image" disabled={user?.role !== 'admin'} />
+                </div>
+                <div className="form-group">
+                  <label className="form-label">รูปภาพฝาหลัง (เช่น /images/LUMINOX/name_back.webp)</label>
+                  <input className="form-input" value={productForm.imageBack} onChange={setForm('imageBack')} id="prod-image-back" disabled={user?.role !== 'admin'} />
+                </div>
+                <div className="btn-group">
+                  <button type="submit" className="btn btn-primary" id="btn-submit-form">
+                    {editingProduct ? (user?.role === 'admin' ? 'อัปเดตข้อมูล' : 'บันทึกสต็อกสินค้า') : 'บันทึกข้อมูลสินค้า'}
+                  </button>
+                  {editingProduct && <button type="button" className="btn btn-secondary" onClick={resetForm}>ยกเลิก</button>}
+                </div>
+              </form>
+            </div>
+          )}
 
           {/* Inventory Table */}
           <div className="glass-card">
@@ -326,8 +341,20 @@ export default function Manager() {
                 <tbody id="manager-inventory-table">
                   {products.length === 0 ? (
                     <tr><td colSpan={5} style={{ textAlign: 'center', color: 'var(--text-muted)' }}>ไม่มีสินค้าในคลัง</td></tr>
-                  ) : products.map((p) => (
-                    <tr key={p.id}>
+                  ) : [...products].sort((a, b) => {
+                    if (a.id === editingProduct) return -1;
+                    if (b.id === editingProduct) return 1;
+                    return 0;
+                  }).map((p) => (
+                    <tr 
+                      key={p.id} 
+                      style={{ 
+                        outline: p.id === editingProduct ? '2px solid #51cf66' : 'none', 
+                        outlineOffset: '-2px', 
+                        background: p.id === editingProduct ? 'rgba(81, 207, 102, 0.05)' : 'none',
+                        transition: 'background 0.25s, outline 0.25s' 
+                      }}
+                    >
                       <td style={{ textAlign: 'center' }}>
                         {p.image ? (
                           <img src={p.image} alt={p.name} style={{ width: '40px', height: '40px', objectFit: 'contain', background: 'rgba(255,255,255,0.02)', borderRadius: '6px', border: '1px solid var(--glass-border)' }} />
@@ -340,8 +367,12 @@ export default function Manager() {
                       <td><span style={{ fontWeight: 700, color: p.stock <= 3 ? '#ff6b6b' : '#f5f5f7' }}>{p.stock} เรือน</span>{p.stock <= 3 && <><br /><small style={{ color: '#ff6b6b', display: 'inline-flex', alignItems: 'center', gap: '0.2rem' }}><Icons.Info style={{ width: '12px', height: '12px' }} /> ใกล้หมด</small></>}</td>
                       <td>
                         <div className="btn-group">
-                          <button className="btn btn-secondary" style={{ padding: '0.3rem 0.6rem', fontSize: '0.8rem' }} onClick={() => startEdit(p)}>แก้ไข</button>
-                          <button className="btn btn-danger" style={{ padding: '0.3rem 0.6rem', fontSize: '0.8rem' }} onClick={() => handleDelete(p.id)}>ลบ</button>
+                          <button className="btn btn-secondary" style={{ padding: '0.3rem 0.6rem', fontSize: '0.8rem' }} onClick={() => startEdit(p)}>
+                            {user?.role === 'admin' ? 'แก้ไข' : 'แก้ไขสต็อก'}
+                          </button>
+                          {user?.role === 'admin' && (
+                            <button className="btn btn-danger" style={{ padding: '0.3rem 0.6rem', fontSize: '0.8rem' }} onClick={() => handleDelete(p.id)}>ลบ</button>
+                          )}
                         </div>
                       </td>
                     </tr>

@@ -491,15 +491,13 @@ export default function Header({ showCart, cartCount: cartCountProp, onCartClick
                   </li>
                 </>
               )}
-              {(user?.role === 'manager' || user?.role === 'admin') && (
-                <>
-                  <li>
-                    <Link to="/manager" className={isActive('/manager')} style={{ fontSize: '0.88rem', textDecoration: 'none', color: location.pathname === '/manager' ? 'var(--accent-gold)' : 'var(--text-light)', display: 'inline-flex', alignItems: 'center', gap: '0.3rem' }}>
-                      <Icons.Chart style={{ width: '13px', height: '13px' }} />
-                      <span>{t('manager')}</span>
-                    </Link>
-                  </li>
-                </>
+              {user?.role === 'manager' && (
+                <li>
+                  <Link to="/manager" className={isActive('/manager')} style={{ fontSize: '0.88rem', textDecoration: 'none', color: location.pathname === '/manager' ? 'var(--accent-gold)' : 'var(--text-light)', display: 'inline-flex', alignItems: 'center', gap: '0.3rem' }}>
+                    <Icons.Chart style={{ width: '13px', height: '13px' }} />
+                    <span>{t('manager')}</span>
+                  </Link>
+                </li>
               )}
             </ul>
           </nav>
