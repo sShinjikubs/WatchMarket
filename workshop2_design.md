@@ -32,33 +32,34 @@
 แผนภาพแสดงความสัมพันธ์ระหว่างผู้ใช้งาน (Actors) และฟังก์ชันการทำงาน (Use Cases) ภายใต้ขอบเขตของระบบ (System Boundary) ของ WatchMart:
 
 ```mermaid
-graph TD
-    %% Define Actors
+graph TB
     UserActor["👤 ผู้ซื้อ (Customer)"]
     ManagerActor["🛍️ ผู้จัดการ (Manager)"]
     AdminActor["👑 ผู้ดูแลระบบ (Admin)"]
 
     subgraph WatchMart_Boundary ["📦 ขอบเขตรองรับระบบ WatchMart Platform"]
-        %% Common Use Cases
         UC_Login["เข้าสู่ระบบ (Login)"]
-        
-        %% Customer Use Cases
-        UC_Browse["ค้นหาและชมนาฬิกาพร้อมคะแนนรีวิวดาว (Browse & Filter Watch)"]
-        UC_Cart["จัดการตะกร้าสินค้า (Manage Cart)"]
-        UC_Checkout["สั่งซื้อสินค้า (Checkout / Pay Later)"]
-        UC_UploadSlip["แนบสลิปชำระเงินภายใน 24 ชม. (Upload Slip)"]
-        UC_Track["ดูประวัติและติดตามออเดอร์ (View Orders History)"]
-        UC_Notif["รับการแจ้งเตือนสถานะออเดอร์ (Receive Notification)"]
 
-        %% Manager Use Cases
-        UC_ManageStock["จัดการคลังนาฬิกา (Manage Watch Catalog)"]
-        UC_VerifySlip["ตรวจสอบสลิปโอนเงินขั้นต้น (Verify Slip)"]
-        UC_Ship["ดำเนินการจัดส่งสินค้า (Ship Order)"]
+        subgraph Customer_Actions ["🛒 Customer Use Cases"]
+            UC_Browse["ค้นหาและชมนาฬิกาพร้อมคะแนนรีวิวดาว (Browse & Filter Watch)"]
+            UC_Cart["จัดการตะกร้าสินค้า (Manage Cart)"]
+            UC_Checkout["สั่งซื้อสินค้า (Checkout / Pay Later)"]
+            UC_UploadSlip["แนบสลิปชำระเงินภายใน 24 ชม. (Upload Slip)"]
+            UC_Track["ดูประวัติและติดตามออเดอร์ (View Orders History)"]
+            UC_Notif["รับการแจ้งเตือนสถานะออเดอร์ (Receive Notification)"]
+        end
 
-        %% Admin Use Cases
-        UC_ApproveWatch["อนุมัตินำนาฬิกาเข้าขาย (Approve Watch Catalog)"]
-        UC_FinalConfirm["ยืนยันออเดอร์ขั้นสุดท้าย (Final Confirm Order)"]
-        UC_Audit["ตรวจสอบราคากลางและประวัติระบบ (Audit Logs)"]
+        subgraph Manager_Actions ["⚙️ Manager Use Cases"]
+            UC_ManageStock["จัดการคลังนาฬิกา (Manage Watch Catalog)"]
+            UC_VerifySlip["ตรวจสอบสลิปโอนเงินขั้นต้น (Verify Slip)"]
+            UC_Ship["ดำเนินการจัดส่งสินค้า (Ship Order)"]
+        end
+
+        subgraph Admin_Actions ["👑 Admin Use Cases"]
+            UC_ApproveWatch["อนุมัตินำนาฬิกาเข้าขาย (Approve Watch Catalog)"]
+            UC_FinalConfirm["ยืนยันออเดอร์ขั้นสุดท้าย (Final Confirm Order)"]
+            UC_Audit["ตรวจสอบราคากลางและประวัติระบบ (Audit Logs)"]
+        end
     end
 
     %% Customer Connections

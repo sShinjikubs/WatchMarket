@@ -218,31 +218,37 @@ CREATE TABLE reviews (
 แผนภาพ Use Case แสดงขอบเขตของระบบ (System Boundary) และปฏิสัมพันธ์ระหว่างนักช้อป (User), พนักงาน/ผู้จัดการ (Manager) และผู้ดูแลระบบ (Admin)
 
 ```mermaid
-graph TD
-    %% Define Actors
+graph TB
     UserActor["👤 ผู้ซื้อ (User)"]
     ManagerActor["🛍️ ผู้จัดการ (Manager)"]
     AdminActor["👑 ผู้ดูแลระบบ (Admin)"]
 
     subgraph WatchMart_System ["💼 ระบบ WatchMart Platform"]
         UC_Login["เข้าสู่ระบบ (Login)"]
-        UC_Search["ค้นหาและกรองนาฬิกา (Search & Filter)"]
-        UC_Cart["จัดการตะกร้าสินค้า (Manage Cart)"]
-        UC_Checkout["สั่งซื้อสินค้า (Checkout)"]
-        UC_UploadSlip["แนบสลิปหลักฐานชำระเงินภายหลัง 24 ชม. (Upload Slip)"]
-        UC_Track["ติดตามสถานะจัดส่งและใบสั่งซื้อ (Track Orders)"]
-        UC_Notif["รับแจ้งเตือนการยืนยันสินค้า/ตรวจสลิป (Notification)"]
 
-        UC_Verify["ยืนยันตัวตนพนักงาน (Employee Verify)"]
-        UC_AddWatch["ลงรายการนาฬิกาเข้าคลัง (Add Watch to Stock)"]
+        subgraph Customer_Actions ["🛒 Customer Use Cases"]
+            UC_Search["ค้นหาและกรองนาฬิกา (Search & Filter)"]
+            UC_Cart["จัดการตะกร้าสินค้า (Manage Cart)"]
+            UC_Checkout["สั่งซื้อสินค้า (Checkout)"]
+            UC_UploadSlip["แนบสลิปชำระเงินภายหลัง 24 ชม. (Upload Slip)"]
+            UC_Track["ติดตามสถานะจัดส่ง (Track Orders)"]
+            UC_Notif["รับแจ้งเตือนสถานะ (Notification)"]
+        end
 
-        UC_Inspect["ตรวจสอบและอนุมัติสินค้า (Inspect & Approve)"]
-        UC_VerifySlip["ตรวจสอบสลิปและอนุมัติขั้นแรก (Verify Slip)"]
-        UC_FinalConfirm["ยืนยันออเดอร์ขั้นสุดท้าย (Final Confirm Order)"]
-        UC_PriceAudit["ตรวจสอบราคากลาง (Price Audit)"]
-        UC_Chat["ให้บริการแชทช่วยเหลือ (Support Chat)"]
-        UC_Blacklist["จัดการบัญชีดำ (Blacklist Management)"]
-        UC_Logs["ตรวจสอบระบบประวัติการทำงาน (System Logs)"]
+        subgraph Manager_Actions ["⚙️ Manager Use Cases"]
+            UC_Verify["ยืนยันตัวตนพนักงาน (Employee Verify)"]
+            UC_AddWatch["ลงนาฬิกาเข้าคลัง (Add Watch to Stock)"]
+            UC_VerifySlip["ตรวจสอบสลิปและอนุมัติขั้นแรก (Verify Slip)"]
+        end
+
+        subgraph Admin_Actions ["👑 Admin Use Cases"]
+            UC_Inspect["ตรวจสอบสินค้า (Inspect & Approve)"]
+            UC_FinalConfirm["ยืนยันออเดอร์ขั้นสุดท้าย (Final Confirm Order)"]
+            UC_PriceAudit["ตรวจสอบราคากลาง (Price Audit)"]
+            UC_Chat["ให้บริการแชทช่วยเหลือ (Support Chat)"]
+            UC_Blacklist["จัดการบัญชีดำ (Blacklist Management)"]
+            UC_Logs["ตรวจสอบระบบประวัติการทำงาน (System Logs)"]
+        end
     end
 
     %% User Connections
