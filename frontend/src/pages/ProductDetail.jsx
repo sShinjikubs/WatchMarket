@@ -12,10 +12,6 @@ function WatchPreview({ color, strokeColor, size = 260 }) {
   const s = strokeColor || '#c5a880';
   return (
     <svg viewBox="0 0 200 200" width={size} height={size} style={{ filter: 'drop-shadow(0 12px 32px rgba(0,0,0,0.6))' }}>
-      {/* Strap top */}
-      <rect x="82" y="10" width="36" height="28" rx="6" fill="#2a2a3a" />
-      {/* Strap bottom */}
-      <rect x="82" y="162" width="36" height="28" rx="6" fill="#2a2a3a" />
       {/* Case outer */}
       <circle cx="100" cy="100" r="75" fill="none" stroke={s} strokeWidth="4" />
       {/* Case */}
@@ -37,11 +33,11 @@ function WatchPreview({ color, strokeColor, size = 260 }) {
       {/* Crown */}
       <rect x="172" y="94" width="10" height="12" rx="3" fill="#2a2a3a" stroke={s} strokeWidth="1" />
       {/* Hour hand */}
-      <line x1="100" y1="100" x2="100" y2="66" stroke="#f5f5f7" strokeWidth="3" strokeLinecap="round" />
+      <line x1="100" y1="100" x2="100" y2="66" stroke={s} strokeWidth="3" strokeLinecap="round" />
       {/* Minute hand */}
-      <line x1="100" y1="100" x2="126" y2="100" stroke="#f5f5f7" strokeWidth="2" strokeLinecap="round" />
+      <line x1="100" y1="100" x2="100" y2="46" stroke={s} strokeWidth="2" strokeLinecap="round" />
       {/* Second hand */}
-      <line x1="100" y1="100" x2="88" y2="128" stroke="#ff6b6b" strokeWidth="1.2" strokeLinecap="round" />
+      <line x1="100" y1="110" x2="100" y2="50" stroke="#ff4757" strokeWidth="1" strokeLinecap="round" />
       {/* Center dot */}
       <circle cx="100" cy="100" r="3.5" fill={s} />
       <circle cx="100" cy="100" r="1.5" fill="#000" />

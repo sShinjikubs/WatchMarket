@@ -40,8 +40,15 @@ export default function Login() {
       {/* Left Side: Brand Imagery */}
       <div 
         className="login-left-side"
-        style={{ backgroundImage: 'url("/images/TAG Heuer/TAG Heuer Formula 1 Chronograph  Front.avif")' }}
+        style={{ backgroundColor: '#080a0f', position: 'relative', overflow: 'hidden' }}
       >
+        <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', opacity: 0.9, zIndex: 1 }}>
+          <img 
+            src="/images/TAG Heuer/TAG Heuer Formula 1 Chronograph  Front.avif" 
+            alt="TAG Heuer" 
+            style={{ width: '150%', height: '150%', objectFit: 'contain', animation: 'float-watch 6s ease-in-out infinite' }}
+          />
+        </div>
         <div className="login-left-overlay"></div>
         <div className="login-left-content">
           <div className="login-logo">

@@ -1,0 +1,104 @@
+.floating-watch-container {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  z-index: 2;
+  perspective: 1000px;
+}
+
+.floating-watch-wrapper {
+  width: 100%;
+  max-width: 450px;
+  animation: float-watch 6s ease-in-out infinite;
+  transform-style: preserve-3d;
+}
+
+.floating-watch-svg {
+  filter: drop-shadow(0 25px 35px rgba(0, 0, 0, 0.5));
+}
+
+.watch-shadow {
+  width: 200px;
+  height: 20px;
+  background: radial-gradient(ellipse at center, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0) 70%);
+  margin-top: 40px;
+  border-radius: 50%;
+  animation: watch-shadow-scale 6s ease-in-out infinite;
+}
+
+/* Animations */
+@keyframes float-watch {
+  0% {
+    transform: translateY(0) rotateY(-5deg) rotateX(5deg);
+  }
+  50% {
+    transform: translateY(-20px) rotateY(5deg) rotateX(-5deg);
+  }
+  100% {
+    transform: translateY(0) rotateY(-5deg) rotateX(5deg);
+  }
+}
+
+@keyframes watch-shadow-scale {
+  0% {
+    transform: scale(1);
+    opacity: 0.6;
+  }
+  50% {
+    transform: scale(0.8);
+    opacity: 0.3;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 0.6;
+  }
+}
+
+/* Hands Animation */
+.watch-hour-hand {
+  transform-origin: 200px 200px;
+  animation: sweep 43200s linear infinite;
+}
+
+.watch-minute-hand {
+  transform-origin: 200px 200px;
+  animation: sweep 3600s linear infinite;
+}
+
+.watch-second-hand {
+  transform-origin: 200px 200px;
+  animation: sweep 60s linear infinite;
+}
+
+.chrono-hand-1 {
+  transform-origin: 150px 200px;
+  animation: sweep 60s linear infinite;
+}
+.chrono-hand-2 {
+  transform-origin: 250px 200px;
+  animation: sweep 1800s linear infinite;
+}
+.chrono-hand-3 {
+  transform-origin: 200px 260px;
+  animation: sweep 43200s linear infinite;
+}
+
+@keyframes sweep {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.watch-button {
+  transition: transform 0.2s;
+}
+.watch-button:active, .floating-watch-container:hover .btn-top {
+  transform: translateX(-2px);
+}
