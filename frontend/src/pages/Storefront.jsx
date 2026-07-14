@@ -164,7 +164,7 @@ export default function Storefront() {
     const fullStars = Math.round(rating);
     for (let i = 1; i <= 5; i++) {
       stars.push(
-        <span key={i} style={{ color: i <= fullStars && fullStars > 0 ? 'var(--accent-gold)' : 'rgba(255,255,255,0.15)', marginRight: '2px', fontSize: '0.85rem' }}>
+        <span key={i} style={{ color: i <= fullStars && fullStars > 0 ? 'var(--accent-gold)' : 'var(--text-muted)', marginRight: '2px', fontSize: '0.85rem', opacity: i <= fullStars && fullStars > 0 ? 1 : 0.5 }}>
           ★
         </span>
       );
@@ -422,7 +422,7 @@ export default function Storefront() {
                     {p.image ? (
                       <img src={p.image} alt={p.name} style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center', display: 'block' }} />
                     ) : (
-                      <Icons.Watch style={{ width: '48px', height: '48px', color: 'rgba(255,255,255,0.15)' }} />
+                      <Icons.Watch style={{ width: '48px', height: '48px', color: 'var(--text-muted)', opacity: 0.5 }} />
                     )}
                   </div>
                   <div className="product-card-details">
@@ -470,7 +470,7 @@ export default function Storefront() {
                     {p.image ? (
                       <img src={p.image} alt={p.name} style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center', display: 'block' }} />
                     ) : (
-                      <Icons.Watch style={{ width: '48px', height: '48px', color: 'rgba(255,255,255,0.15)' }} />
+                      <Icons.Watch style={{ width: '48px', height: '48px', color: 'var(--text-muted)', opacity: 0.5 }} />
                     )}
                   </div>
                   <div className="product-card-details">
@@ -518,7 +518,7 @@ export default function Storefront() {
                     {p.image ? (
                       <img src={p.image} alt={p.name} style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center', display: 'block' }} />
                     ) : (
-                      <Icons.Watch style={{ width: '48px', height: '48px', color: 'rgba(255,255,255,0.15)' }} />
+                      <Icons.Watch style={{ width: '48px', height: '48px', color: 'var(--text-muted)', opacity: 0.5 }} />
                     )}
                   </div>
                   <div className="product-card-details">
