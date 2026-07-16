@@ -364,7 +364,16 @@ export default function ProductDetail() {
               </button>
               <button
                 className="btn btn-primary pd-btn-buy"
-                onClick={() => { handleAddToCart(); openCart(); }}
+                onClick={() => {
+                  if (!user) {
+                    navigate('/register');
+                    return;
+                  }
+                  const ok = addToCart(product, quantity);
+                  if (ok) {
+                    navigate('/checkout');
+                  }
+                }}
                 disabled={product.stock === 0}
               >
                 {product.stock === 0 ? 'สินค้าหมดชั่วคราว' : 'ซื้อเลย'}
