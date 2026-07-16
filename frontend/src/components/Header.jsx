@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Link, useNavigate, useLocation, useSearchParams } from 'react-router-dom';
 import { useAuth, useLanguage, useTheme } from '../App';
 import { useCart } from '../CartContext';
+import { useWishlist } from '../WishlistContext';
 import { api } from '../api';
 
 const Icons = {
@@ -89,6 +90,7 @@ const Icons = {
 export default function Header({ showCart, cartCount: cartCountProp, onCartClick }) {
   const { user, logout } = useAuth();
   const { cartCount: ctxCartCount, toggleCart } = useCart();
+  const { wishlist, toggleWishlistDrawer } = useWishlist();
   const navigate = useNavigate();
   const location = useLocation();
   const [searchParams, setSearchParams] = useSearchParams();
@@ -632,12 +634,41 @@ export default function Header({ showCart, cartCount: cartCountProp, onCartClick
             </ul>
           </nav>
 
+          {/* Wishlist Icon */}
+          {(user?.role === 'user' || !user) && (
+            <button className="cart-icon-btn" onClick={() => {
+              if (!user) {
+                navigate('/register');
+              } else {
+                toggleWishlistDrawer();
+              }
+            }} aria-label={t('wishlist')} style={{ margin: 0, display: 'inline-flex', alignItems: 'center', gap: '0.3rem', marginRight: '0.5rem' }}>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ display: 'inline-block', verticalAlign: 'middle', color: '#ff6b6b' }}>
+                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+              </svg>
+              <span className="cart-badge" style={{ backgroundColor: '#ff6b6b' }}>{wishlist.length}</span>
+            </button>
+          )}
+
           {/* Cart Icon */}
-          {user?.role === 'user' && (
-            <button className="cart-icon-btn" onClick={handleCartClick} aria-label="Shopping Cart" style={{ margin: 0, display: 'inline-flex', alignItems: 'center', gap: '0.3rem' }}>
+          {(user?.role === 'user' || !user) && (
+            <button className="cart-icon-btn" onClick={() => {
+              if (!user) {
+                navigate('/register');
+              } else {
+                handleCartClick();
+              }
+            }} aria-label="Shopping Cart" style={{ margin: 0, display: 'inline-flex', alignItems: 'center', gap: '0.3rem' }}>
               <Icons.Cart style={{ width: '16px', height: '16px' }} />
               <span className="cart-badge" id="cart-counter">{displayCartCount || 0}</span>
             </button>
+          )}
+
+          {/* Guest Login/Register Button */}
+          {!user && (
+            <Link to="/login" className="btn btn-primary" style={{ padding: '0.45rem 1rem', fontSize: '0.85rem', textDecoration: 'none', borderRadius: '6px', fontWeight: 'bold', marginLeft: '0.5rem' }}>
+              {lang === 'th' ? 'เข้าสู่ระบบ / สมัครสมาชิก' : 'Login / Register'}
+            </Link>
           )}
 
           {/* Notifications Icon & Dropdown */}

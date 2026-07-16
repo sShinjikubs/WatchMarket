@@ -101,6 +101,10 @@ export default function ProductDetail() {
   }, [id, navigate]);
 
   const handleAddToCart = () => {
+    if (!user) {
+      navigate('/register');
+      return;
+    }
     if (!product || product.stock <= 0) return;
     const ok = addToCart(product, quantity);
     if (ok) {

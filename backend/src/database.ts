@@ -328,6 +328,16 @@ const defaultProducts: Product[] = [
     stock: 2,
     image: "/images/TAG Heuer/More/TAG Heuer Monaco Evergraph Automatic, 40 mm, Titanium Front.avif",
     imageBack: "/images/TAG Heuer/More/TAG Heuer Monaco Evergraph Automatic, 40 mm, Titanium back.avif"
+  },
+  {
+    id: "31",
+    name: "Rolex Submariner Date 41mm Oystersteel",
+    brand: "Rolex",
+    category: "sport",
+    price: 380000,
+    stock: 5,
+    image: "/images/Rolex/001.avif",
+    imageBack: "/images/Rolex/001.avif"
   }
 ];
 
