@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { api } from '../api';
-import { useAuth } from '../App';
+import { useAuth, useLanguage } from '../App';
 import Header from '../components/Header';
 import { Icons } from '../components/Icons';
 import SystemLogger from '../components/SystemLogger';
@@ -118,6 +118,7 @@ function drawTrendChart(canvas, orders) {
 // ─── Unified Admin Dashboard Component ─────────────────────────────────────────
 export default function Admin() {
   const { user: currentUser } = useAuth();
+  const { t, lang } = useLanguage();
   const [activeTab, setActiveTab] = useState('sales'); // 'sales' | 'inventory' | 'orders' | 'users'
 
   // Data states
@@ -193,29 +194,29 @@ export default function Admin() {
       }
 
       if (res.ok) {
-        showNotif(editingProduct ? 'อัปเดตข้อมูลนาฬิกาสำเร็จ!' : 'บันทึกนาฬิกาใหม่สำเร็จ!');
+        showNotif(editingProduct ? t('updateWatchSuccessToast') : t('addWatchSuccessToast'));
         resetForm();
         refreshData();
       } else {
-        showNotif('บันทึกข้อมูลไม่สำเร็จ', false);
+        showNotif(t('saveFailed'), false);
       }
     } catch (_) {
-      showNotif('เกิดข้อผิดพลาดกับเซิร์ฟเวอร์', false);
+      showNotif(t('serverErrorGeneric'), false);
     }
   };
 
   const handleDeleteProduct = async (id) => {
-    if (!window.confirm('คุณแน่ใจหรือไม่ที่จะลบสินค้านี้ออกจากระบบ?')) return;
+    if (!window.confirm(t('confirmDeleteProduct'))) return;
     try {
       const res = await api.deleteProduct(id);
       if (res.ok) {
-        showNotif('ลบสินค้าสำเร็จ!');
+        showNotif(t('deleteProductSuccessToast'));
         refreshData();
       } else {
-        showNotif('ไม่สามารถลบสินค้าได้', false);
+        showNotif(t('deleteProductFailToast'), false);
       }
     } catch (_) {
-      showNotif('เกิดข้อผิดพลาดกับเซิร์ฟเวอร์', false);
+      showNotif(t('serverErrorGeneric'), false);
     }
   };
 
@@ -258,33 +259,33 @@ export default function Admin() {
       }
       const res = await api.updateUser(editingUser, payload);
       if (res.ok) {
-        showNotif(`อัปเดตผู้ใช้ "${editingUser}" สำเร็จ!`);
+        showNotif(t('updateUserSuccessToast').replace('{username}', editingUser));
         cancelEditUser();
         refreshData();
       } else {
-        showNotif('ไม่สามารถอัปเดตข้อมูลผู้ใช้ได้', false);
+        showNotif(t('updateUserFailToast'), false);
       }
     } catch (_) {
-      showNotif('เกิดข้อผิดพลาดกับเซิร์ฟเวอร์', false);
+      showNotif(t('serverErrorGeneric'), false);
     }
   };
 
   const handleDeleteUser = async (username) => {
     if (username === currentUser?.username) {
-      showNotif('ไม่สามารถลบบัญชีของคุณเองได้!', false);
+      showNotif(t('deleteSelfFailToast'), false);
       return;
     }
-    if (!window.confirm(`คุณแน่ใจหรือไม่ว่าต้องการลบผู้ใช้ "${username}"?`)) return;
+    if (!window.confirm(t('confirmDeleteUser').replace('{username}', username))) return;
     try {
       const res = await api.deleteUser(username);
       if (res.ok) {
-        showNotif(`ลบผู้ใช้ "${username}" เรียบร้อยแล้ว`);
+        showNotif(t('deleteUserSuccessToast').replace('{username}', username));
         refreshData();
       } else {
-        showNotif('ไม่สามารถลบผู้ใช้ได้', false);
+        showNotif(t('deleteUserFailToast'), false);
       }
     } catch (_) {
-      showNotif('เกิดข้อผิดพลาดกับเซิร์ฟเวอร์', false);
+      showNotif(t('serverErrorGeneric'), false);
     }
   };
 
@@ -292,39 +293,39 @@ export default function Admin() {
   const handleInspect = async (id, result) => {
     const res = await api.inspectWatch(id, result);
     if (res.ok) {
-      showNotif(`ตรวจสภาพ: ${result === 'passed' ? 'ผ่านเกณฑ์' : 'ไม่ผ่านเกณฑ์'}`);
+      showNotif(t('inspectResultToast').replace('{result}', result === 'passed' ? t('inspectPass') : t('inspectFail')));
       refreshData();
-    } else showNotif('ตรวจสภาพล้มเหลว', false);
+    } else showNotif(t('inspectFailToast'), false);
   };
 
   const handleImport = async (id) => {
     const res = await api.importWatch(id);
     if (res.ok) {
-      showNotif('นำเข้าคลังสำเร็จ!');
+      showNotif(t('importSuccessToast'));
       refreshData();
-    } else showNotif('นำเข้าล้มเหลว', false);
+    } else showNotif(t('importFailToast'), false);
   };
 
   // Shipment fulfillment
   const shipOrder = async (id) => {
     const res = await api.shipOrder(id);
     if (res.ok) {
-      showNotif('จัดส่งพัสดุสำเร็จ!');
+      showNotif(t('shipSuccess'));
       refreshData();
     } else {
       const d = await res.json();
-      showNotif(d.error || 'อัปเดตสถานะล้มเหลว', false);
+      showNotif(d.error || t('updateStatusFail'), false);
     }
   };
 
   const confirmOrder = async (id) => {
     const res = await api.adminConfirmOrder(id);
     if (res.ok) {
-      showNotif('ยืนยันความถูกต้องและชำระเงินเรียบร้อยแล้ว!');
+      showNotif(t('confirmOrderSuccessToast'));
       refreshData();
     } else {
       const d = await res.json();
-      showNotif(d.error || 'การยืนยันล้มเหลว', false);
+      showNotif(d.error || t('confirmOrderFailToast'), false);
     }
   };
 
@@ -346,28 +347,28 @@ export default function Admin() {
         <div className="page-header">
           <h1 className="page-title" style={{ display: 'inline-flex', alignItems: 'center', gap: '0.6rem' }}>
             <Icons.Crown style={{ color: 'var(--accent-gold)', width: '24px', height: '24px' }} />
-            <span>Admin Dashboard</span>
+            <span>{t('adminDashboardTitle')}</span>
           </h1>
-          <p className="page-subtitle">แผงควบคุมระบบคลังสินค้า จัดการธุรกรรม บัญชีผู้ใช้ และประเมินระบบงานรวม</p>
+          <p className="page-subtitle">{t('adminDashboardSubtitle')}</p>
         </div>
 
         {/* Unified Tab Bar controls */}
         <div className="filter-controls" style={{ marginBottom: '2.5rem', display: 'flex', gap: '0.8rem', flexWrap: 'wrap' }}>
           <button className={`filter-btn ${activeTab === 'sales' ? 'active' : ''}`} onClick={() => setActiveTab('sales')}>
             <Icons.Chart style={{ marginRight: '6px' }} />
-            <span>วิเคราะห์ยอดขาย</span>
+            <span>{t('tabSales')}</span>
           </button>
           <button className={`filter-btn ${activeTab === 'inventory' ? 'active' : ''}`} onClick={() => setActiveTab('inventory')}>
             <Icons.Package style={{ marginRight: '6px' }} />
-            <span>จัดการสินค้า</span>
+            <span>{t('tabInventory')}</span>
           </button>
           <button className={`filter-btn ${activeTab === 'orders' ? 'active' : ''}`} onClick={() => setActiveTab('orders')}>
             <Icons.Book style={{ marginRight: '6px' }} />
-            <span>ใบสั่งซื้อและการจัดส่ง</span>
+            <span>{t('tabOrders')}</span>
           </button>
           <button className={`filter-btn ${activeTab === 'users' ? 'active' : ''}`} onClick={() => setActiveTab('users')}>
             <Icons.User style={{ marginRight: '6px' }} />
-            <span>สิทธิ์ผู้ใช้และระบบ ({users.length})</span>
+            <span>{t('tabUsers')} ({users.length})</span>
           </button>
         </div>
 
@@ -378,15 +379,15 @@ export default function Admin() {
             <div className="stats-grid">
               <div className="stat-card">
                 <div className="stat-value">฿ {totalSales.toLocaleString()}</div>
-                <div className="stat-label">ยอดขายรวม</div>
+                <div className="stat-label">{t('totalSalesLabel')}</div>
               </div>
               <div className="stat-card">
-                <div className="stat-value">{orders.length} รายการ</div>
-                <div className="stat-label">คำสั่งซื้อทั้งหมด</div>
+                <div className="stat-value">{t('orderCount').replace('{count}', orders.length)}</div>
+                <div className="stat-label">{t('totalOrdersLabel')}</div>
               </div>
               <div className="stat-card">
-                <div className="stat-value">{products.length} รุ่น</div>
-                <div className="stat-label">สินค้าในคลัง</div>
+                <div className="stat-value">{t('productModelCount').replace('{count}', products.length)}</div>
+                <div className="stat-label">{t('inventoryProductsLabel')}</div>
               </div>
             </div>
 
@@ -395,14 +396,14 @@ export default function Admin() {
               <div className="glass-card">
                 <h2 className="card-title" style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem' }}>
                   <Icons.Chart style={{ color: 'var(--accent-gold)' }} />
-                  <span>ยอดขายแยกตามแบรนด์</span>
+                  <span>{t('salesByBrandTitle')}</span>
                 </h2>
                 <canvas ref={barRef} id="salesChart" width="460" height="260" style={{ width: '100%' }} />
               </div>
               <div className="glass-card">
                 <h2 className="card-title" style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem' }}>
                   <Icons.Chart style={{ color: 'var(--accent-gold)' }} />
-                  <span>แนวโน้มยอดขาย 7 วันล่าสุด</span>
+                  <span>{t('salesTrend7DaysTitle')}</span>
                 </h2>
                 <canvas ref={trendRef} id="salesTrendChart" width="460" height="260" style={{ width: '100%' }} />
               </div>
@@ -418,45 +419,45 @@ export default function Admin() {
                 {editingProduct ? (
                   <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem' }}>
                     <Icons.Edit style={{ color: 'var(--accent-gold)' }} />
-                    <span>แก้ไข: {productForm.name}</span>
+                    <span>{t('editProductTitle').replace('{name}', productForm.name)}</span>
                   </span>
                 ) : (
                   <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem' }}>
                     <Icons.Plus style={{ color: 'var(--accent-gold)' }} />
-                    <span>เพิ่มสินค้าใหม่</span>
+                    <span>{t('addNewProductTitle')}</span>
                   </span>
                 )}
               </h2>
               <form onSubmit={handleProductSubmit} className="form-stack" id="product-form">
                 <div className="form-group">
-                  <label className="form-label">ชื่อสินค้า</label>
+                  <label className="form-label">{t('productNameLabel')}</label>
                   <input className="form-input" value={productForm.name} onChange={setProductFormValue('name')} required />
                 </div>
                 <div className="form-group">
-                  <label className="form-label">แบรนด์</label>
+                  <label className="form-label">{t('brandLabel')}</label>
                   <input className="form-input" value={productForm.brand} onChange={setProductFormValue('brand')} required />
                 </div>
                 <div className="form-group">
-                  <label className="form-label">ราคา (บาท)</label>
+                  <label className="form-label">{t('priceThbLabel')}</label>
                   <input type="number" className="form-input" value={productForm.price} onChange={setProductFormValue('price')} required />
                 </div>
                 <div className="form-group">
-                  <label className="form-label">สต็อก (เรือน)</label>
+                  <label className="form-label">{t('stockQtyLabel')}</label>
                   <input type="number" className="form-input" value={productForm.stock} onChange={setProductFormValue('stock')} required />
                 </div>
                 <div className="form-group">
-                  <label className="form-label">รูปภาพหน้าปัด (เช่น /images/LUMINOX/name.webp)</label>
+                  <label className="form-label">{t('frontImageLabel')}</label>
                   <input className="form-input" value={productForm.image} onChange={setProductFormValue('image')} />
                 </div>
                 <div className="form-group">
-                  <label className="form-label">รูปภาพฝาหลัง (เช่น /images/LUMINOX/name_back.webp)</label>
+                  <label className="form-label">{t('backImageLabel')}</label>
                   <input className="form-input" value={productForm.imageBack} onChange={setProductFormValue('imageBack')} />
                 </div>
                 <div className="btn-group">
                   <button type="submit" className="btn btn-primary">
-                    {editingProduct ? 'อัปเดตข้อมูล' : 'บันทึกข้อมูลสินค้า'}
+                    {editingProduct ? t('updateDataBtn') : t('saveProductInfoBtn')}
                   </button>
-                  {editingProduct && <button type="button" className="btn btn-secondary" onClick={resetForm}>ยกเลิก</button>}
+                  {editingProduct && <button type="button" className="btn btn-secondary" onClick={resetForm}>{t('cancelBtn')}</button>}
                 </div>
               </form>
             </div>
@@ -465,7 +466,7 @@ export default function Admin() {
             <div className="glass-card">
               <h2 className="card-title" style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem' }}>
                 <Icons.Package style={{ color: 'var(--accent-gold)' }} />
-                <span>สินค้าคงคลัง</span>
+                <span>{t('inventoryTitle')}</span>
               </h2>
               <div className="table-responsive">
                 <table className="data-table">
@@ -474,15 +475,15 @@ export default function Admin() {
                       <th>
                         <Icons.Watch style={{ width: '16px', height: '16px', color: 'var(--accent-gold)' }} />
                       </th>
-                      <th>สินค้า</th>
-                      <th>ราคา</th>
-                      <th>สต็อก</th>
-                      <th>จัดการ</th>
+                      <th>{t('productCol')}</th>
+                      <th>{t('priceCol')}</th>
+                      <th>{t('stockCol')}</th>
+                      <th>{t('manageCol')}</th>
                     </tr>
                   </thead>
                   <tbody>
                     {products.length === 0 ? (
-                      <tr><td colSpan={5} style={{ textAlign: 'center', color: 'var(--text-muted)' }}>ไม่มีสินค้าในคลัง</td></tr>
+                      <tr><td colSpan={5} style={{ textAlign: 'center', color: 'var(--text-muted)' }}>{t('noProductsInInventory')}</td></tr>
                     ) : [...products].sort((a, b) => {
                       if (a.id === editingProduct) return -1;
                       if (b.id === editingProduct) return 1;
@@ -499,21 +500,21 @@ export default function Admin() {
                       >
                         <td style={{ textAlign: 'center' }}>
                           {p.image ? (
-                            <img src={p.image} alt={p.name} style={{ width: '40px', height: '40px', objectFit: 'contain', background: 'rgba(255,255,255,0.02)', borderRadius: '6px', border: '1px solid var(--glass-border)' }} />
+                            <img src={p.image} alt={lang === 'en' && p.nameEn ? p.nameEn : p.name} style={{ width: '40px', height: '40px', objectFit: 'contain', background: 'rgba(255,255,255,0.02)', borderRadius: '6px', border: '1px solid var(--glass-border)' }} />
                           ) : (
                             <Icons.Watch style={{ width: '22px', height: '22px', color: 'rgba(255,255,255,0.15)' }} />
                           )}
                         </td>
-                        <td><strong>{p.name}</strong><br /><span style={{ color: 'var(--text-muted)', fontSize: '0.8rem' }}>{p.brand}</span></td>
+                        <td><strong>{lang === 'en' && p.nameEn ? p.nameEn : p.name}</strong><br /><span style={{ color: 'var(--text-muted)', fontSize: '0.8rem' }}>{p.brand}</span></td>
                         <td><strong>฿ {p.price?.toLocaleString()}</strong></td>
                         <td>
-                          <span style={{ fontWeight: 700, color: p.stock <= 3 ? '#ff6b6b' : '#f5f5f7' }}>{p.stock} เรือน</span>
-                          {p.stock <= 3 && <><br /><small style={{ color: '#ff6b6b', display: 'inline-flex', alignItems: 'center', gap: '0.2rem' }}><Icons.Info style={{ width: '12px', height: '12px' }} /> ใกล้หมด</small></>}
+                          <span style={{ fontWeight: 700, color: p.stock <= 3 ? '#ff6b6b' : '#f5f5f7' }}>{t('stockLeft').replace('{count}', p.stock)}</span>
+                          {p.stock <= 3 && <><br /><small style={{ color: '#ff6b6b', display: 'inline-flex', alignItems: 'center', gap: '0.2rem' }}><Icons.Info style={{ width: '12px', height: '12px' }} /> {t('lowStockWarning')}</small></>}
                         </td>
                         <td>
                           <div className="btn-group">
-                            <button className="btn btn-secondary" style={{ padding: '0.3rem 0.6rem', fontSize: '0.8rem' }} onClick={() => startEditProduct(p)}>แก้ไข</button>
-                            <button className="btn btn-danger" style={{ padding: '0.3rem 0.6rem', fontSize: '0.8rem' }} onClick={() => handleDeleteProduct(p.id)}>ลบ</button>
+                            <button className="btn btn-secondary" style={{ padding: '0.3rem 0.6rem', fontSize: '0.8rem' }} onClick={() => startEditProduct(p)}>{t('editBtn')}</button>
+                            <button className="btn btn-danger" style={{ padding: '0.3rem 0.6rem', fontSize: '0.8rem' }} onClick={() => handleDeleteProduct(p.id)}>{t('deleteBtn')}</button>
                           </div>
                         </td>
                       </tr>
@@ -529,71 +530,71 @@ export default function Admin() {
           <div className="glass-card">
             <h2 className="card-title" style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem' }}>
               <Icons.Book style={{ color: 'var(--accent-gold)' }} />
-              <span>รายการใบสั่งซื้อและการจัดส่ง</span>
+              <span>{t('ordersAndShippingTitle')}</span>
             </h2>
             <div className="table-responsive">
               <table className="data-table">
                 <thead>
                   <tr>
                     <th>Order ID</th>
-                    <th>สินค้า / ที่อยู่</th>
-                    <th>ยอดรวม</th>
-                    <th>สถานะ</th>
-                    <th>ช่องทาง</th>
-                    <th>ดำเนินการ</th>
+                    <th>{t('productAddressCol')}</th>
+                    <th>{t('totalAmountCol')}</th>
+                    <th>{t('statusCol')}</th>
+                    <th>{t('channelCol')}</th>
+                    <th>{t('actionCol')}</th>
                   </tr>
                 </thead>
                 <tbody>
                   {orders.length === 0 ? (
-                    <tr><td colSpan={6} style={{ textAlign: 'center', color: 'var(--text-muted)' }}>ไม่มีรายการใบสั่งซื้อ</td></tr>
+                    <tr><td colSpan={6} style={{ textAlign: 'center', color: 'var(--text-muted)' }}>{t('noOrdersList')}</td></tr>
                   ) : orders.map((ord) => (
                     <tr key={ord.id}>
                       <td><strong>{ord.id}</strong></td>
                       <td>
-                        <div style={{ fontSize: '0.85rem' }}>{ord.items?.map((i) => `${i.name} (${i.quantity} เรือน)`).join(', ')}</div>
+                        <div style={{ fontSize: '0.85rem' }}>{ord.items?.map((i) => `${lang === 'en' && i.nameEn ? i.nameEn : i.name} (${t('stockLeft').replace('{count}', i.quantity)})`).join(', ')}</div>
                         <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '0.2rem' }}>
-                          ผู้ซื้อ: {ord.email} | ที่อยู่: {ord.address}
+                          {t('buyerAddressLabel').replace('{email}', ord.email).replace('{address}', ord.address)}
                         </div>
                       </td>
                       <td><strong>฿ {ord.total?.toLocaleString()}</strong></td>
                       <td>
-                        {ord.status === 'pending_payment' && <span className="badge" style={{ background: 'rgba(255,165,0,0.18)', color: '#ffa94d', border: '1px solid #ffa94d55' }}>รอชำระเงิน</span>}
-                        {ord.status === 'pending_review' && <span className="badge" style={{ background: 'rgba(255,165,0,0.18)', color: '#ffa94d', border: '1px solid #ffa94d55' }}>รอ Manager ตรวจ</span>}
-                        {ord.status === 'manager_approved' && <span className="badge" style={{ background: 'rgba(59,130,246,0.18)', color: '#60a5fa', border: '1px solid #60a5fa55' }}>ผ่าน Manager แล้ว</span>}
-                        {ord.status === 'confirmed' && <span className="badge badge-paid">เตรียมส่ง (ยืนยันแล้ว)</span>}
-                        {ord.status === 'shipped' && <span className="badge badge-shipped">ส่งแล้ว</span>}
-                        {ord.status === 'cancelled' && <span className="badge badge-cancelled">ยกเลิก</span>}
-                        {ord.status === 'paid' && <span className="badge badge-paid">เตรียมส่ง</span>}
+                        {ord.status === 'pending_payment' && <span className="badge" style={{ background: 'rgba(255,165,0,0.18)', color: '#ffa94d', border: '1px solid #ffa94d55' }}>{t('statusPendingPayment')}</span>}
+                        {ord.status === 'pending_review' && <span className="badge" style={{ background: 'rgba(255,165,0,0.18)', color: '#ffa94d', border: '1px solid #ffa94d55' }}>{t('statusPendingReviewAdmin')}</span>}
+                        {ord.status === 'manager_approved' && <span className="badge" style={{ background: 'rgba(59,130,246,0.18)', color: '#60a5fa', border: '1px solid #60a5fa55' }}>{t('statusManagerApprovedAdmin')}</span>}
+                        {ord.status === 'confirmed' && <span className="badge badge-paid">{t('statusConfirmedReadyToShip')}</span>}
+                        {ord.status === 'shipped' && <span className="badge badge-shipped">{t('statusShipped')}</span>}
+                        {ord.status === 'cancelled' && <span className="badge badge-cancelled">{t('statusCancelled')}</span>}
+                        {ord.status === 'paid' && <span className="badge badge-paid">{t('statusPaidReadyToShip')}</span>}
                       </td>
                       <td>
                         <small style={{ color: 'var(--text-muted)', fontFamily: 'monospace' }}>{ord.payment?.toUpperCase()}</small>
-                        {ord.slip && <><br /><button className="btn btn-secondary" style={{ padding: '0.15rem 0.4rem', fontSize: '0.75rem', marginTop: '0.3rem' }} onClick={() => setSlipModal(slipModal === ord.id ? null : ord.id)}>ดูสลิป</button></>}
+                        {ord.slip && <><br /><button className="btn btn-secondary" style={{ padding: '0.15rem 0.4rem', fontSize: '0.75rem', marginTop: '0.3rem' }} onClick={() => setSlipModal(slipModal === ord.id ? null : ord.id)}>{t('viewSlipBtn')}</button></>}
                       </td>
                       <td style={{ minWidth: '180px' }}>
                         {ord.slip && slipModal === ord.id && (
                           <div style={{ marginBottom: '0.4rem', borderRadius: '8px', overflow: 'hidden', border: '1px solid var(--glass-border)', maxWidth: '160px' }}>
-                            <img src={ord.slip} alt="สลิป" style={{ width: '100%', display: 'block' }} />
+                            <img src={ord.slip} alt="slip" style={{ width: '100%', display: 'block' }} />
                           </div>
                         )}
                         {ord.status === 'pending_payment' ? (
-                          <span style={{ color: '#ffa94d', fontSize: '0.8rem' }}>รอชำระเงิน</span>
+                          <span style={{ color: '#ffa94d', fontSize: '0.8rem' }}>{t('statusPendingPayment')}</span>
                         ) : ord.status === 'pending_review' ? (
-                          <span style={{ color: '#ffa94d', fontSize: '0.8rem' }}>รอการตรวจสอบจาก Manager</span>
+                          <span style={{ color: '#ffa94d', fontSize: '0.8rem' }}>{t('waitingManagerReviewText')}</span>
                         ) : ord.status === 'manager_approved' ? (
                           <button className="btn btn-primary" style={{ padding: '0.25rem 0.6rem', fontSize: '0.8rem', background: 'linear-gradient(135deg, var(--accent-gold), #b58900)', border: 'none', color: '#000', fontWeight: 'bold' }} onClick={() => confirmOrder(ord.id)}>
-                            ยืนยันขั้นสุดท้าย
+                            {t('finalConfirmBtn')}
                           </button>
                         ) : ord.status === 'confirmed' || ord.status === 'paid' ? (
                           <span style={{ color: '#51cf66', fontSize: '0.8rem', display: 'inline-flex', alignItems: 'center', gap: '0.2rem' }}>
-                            <Icons.Check /><span>ยืนยันชำระเงินแล้ว</span>
+                            <Icons.Check /><span>{t('paymentConfirmedText')}</span>
                           </span>
                         ) : ord.status === 'shipped' ? (
                           <span style={{ color: '#4ade80', fontSize: '0.8rem', fontWeight: 700, display: 'inline-flex', alignItems: 'center', gap: '0.2rem' }}>
                             <Icons.Check />
-                            <span>จัดส่งแล้ว</span>
+                            <span>{t('deliveredStatusLabel')}</span>
                           </span>
                         ) : (
-                          <span style={{ color: 'var(--text-muted)', fontSize: '0.8rem' }}>ยกเลิกแล้ว</span>
+                          <span style={{ color: 'var(--text-muted)', fontSize: '0.8rem' }}>{t('cancelledStatusLabel')}</span>
                         )}
                       </td>
                     </tr>
@@ -611,18 +612,18 @@ export default function Admin() {
               <div className="glass-card">
                 <h2 className="card-title" style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem' }}>
                   <Icons.Settings style={{ color: 'var(--accent-gold)' }} />
-                  <span>คิวประเมินสภาพนาฬิกา (ข้อเสนอขายจากลูกค้า)</span>
+                  <span>{t('inspectQueueTitle')}</span>
                 </h2>
                 <div className="table-responsive">
                   <table className="data-table">
                     <thead>
                       <tr>
-                        <th>ผู้เสนอขาย</th>
-                        <th>แบรนด์/รุ่น</th>
-                        <th>ราคาที่ต้องการ</th>
-                        <th>สภาพประเมิน</th>
-                        <th>ตรวจสภาพ</th>
-                        <th>นำเข้าคลัง</th>
+                        <th>{t('sellerCol')}</th>
+                        <th>{t('brandModelCol')}</th>
+                        <th>{t('desiredPriceCol')}</th>
+                        <th>{t('evalConditionCol')}</th>
+                        <th>{t('inspectActionCol')}</th>
+                        <th>{t('importActionCol')}</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -638,22 +639,22 @@ export default function Admin() {
                           <td>
                             {w.inspectionStatus === 'pending' ? (
                               <div className="btn-group">
-                                <button className="btn btn-success" style={{ padding: '0.25rem 0.5rem', fontSize: '0.8rem' }} onClick={() => handleInspect(w.id, 'passed')}>ผ่าน</button>
-                                <button className="btn btn-danger" style={{ padding: '0.25rem 0.5rem', fontSize: '0.8rem' }} onClick={() => handleInspect(w.id, 'failed')}>ตกเกณฑ์</button>
+                                <button className="btn btn-success" style={{ padding: '0.25rem 0.5rem', fontSize: '0.8rem' }} onClick={() => handleInspect(w.id, 'passed')}>{t('passBtn')}</button>
+                                <button className="btn btn-danger" style={{ padding: '0.25rem 0.5rem', fontSize: '0.8rem' }} onClick={() => handleInspect(w.id, 'failed')}>{t('failBtn')}</button>
                               </div>
                             ) : w.inspectionStatus === 'passed' ? (
-                              <span className="badge badge-watch-passed">ผ่านเกณฑ์</span>
+                              <span className="badge badge-watch-passed">{t('inspectPass')}</span>
                             ) : (
-                              <span className="badge badge-watch-failed">ไม่ผ่านเกณฑ์</span>
+                              <span className="badge badge-watch-failed">{t('inspectFail')}</span>
                             )}
                           </td>
                           <td>
                             {w.inspectionStatus === 'passed' && w.importStatus === 'pending' ? (
-                              <button className="btn btn-primary" style={{ padding: '0.25rem 0.6rem', fontSize: '0.8rem' }} onClick={() => handleImport(w.id)}>นำเข้าคลัง</button>
+                              <button className="btn btn-primary" style={{ padding: '0.25rem 0.6rem', fontSize: '0.8rem' }} onClick={() => handleImport(w.id)}>{t('importActionCol')}</button>
                             ) : w.importStatus === 'imported' ? (
-                              <span className="badge badge-watch-imported">นำเข้าแล้ว</span>
+                              <span className="badge badge-watch-imported">{t('importedLabel')}</span>
                             ) : (
-                              <span style={{ color: 'var(--text-muted)', fontSize: '0.8rem' }}>รอกระบวนการ</span>
+                              <span style={{ color: 'var(--text-muted)', fontSize: '0.8rem' }}>{t('waitingProcessText')}</span>
                             )}
                           </td>
                         </tr>
@@ -669,15 +670,15 @@ export default function Admin() {
               <div className="glass-card">
                 <h2 className="card-title" style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem' }}>
                   <Icons.User style={{ color: 'var(--accent-gold)' }} />
-                  <span>บัญชีผู้ใช้ในระบบ ({users.length})</span>
+                  <span>{t('systemUsersTitle')} ({users.length})</span>
                 </h2>
                 <div className="table-responsive">
                   <table className="data-table">
                     <thead>
                       <tr>
-                        <th>ชื่อผู้ใช้งาน</th>
-                        <th>ระดับสิทธิ์</th>
-                        <th>จัดการ</th>
+                        <th>{t('usernameCol')}</th>
+                        <th>{t('roleCol')}</th>
+                        <th>{t('manageCol')}</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -686,7 +687,7 @@ export default function Admin() {
                           <td>
                             <strong>{u.username}</strong>
                             {u.username === currentUser?.username && (
-                              <span className="badge" style={{ background: 'rgba(81,207,102,0.1)', color: '#51cf66', marginLeft: '0.5rem' }}>คุณ</span>
+                              <span className="badge" style={{ background: 'rgba(81,207,102,0.1)', color: '#51cf66', marginLeft: '0.5rem' }}>{t('youBadge')}</span>
                             )}
                           </td>
                           <td>
@@ -702,8 +703,8 @@ export default function Admin() {
                           </td>
                           <td>
                             <div className="btn-group">
-                              <button className="btn btn-secondary" style={{ padding: '0.25rem 0.5rem', fontSize: '0.8rem' }} onClick={() => startEditUser(u)}>แก้ไข</button>
-                              <button className="btn btn-danger" style={{ padding: '0.25rem 0.5rem', fontSize: '0.8rem' }} disabled={u.username === currentUser?.username} onClick={() => handleDeleteUser(u.username)}>ลบ</button>
+                              <button className="btn btn-secondary" style={{ padding: '0.25rem 0.5rem', fontSize: '0.8rem' }} onClick={() => startEditUser(u)}>{t('editBtn')}</button>
+                              <button className="btn btn-danger" style={{ padding: '0.25rem 0.5rem', fontSize: '0.8rem' }} disabled={u.username === currentUser?.username} onClick={() => handleDeleteUser(u.username)}>{t('deleteBtn')}</button>
                             </div>
                           </td>
                         </tr>
@@ -717,30 +718,30 @@ export default function Admin() {
               <div className="glass-card">
                 <h2 className="card-title" style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem' }}>
                   <Icons.Edit style={{ color: 'var(--accent-gold)' }} />
-                  <span>{editingUser ? `แก้ไขสิทธิ์: ${editingUser}` : 'เลือกบัญชีผู้ใช้เพื่อแก้ไข'}</span>
+                  <span>{editingUser ? t('editUserPrivilegeTitle').replace('{username}', editingUser) : t('selectUserToEditTitle')}</span>
                 </h2>
                 {editingUser ? (
                   <form onSubmit={handleUpdateUser} className="form-stack">
                     <div className="form-group">
-                      <label className="form-label">สิทธิ์การเข้าถึงระบบ</label>
+                      <label className="form-label">{t('accessPrivilegeLabel')}</label>
                       <select className="form-select" value={userForm.role} onChange={(e) => setUserForm((prev) => ({ ...prev, role: e.target.value }))}>
-                        <option value="user">USER (ลูกค้า / ผู้ซื้อ)</option>
-                        <option value="manager">MANAGER (ผู้จัดการ)</option>
-                        <option value="admin">ADMIN (ผู้ดูแลระบบสูงสุด)</option>
+                        <option value="user">{t('roleUserOption')}</option>
+                        <option value="manager">{t('roleManagerOption')}</option>
+                        <option value="admin">{t('roleAdminOption')}</option>
                       </select>
                     </div>
                     <div className="form-group">
-                      <label className="form-label">เปลี่ยนรหัสผ่านใหม่ (หากไม่เปลี่ยนให้เว้นว่าง)</label>
-                      <input type="password" className="form-input" placeholder="กรอกรหัสผ่านใหม่" value={userForm.password} onChange={(e) => setUserForm((prev) => ({ ...prev, password: e.target.value }))} />
+                      <label className="form-label">{t('changePasswordLabel')}</label>
+                      <input type="password" className="form-input" placeholder={t('newPasswordPlaceholder')} value={userForm.password} onChange={(e) => setUserForm((prev) => ({ ...prev, password: e.target.value }))} />
                     </div>
                     <div className="btn-group">
-                      <button type="submit" className="btn btn-primary">บันทึกข้อมูล</button>
-                      <button type="button" className="btn btn-secondary" onClick={cancelEditUser}>ยกเลิก</button>
+                      <button type="submit" className="btn btn-primary">{t('updateDataBtn')}</button>
+                      <button type="button" className="btn btn-secondary" onClick={cancelEditUser}>{t('cancelBtn')}</button>
                     </div>
                   </form>
                 ) : (
                   <p style={{ color: 'var(--text-muted)', fontStyle: 'italic', fontSize: '0.88rem' }}>
-                    กดปุ่มแก้ไขท้ายชื่อบัญชีผู้ใช้งานที่ต้องการปรับบทบาทสิทธิ์การเข้าถึงระบบ หรือรีเซ็ตรหัสผ่านใหม่
+                    {t('editUserInstruction')}
                   </p>
                 )}
               </div>

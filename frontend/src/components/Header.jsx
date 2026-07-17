@@ -136,23 +136,23 @@ export default function Header({ showCart, cartCount: cartCountProp, onCartClick
     if (user.role === 'admin') {
       orders.forEach(ord => {
         if (ord.status === 'manager_approved') {
-          list.push({
-            id: `admin-confirm-${ord.id}`,
-            text: `ออเดอร์ ${ord.id} ผ่านการตรวจสลิปแล้ว รอคุณยืนยันขั้นสุดท้าย`,
-            time: ord.date,
-            link: '/manager'
-          });
+            list.push({
+              id: `admin-confirm-${ord.id}`,
+              text: t('adminConfirmNotif').replace('{id}', ord.id),
+              time: ord.date,
+              link: '/manager'
+            });
         }
       });
     } else if (user.role === 'manager') {
       orders.forEach(ord => {
         if (ord.status === 'pending_review') {
-          list.push({
-            id: `manager-review-${ord.id}`,
-            text: `มีออเดอร์ใหม่ ${ord.id} รอตรวจสอบสลิปชำระเงิน`,
-            time: ord.date,
-            link: '/manager'
-          });
+            list.push({
+              id: `manager-review-${ord.id}`,
+              text: t('managerReviewNotif').replace('{id}', ord.id),
+              time: ord.date,
+              link: '/manager'
+            });
         }
       });
     } else {
@@ -160,33 +160,33 @@ export default function Header({ showCart, cartCount: cartCountProp, onCartClick
       const myOrders = orders.filter(o => o.userId === user.username);
       myOrders.forEach(ord => {
         if (ord.status === 'manager_approved') {
-          list.push({
-            id: `user-m-approve-${ord.id}`,
-            text: `ออเดอร์ ${ord.id} ผ่านการตรวจสอบสลิปจาก Manager แล้ว (รอ Admin ยืนยัน)`,
-            time: ord.date,
-            link: '/my-orders'
-          });
+            list.push({
+              id: `user-m-approve-${ord.id}`,
+              text: t('userManagerApproveNotif').replace('{id}', ord.id),
+              time: ord.date,
+              link: '/my-orders'
+            });
         } else if (ord.status === 'confirmed') {
-          list.push({
-            id: `user-confirm-${ord.id}`,
-            text: `ออเดอร์ ${ord.id} ได้รับการยืนยันการชำระเงินจาก Admin แล้ว (เตรียมจัดส่ง)`,
-            time: ord.date,
-            link: '/my-orders'
-          });
+            list.push({
+              id: `user-confirm-${ord.id}`,
+              text: t('userConfirmNotif').replace('{id}', ord.id),
+              time: ord.date,
+              link: '/my-orders'
+            });
         } else if (ord.status === 'shipped') {
-          list.push({
-            id: `user-shipped-${ord.id}`,
-            text: `ออเดอร์ ${ord.id} จัดส่งสินค้าเรียบร้อยแล้ว!`,
-            time: ord.date,
-            link: '/my-orders'
-          });
+            list.push({
+              id: `user-shipped-${ord.id}`,
+              text: t('userShippedNotif').replace('{id}', ord.id),
+              time: ord.date,
+              link: '/my-orders'
+            });
         } else if (ord.status === 'cancelled' && ord.slip) {
-          list.push({
-            id: `user-cancelled-${ord.id}`,
-            text: `ออเดอร์ ${ord.id} ปฏิเสธสลิปการชำระเงิน โปรดส่งสลิปใหม่`,
-            time: ord.date,
-            link: '/my-orders'
-          });
+            list.push({
+              id: `user-cancelled-${ord.id}`,
+              text: t('userCancelNotif').replace('{id}', ord.id),
+              time: ord.date,
+              link: '/my-orders'
+            });
         }
       });
     }
@@ -198,7 +198,7 @@ export default function Header({ showCart, cartCount: cartCountProp, onCartClick
 
   const handleLogout = async () => {
     try {
-      await api.addLog(`[AUTH]: ผู้ใช้ ${user?.username} ออกจากระบบ`);
+      await api.addLog(t('logoutLog').replace('{username}', user?.username));
     } catch (_) {}
     logout();
     navigate('/login');
@@ -250,9 +250,9 @@ export default function Header({ showCart, cartCount: cartCountProp, onCartClick
     user?.role === 'manager' ? t('manager') : `${t('role')}${t('home')}`;
 
   const roleDescription = 
-    user?.role === 'admin' ? 'สิทธิ์การเข้าถึง: Admin (ผู้ดูแลระบบสูงสุด สามารถจัดการผู้ใช้งาน จัดการฐานข้อมูล และเข้าถึงหน้ารายงานสรุปโครงงานได้)' :
-    user?.role === 'manager' ? 'สิทธิ์การเข้าถึง: Manager (ผู้จัดการ สามารถเพิ่ม ลบ แก้ไขนาฬิกาในระบบ รวมถึงดูรายงานยอดขายได้)' :
-    'สิทธิ์การเข้าถึง: User (ลูกค้า/ผู้ซื้อทั่วไป สามารถเลือกซื้อนาฬิกา ใส่ตะกร้า และบันทึกคำสั่งซื้อได้)';
+    user?.role === 'admin' ? t('roleAdminDesc') :
+    user?.role === 'manager' ? t('roleManagerDesc') :
+    t('roleUserDesc');
 
   const isActive = (path) => location.pathname === path ? 'active' : '';
 
@@ -317,7 +317,7 @@ export default function Header({ showCart, cartCount: cartCountProp, onCartClick
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
             <label style={{ fontSize: '0.72rem', textTransform: 'uppercase', color: 'var(--text-muted)', fontWeight: 'bold', letterSpacing: '0.8px', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
               <Icons.Settings style={{ color: 'var(--accent-gold)' }} />
-              <span>{lang === 'th' ? 'สลับบทบาทผู้ใช้' : 'Switch Role (Mock)'}</span>
+              <span>{t('switchRole')}</span>
             </label>
             <button 
               onClick={() => { setShowRoleInfo(true); setShowDrawer(false); }}
@@ -352,7 +352,7 @@ export default function Header({ showCart, cartCount: cartCountProp, onCartClick
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
             <label style={{ fontSize: '0.72rem', textTransform: 'uppercase', color: 'var(--text-muted)', fontWeight: 'bold', letterSpacing: '0.8px', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
               <Icons.Globe style={{ color: 'var(--accent-gold)' }} />
-              <span>{lang === 'th' ? 'ภาษา' : 'Language'}</span>
+              <span>{t('language')}</span>
             </label>
             <div style={{ display: 'flex', background: 'var(--input-bg)', borderRadius: '8px', padding: '2px', border: '1px solid var(--glass-border)' }}>
               <button 
@@ -370,7 +370,7 @@ export default function Header({ showCart, cartCount: cartCountProp, onCartClick
                   transition: 'all 0.2s'
                 }}
               >
-                ไทย (TH)
+                {t('langTh')}
               </button>
               <button 
                 onClick={() => { if (lang !== 'en') toggleLanguage(); }}
@@ -387,7 +387,7 @@ export default function Header({ showCart, cartCount: cartCountProp, onCartClick
                   transition: 'all 0.2s'
                 }}
               >
-                English (EN)
+                {t('langEn')}
               </button>
             </div>
           </div>
@@ -396,7 +396,7 @@ export default function Header({ showCart, cartCount: cartCountProp, onCartClick
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
             <label style={{ fontSize: '0.72rem', textTransform: 'uppercase', color: 'var(--text-muted)', fontWeight: 'bold', letterSpacing: '0.8px', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
               <span style={{ color: 'var(--accent-gold)' }}>◑</span>
-              <span>{lang === 'th' ? 'ธีม' : 'Theme'}</span>
+              <span>{t('themeTitle')}</span>
             </label>
             <div style={{ display: 'flex', background: 'var(--input-bg)', borderRadius: '8px', padding: '2px', border: '1px solid var(--glass-border)' }}>
               <button 
@@ -414,7 +414,7 @@ export default function Header({ showCart, cartCount: cartCountProp, onCartClick
                   transition: 'all 0.2s'
                 }}
               >
-                {lang === 'th' ? 'มืด' : 'Dark'}
+                {t('themeDark')}
               </button>
               <button 
                 onClick={() => { if (theme !== 'light') toggleTheme(); }}
@@ -431,7 +431,7 @@ export default function Header({ showCart, cartCount: cartCountProp, onCartClick
                   transition: 'all 0.2s'
                 }}
               >
-                {lang === 'th' ? 'สว่าง' : 'Light'}
+                {t('themeLight')}
               </button>
             </div>
           </div>
@@ -462,9 +462,9 @@ export default function Header({ showCart, cartCount: cartCountProp, onCartClick
               <div style={{ background: 'rgba(255,255,255,0.02)', padding: '0.75rem', borderRadius: '8px', fontSize: '0.78rem', color: 'var(--text-muted)', display: 'flex', flexDirection: 'column', gap: '0.45rem', border: '1px solid rgba(255,255,255,0.04)' }}>
                 <div style={{ color: 'var(--text-light)', display: 'flex', alignItems: 'center', gap: '0.3rem' }}>
                   <Icons.Sparkle style={{ color: 'var(--accent-gold)', width: '10px', height: '10px' }} />
-                  <span>{lang === 'th' ? 'ยินดีต้อนรับสู่ WatchMart! ระบบออนไลน์สมบูรณ์แบบ' : 'Welcome to WatchMart! Fully functional system.'}</span>
+                  <span>{t('welcomeSys')}</span>
                 </div>
-                <div>📦 {lang === 'th' ? 'ฐานข้อมูล PostgreSQL (Neon) เชื่อมต่อใช้งานสำเร็จ' : 'PostgreSQL DB (Neon) connected successfully.'}</div>
+                <div>📦 {t('dbConnectedSys')}</div>
               </div>
             )}
 
@@ -494,11 +494,11 @@ export default function Header({ showCart, cartCount: cartCountProp, onCartClick
           <div style={{ marginTop: 'auto', borderTop: '1px solid rgba(255,255,255,0.06)', paddingTop: '1.2rem', display: 'flex', flexDirection: 'column', gap: '0.4rem', fontSize: '0.75rem', color: 'var(--text-muted)' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
               <Icons.Phone style={{ color: 'var(--accent-gold)' }} />
-              <span>{lang === 'th' ? 'ศูนย์บริการลูกค้า: 02-123-4567' : 'Call Center: 02-123-4567'}</span>
+              <span>{t('callCenter')}</span>
             </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
               <Icons.Sparkle style={{ color: 'var(--accent-gold)' }} />
-              <span>{lang === 'th' ? 'โครงงาน CSI204 ระดับพรีเมียม' : 'Premium CSI204 Project'}</span>
+              <span>{t('project')}</span>
             </div>
           </div>
 
@@ -667,7 +667,7 @@ export default function Header({ showCart, cartCount: cartCountProp, onCartClick
           {/* Guest Login/Register Button */}
           {!user && (
             <Link to="/login" className="btn btn-primary" style={{ padding: '0.45rem 1rem', fontSize: '0.85rem', textDecoration: 'none', borderRadius: '6px', fontWeight: 'bold', marginLeft: '0.5rem' }}>
-              {lang === 'th' ? 'เข้าสู่ระบบ / สมัครสมาชิก' : 'Login / Register'}
+              {t('loginRegister')}
             </Link>
           )}
 
@@ -732,14 +732,14 @@ export default function Header({ showCart, cartCount: cartCountProp, onCartClick
                   gap: '0.6rem'
                 }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid rgba(255,255,255,0.08)', paddingBottom: '0.5rem', marginBottom: '0.4rem' }}>
-                    <span style={{ fontWeight: 'bold', color: 'var(--text-primary)', fontSize: '0.9rem' }}>🔔 {lang === 'th' ? 'การแจ้งเตือน' : 'Notifications'}</span>
-                    <span style={{ fontSize: '0.75rem', color: 'var(--accent-gold)' }}>{notificationsList.length} {lang === 'th' ? 'รายการใหม่' : 'new'}</span>
+                    <span style={{ fontWeight: 'bold', color: 'var(--text-primary)', fontSize: '0.9rem' }}>🔔 {t('notifications')}</span>
+                    <span style={{ fontSize: '0.75rem', color: 'var(--accent-gold)' }}>{t('newItemsCount').replace('{count}', notificationsList.length)}</span>
                   </div>
 
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', maxHeight: '250px', overflowY: 'auto' }}>
                     {notificationsList.length === 0 ? (
                       <div style={{ padding: '1.5rem', textAlign: 'center', color: 'var(--text-muted)', fontSize: '0.8rem' }}>
-                        {lang === 'th' ? 'ไม่มีการแจ้งเตือนใหม่ในขณะนี้' : 'No new notifications.'}
+                        {t('noNewNotifications')}
                       </div>
                     ) : notificationsList.map((item) => (
                       <div 
@@ -811,7 +811,7 @@ export default function Header({ showCart, cartCount: cartCountProp, onCartClick
                   style={{ textDecoration: 'none', display: 'block', textAlign: 'left' }}
                   onClick={() => setDropdownOpen(false)}
                 >
-                  📦 ประวัติใบสั่งซื้อของฉัน
+                  📦 {t('myOrders')}
                 </Link>
                 <div className="profile-dropdown-divider" />
                 <button className="profile-dropdown-item signout-btn" onClick={handleLogout}>
@@ -846,26 +846,26 @@ export default function Header({ showCart, cartCount: cartCountProp, onCartClick
             textAlign: 'left'
           }} onClick={(e) => e.stopPropagation()}>
             <h3 style={{ margin: '0 0 1rem 0', color: 'var(--accent-gold)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <span>❓ {lang === 'th' ? 'ความช่วยเหลือและคำถามที่พบบ่อย' : 'Help & FAQ'}</span>
+              <span>❓ {t('helpFaq')}</span>
               <span style={{ cursor: 'pointer', fontSize: '1.2rem', color: 'var(--text-muted)' }} onClick={() => setShowHelp(false)}>✕</span>
             </h3>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', fontSize: '0.88rem', color: 'var(--text-light)' }}>
               <div>
-                <strong>🔍 {lang === 'th' ? 'ค้นหาสินค้าอย่างไร?' : 'How to search?'}</strong>
+                <strong>🔍 {t('howToSearch')}</strong>
                 <p style={{ margin: '0.2rem 0 0 0', color: 'var(--text-muted)' }}>
-                  {lang === 'th' ? 'คุณสามารถพิมพ์ชื่อนาฬิกาหรือแบรนด์ในแถบค้นหาเพื่อทำการกรอง หรือคลิกที่แบรนด์ฮิตด้านล่างของแถบค้นหาเพื่อกรองทันที' : 'Type watch names or brands in the search box to filter, or click hot keywords below it.'}
+                  {t('searchHelp')}
                 </p>
               </div>
               <div>
-                <strong>💳 {lang === 'th' ? 'การทดสอบจ่ายเงินชำระเงิน' : 'Testing Payment'}</strong>
+                <strong>💳 {t('testingPayment')}</strong>
                 <p style={{ margin: '0.2rem 0 0 0', color: 'var(--text-muted)' }}>
-                  {lang === 'th' ? 'เมื่อเลือกสินค้าลงตะกร้าแล้ว สามารถเข้าสู่หน้าชำระเงิน โดยระบบจะทำการอัปเดตสต็อกสินค้าหักออกจากระบบทันทีหลังจากสั่งซื้อสำเร็จ' : 'Add items to cart and go to checkout. The system will automatically deduct product stock upon successful checkout simulation.'}
+                  {t('paymentHelp')}
                 </p>
               </div>
               <div>
-                <strong>🔑 {lang === 'th' ? 'การเปลี่ยนบทบาทเพื่อทดสอบสิทธิ์' : 'Testing Roles'}</strong>
+                <strong>🔑 {t('testingRoles')}</strong>
                 <p style={{ margin: '0.2rem 0 0 0', color: 'var(--text-muted)' }}>
-                  {lang === 'th' ? 'ล็อกเอ้าท์ออกจากระบบ แล้วเลือก Sign In ด้วยบัญชีที่มีบทบาทแตกต่างกัน (Admin, Manager, User) เพื่อทดสอบขอบเขตการเข้าถึง' : 'Logout and sign in using accounts with different roles (Admin, Manager, User) to test system permission limits.'}
+                  {t('rolesHelp')}
                 </p>
               </div>
             </div>
@@ -895,7 +895,7 @@ export default function Header({ showCart, cartCount: cartCountProp, onCartClick
             boxShadow: '0 20px 40px rgba(0,0,0,0.6)',
             textAlign: 'center'
           }} onClick={(e) => e.stopPropagation()}>
-            <h3 style={{ margin: '0 0 1rem 0', color: 'var(--accent-gold)' }}>🔑 {lang === 'th' ? 'ข้อมูลสิทธิ์บัญชีผู้ใช้' : 'Account Role Privileges'}</h3>
+            <h3 style={{ margin: '0 0 1rem 0', color: 'var(--accent-gold)' }}>🔑 {t('accountRolePrivileges')}</h3>
             <p style={{ fontSize: '0.9rem', color: 'var(--text-light)', lineHeight: 1.5 }}>
               {roleDescription}
             </p>
@@ -904,7 +904,7 @@ export default function Header({ showCart, cartCount: cartCountProp, onCartClick
               style={{ marginTop: '1.5rem', padding: '0.5rem 2rem' }}
               onClick={() => setShowRoleInfo(false)}
             >
-              {lang === 'th' ? 'รับทราบ' : 'OK'}
+              {t('okButton')}
             </button>
           </div>
         </div>

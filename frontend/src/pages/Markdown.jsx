@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
+import { useLanguage } from '../App';
 import Header from '../components/Header';
 
 export default function MarkdownViewer() {
+  const { t } = useLanguage();
   const [content, setContent] = useState('');
   const [fileName, setFileName] = useState('analysis_design.md');
 
@@ -13,10 +15,10 @@ export default function MarkdownViewer() {
         setContent(text);
         setFileName(name);
       } else {
-        setContent('ไม่พบเอกสาร');
+        setContent(t('docNotFound'));
       }
     } catch (_) {
-      setContent('ไม่สามารถโหลดเอกสารได้');
+      setContent(t('docLoadFail'));
     }
   };
 
@@ -40,13 +42,13 @@ export default function MarkdownViewer() {
       <Header />
       <main className="main-content">
         <div className="page-header">
-          <h1 className="page-title">📖 System Documents</h1>
+          <h1 className="page-title">{t('systemDocsTitle')}</h1>
           <div style={{ display: 'flex', gap: '0.8rem', flexWrap: 'wrap', marginTop: '0.5rem' }}>
             <button className={`btn ${fileName === 'analysis_design.md' ? 'btn-primary' : 'btn-secondary'}`} onClick={() => loadDoc('analysis_design.md')}>
-              📐 Analysis & Design
+              {t('analysisDesignDocBtn')}
             </button>
             <button className={`btn ${fileName === 'README.md' ? 'btn-primary' : 'btn-secondary'}`} onClick={() => loadDoc('README.md')}>
-              📋 README
+              {t('readmeDocBtn')}
             </button>
           </div>
         </div>
