@@ -331,103 +331,103 @@ const defaultProducts: Product[] = [
   },
   {
     id: "31",
-    name: "Rolex Submariner Date 41mm Oystersteel",
+    name: "Rolex Submariner Date Vintage Matte Dial Yellow Patina Ref.16800",
     brand: "Rolex",
     category: "sport",
-    price: 380000,
+    price: 345000,
     stock: 5,
-    image: "/images/Rolex/001.avif",
-    imageBack: "/images/Rolex/001.avif"
+    image: "/images/Rolex/Rolex Submariner Date Vintage Matte Dial Yellow Patina Ref.16800 หน้า.png",
+    imageBack: "/images/Rolex/Rolex Submariner Date Vintage Matte Dial Yellow Patina Ref.16800 หลัง.png"
   },
   {
     id: "32",
-    name: "Rolex Cosmograph Daytona Black Dial",
+    name: "Rolex 16233 Oyster Datejust Automatic Cal.3135 หลักเพชร",
     brand: "Rolex",
-    category: "sport",
-    price: 1250000,
-    stock: 2,
-    image: "/images/Rolex/001.avif",
-    imageBack: "/images/Rolex/001.avif"
+    category: "elegant",
+    price: 235000,
+    stock: 4,
+    image: "/images/Rolex/Rolex 16233 Oyster Datejust Automatic Cal.3135 หลักเพชร หน้า.png",
+    imageBack: "/images/Rolex/Rolex 16233 Oyster Datejust Automatic Cal.3135 หลักเพชร หลัง.png"
   },
   {
     id: "33",
-    name: "Rolex Datejust 41 Blue Jubilee",
+    name: "ROLEX Datejust 68273 Year 1987 Automatic Date Unisex Size 31 mm. (Pre-owned)",
     brand: "Rolex",
     category: "classic",
-    price: 360000,
-    stock: 6,
-    image: "/images/Rolex/001.avif",
-    imageBack: "/images/Rolex/001.avif"
+    price: 198000,
+    stock: 3,
+    image: "/images/Rolex/ROLEX Datejust 68273 Year 1987 Automatic Date Unisex Size 31 mm. (Pre-owned) หน้า.webp",
+    imageBack: "/images/Rolex/ROLEX Datejust 68273 Year 1987 Automatic Date Unisex Size 31 mm. (Pre-owned) หลัง.webp"
   },
   {
     id: "34",
-    name: "Rolex GMT-Master II Pepsi Bezel",
+    name: "ROLEX GMT-Master II 16713 Year 1991 X Serie Automatic Date Size 40 mm. (Pre-owned)",
     brand: "Rolex",
     category: "sport",
-    price: 720000,
-    stock: 3,
-    image: "/images/Rolex/001.avif",
-    imageBack: "/images/Rolex/001.avif"
+    price: 428000,
+    stock: 2,
+    image: "/images/Rolex/ROLEX GMT-Master II 16713 Year 1991 X Serie Automatic Date Size 40 mm. (Pre-owned) หน้า.webp",
+    imageBack: "/images/Rolex/ROLEX GMT-Master II 16713 Year 1991 X Serie Automatic Date Size 40 mm. (Pre-owned) หลัง.webp"
   },
   {
     id: "35",
-    name: "Rolex Oyster Perpetual 41 Green Dial",
+    name: "Rolex Cosmograph Daytona Oyster, 40 มม., ทองคำ",
     brand: "Rolex",
-    category: "classic",
-    price: 295000,
-    stock: 4,
-    image: "/images/Rolex/001.avif",
-    imageBack: "/images/Rolex/001.avif"
+    category: "sport",
+    price: 1350000,
+    stock: 3,
+    image: "/images/Rolex/Rolex Cosmograph Daytona Oyster, 40 มม., ทองคำ.png",
+    imageBack: "/images/Rolex/Rolex Cosmograph Daytona Oyster, 40 มม., ทองคำ.png"
   },
   {
     id: "36",
-    name: "Rolex Day-Date 40 Olive Green Rose Gold",
+    name: "Rolex Cosmograph Daytona Oyster, 40 มม., ทองคำและเพชร",
     brand: "Rolex",
     category: "elegant",
-    price: 1450000,
-    stock: 2,
-    image: "/images/Rolex/001.avif",
-    imageBack: "/images/Rolex/001.avif"
+    price: 1650000,
+    stock: 1,
+    image: "/images/Rolex/Rolex Cosmograph Daytona Oyster, 40 มม., ทองคำและเพชร.png",
+    imageBack: "/images/Rolex/Rolex Cosmograph Daytona Oyster, 40 มม., ทองคำและเพชร.png"
   },
   {
     id: "37",
-    name: "Rolex Explorer II Polar White",
+    name: "Rolex Cosmograph Daytona Oyster, 40 มม., แพลทินัม",
     brand: "Rolex",
     category: "sport",
-    price: 385000,
-    stock: 5,
-    image: "/images/Rolex/001.avif",
-    imageBack: "/images/Rolex/001.avif"
+    price: 2200000,
+    stock: 2,
+    image: "/images/Rolex/Rolex Cosmograph Daytona Oyster, 40 มม., แพลทินัม.png",
+    imageBack: "/images/Rolex/Rolex Cosmograph Daytona Oyster, 40 มม., แพลทินัม.png"
   },
   {
     id: "38",
-    name: "Rolex Yacht-Master 42 Oysterflex",
+    name: "Rolex Day-Date 40 Oyster, 40 มม., แพลทินัม",
     brand: "Rolex",
     category: "elegant",
-    price: 980000,
+    price: 1850000,
     stock: 3,
-    image: "/images/Rolex/001.avif",
-    imageBack: "/images/Rolex/001.avif"
+    image: "/images/Rolex/Rolex Day-Date 40 Oyster, 40 มม., แพลทินัม.png",
+    imageBack: "/images/Rolex/Rolex Day-Date 40 Oyster, 40 มม., แพลทินัม.png"
   },
   {
     id: "39",
-    name: "Rolex Sea-Dweller Deepsea D-Blue",
+    name: "Rolex Lady-Datejust Oyster, 28 มม., Oystersteel และทองคำ",
     brand: "Rolex",
-    category: "sport",
-    price: 520000,
+    category: "classic",
+    price: 380000,
     stock: 4,
-    image: "/images/Rolex/001.avif",
-    imageBack: "/images/Rolex/001.avif"
+    image: "/images/Rolex/Rolex Lady-Datejust Oyster, 28 มม., Oystersteel และทองคำ.png",
+    imageBack: "/images/Rolex/Rolex Lady-Datejust Oyster, 28 มม., Oystersteel และทองคำ.png"
   },
   {
     id: "40",
-    name: "Rolex Milgauss GV Z-Blue Dial",
+    name: "Rolex Sky-Dweller Oyster, 42 มม., เอเวอร์โรสโกลด์",
     brand: "Rolex",
-    category: "classic",
-    price: 410000,
-    stock: 3,
-    image: "/images/Rolex/001.avif",
-    imageBack: "/images/Rolex/001.avif"
+    category: "elegant",
+    price: 1550000,
+    stock: 2,
+    image: "/images/Rolex/Rolex Sky-Dweller Oyster, 42 มม., เอเวอร์โรสโกลด์.png",
+    imageBack: "/images/Rolex/Rolex Sky-Dweller Oyster, 42 มม., เอเวอร์โรสโกลด์.png"
   }
 ];
 
