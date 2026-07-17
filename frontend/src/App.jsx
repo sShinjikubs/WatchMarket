@@ -364,6 +364,7 @@ const translations = {
     scanQRInstruction: "สแกน QR Code ด้านบนเพื่อชำระเงินและแนบสลิปด้านล่าง",
     qrMockWarning: "⚠️ นี่คือระบบจำลองสำหรับโครงงาน CSI204 เท่านั้น ห้ามสแกนเพื่อโอนเงินจริง",
     attachSlipOptional: "แนบสลิปการโอนเงิน (ไม่บังคับ — แนบภายหลังได้จากประวัติสั่งซื้อภายใน 24 ชม.)",
+    attachSlipRequired: "แนบสลิปการโอนเงิน",
     processingLabel: "กำลังดำเนินการ...",
     confirmOrderBtn: "ยืนยันการสั่งซื้อ",
     orderSummaryTitle: "สรุปคำสั่งซื้อ",
@@ -434,16 +435,7 @@ const translations = {
     statusManagerApprovedAdmin: "ผ่าน Manager แล้ว",
     waitingManagerReviewText: "รอการตรวจสอบจาก Manager",
     finalConfirmBtn: "ยืนยันขั้นสุดท้าย",
-    paymentConfirmedText: "ยืนยันชำระเงินแล้ว",
-    heroDesc1: "ดีไซน์สปอร์ตหรูหราสะท้อนประวัติศาสตร์ความเร็ว คอนเซปต์ระดับเวิลด์คลาสในหน้าปัดกลไกโครโนกราฟคาลิเบอร์สุดหรู",
-    heroDesc2: "รุ่นลิมิเต็ดเอดิชันฉลองครบรอบ 60 ปี รังสรรค์ความแข็งแกร่งด้วยกลไกจักรกลและวัสดุสแตนเลสสตีลชั้นเลิศ",
-    heroDesc3: "นาฬิกายอดมนุษย์ผู้รอดชีวิต ดำน้ำลึก 200 เมตร พร้อมเทคโนโลยีหลอดแก๊สเรืองแสงทริเทียมสว่างไร้ขีดจำกัดนาน 25 ปี",
-    reviews: "รีวิว",
-    addedToCartNotif: 'เพิ่ม "{name}" ลงตะกร้าแล้ว',
-    outOfStockNotif: 'สินค้า "{name}" ในคลังหมดแล้ว!',
-    searchResults: 'ผลการค้นหาสำหรับ "{query}"',
-    all: "ทั้งหมด",
-    noProductsFound: "ไม่พบสินค้าตรงตามเงื่อนไข"
+    paymentConfirmedText: "ยืนยันชำระเงินแล้ว"
   },
   en: {
     home: "Home",
@@ -754,6 +746,7 @@ const translations = {
     scanQRInstruction: "Scan QR Code above to pay and attach slip below",
     qrMockWarning: "⚠️ This is a mock system for CSI204 project only. Do not scan to transfer real money",
     attachSlipOptional: "Attach transfer slip (Optional — can attach later in Order History within 24 hours)",
+    attachSlipRequired: "Attach transfer slip",
     processingLabel: "Processing...",
     confirmOrderBtn: "Confirm Order",
     orderSummaryTitle: "Order Summary",
@@ -824,16 +817,7 @@ const translations = {
     statusManagerApprovedAdmin: "Manager Approved",
     waitingManagerReviewText: "Waiting for Manager review",
     finalConfirmBtn: "Final Confirm",
-    paymentConfirmedText: "Payment Confirmed",
-    heroDesc1: "Sporty, elegant design reflecting the history of speed. A world-class concept in a luxury chronograph caliber dial.",
-    heroDesc2: "60th Anniversary Limited Edition. Forged with strength using a mechanical movement and premium stainless steel materials.",
-    heroDesc3: "The ultimate survivor's watch. Water-resistant to 200 meters, featuring tritium gas tube illumination for limitless glow up to 25 years.",
-    reviews: "reviews",
-    addedToCartNotif: 'Added "{name}" to cart',
-    outOfStockNotif: 'Product "{name}" is out of stock!',
-    searchResults: 'Search results for "{query}"',
-    all: "All",
-    noProductsFound: "No products matched your criteria"
+    paymentConfirmedText: "Payment Confirmed"
   }
 };
 

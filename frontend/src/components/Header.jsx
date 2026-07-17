@@ -89,6 +89,8 @@ const Icons = {
 
 export default function Header({ showCart, cartCount: cartCountProp, onCartClick }) {
   const { user, logout } = useAuth();
+  const { lang, changeLang, t } = useLanguage();
+  const { theme, toggleTheme } = useTheme();
   const { cartCount: ctxCartCount, toggleCart } = useCart();
   const { wishlist, toggleWishlistDrawer } = useWishlist();
   const navigate = useNavigate();
@@ -232,9 +234,6 @@ export default function Header({ showCart, cartCount: cartCountProp, onCartClick
       navigate(`/#${id}`);
     }
   };
-
-  const { lang, changeLang, t } = useLanguage();
-  const { theme, toggleTheme } = useTheme();
 
   const [showNotifications, setShowNotifications] = useState(false);
   const [showHelp, setShowHelp] = useState(false);

@@ -288,12 +288,15 @@ export default function Checkout() {
               {/* Slip upload */}
               {(form.payment === 'promptpay' || form.payment === 'bank_transfer') && (
                 <div className="form-group">
-                  <label className="form-label">{t('attachSlipOptional')}</label>
+                  <label className="form-label">
+                    {form.payment === 'bank_transfer' ? t('attachSlipRequired') : t('attachSlipOptional')}
+                  </label>
                   <input
                     type="file"
                     className="form-input"
                     accept="image/*"
                     onChange={handleSlip}
+                    required={form.payment === 'bank_transfer'}
                     style={{ padding: '0.5rem' }}
                   />
                   {slipBase64 && (
