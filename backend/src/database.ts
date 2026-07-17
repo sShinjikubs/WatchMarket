@@ -338,6 +338,96 @@ const defaultProducts: Product[] = [
     stock: 5,
     image: "/images/Rolex/001.avif",
     imageBack: "/images/Rolex/001.avif"
+  },
+  {
+    id: "32",
+    name: "Rolex Cosmograph Daytona Black Dial",
+    brand: "Rolex",
+    category: "sport",
+    price: 1250000,
+    stock: 2,
+    image: "/images/Rolex/001.avif",
+    imageBack: "/images/Rolex/001.avif"
+  },
+  {
+    id: "33",
+    name: "Rolex Datejust 41 Blue Jubilee",
+    brand: "Rolex",
+    category: "classic",
+    price: 360000,
+    stock: 6,
+    image: "/images/Rolex/001.avif",
+    imageBack: "/images/Rolex/001.avif"
+  },
+  {
+    id: "34",
+    name: "Rolex GMT-Master II Pepsi Bezel",
+    brand: "Rolex",
+    category: "sport",
+    price: 720000,
+    stock: 3,
+    image: "/images/Rolex/001.avif",
+    imageBack: "/images/Rolex/001.avif"
+  },
+  {
+    id: "35",
+    name: "Rolex Oyster Perpetual 41 Green Dial",
+    brand: "Rolex",
+    category: "classic",
+    price: 295000,
+    stock: 4,
+    image: "/images/Rolex/001.avif",
+    imageBack: "/images/Rolex/001.avif"
+  },
+  {
+    id: "36",
+    name: "Rolex Day-Date 40 Olive Green Rose Gold",
+    brand: "Rolex",
+    category: "elegant",
+    price: 1450000,
+    stock: 2,
+    image: "/images/Rolex/001.avif",
+    imageBack: "/images/Rolex/001.avif"
+  },
+  {
+    id: "37",
+    name: "Rolex Explorer II Polar White",
+    brand: "Rolex",
+    category: "sport",
+    price: 385000,
+    stock: 5,
+    image: "/images/Rolex/001.avif",
+    imageBack: "/images/Rolex/001.avif"
+  },
+  {
+    id: "38",
+    name: "Rolex Yacht-Master 42 Oysterflex",
+    brand: "Rolex",
+    category: "elegant",
+    price: 980000,
+    stock: 3,
+    image: "/images/Rolex/001.avif",
+    imageBack: "/images/Rolex/001.avif"
+  },
+  {
+    id: "39",
+    name: "Rolex Sea-Dweller Deepsea D-Blue",
+    brand: "Rolex",
+    category: "sport",
+    price: 520000,
+    stock: 4,
+    image: "/images/Rolex/001.avif",
+    imageBack: "/images/Rolex/001.avif"
+  },
+  {
+    id: "40",
+    name: "Rolex Milgauss GV Z-Blue Dial",
+    brand: "Rolex",
+    category: "classic",
+    price: 410000,
+    stock: 3,
+    image: "/images/Rolex/001.avif",
+    imageBack: "/images/Rolex/001.avif"
   }
 ];
 
