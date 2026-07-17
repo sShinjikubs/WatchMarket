@@ -8,13 +8,14 @@ import { Icons } from '../components/Icons';
 
 export default function Checkout() {
   const { user } = useAuth();
-  const { cart: contextCart, cartTotal: contextCartTotal, clearCart } = useCart();
+  const { cart: contextCart, cartTotal: contextCartTotal, clearCart, removeSelectedFromCart } = useCart();
   const navigate = useNavigate();
   const location = useLocation();
 
   const buyNowItem = location.state?.buyNowItem;
-  const checkoutItems = buyNowItem ? [buyNowItem] : contextCart;
-  const checkoutTotal = buyNowItem ? buyNowItem.price * buyNowItem.quantity : contextCartTotal;
+  const stateItems = location.state?.checkoutItems;
+  const checkoutItems = buyNowItem ? [buyNowItem] : (stateItems ? stateItems : contextCart);
+  const checkoutTotal = buyNowItem ? buyNowItem.price * buyNowItem.quantity : (stateItems ? stateItems.reduce((s, i) => s + i.price * i.quantity, 0) : contextCartTotal);
 
   const [form, setForm] = useState({ email: '', address: '', payment: 'promptpay' });
   const [slipBase64, setSlipBase64] = useState(null);
@@ -91,7 +92,11 @@ export default function Checkout() {
       if (res.ok) {
         const data = await res.json();
         setOrderId(data.id || 'ORD-' + Date.now());
-        if (!buyNowItem) {
+        if (buyNowItem) {
+          // Do nothing to cart
+        } else if (stateItems) {
+          removeSelectedFromCart(stateItems.map(i => i.id));
+        } else {
           clearCart();
         }
         setOrderSuccess(true);
