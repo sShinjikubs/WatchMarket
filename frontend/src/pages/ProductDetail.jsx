@@ -369,10 +369,7 @@ export default function ProductDetail() {
                     navigate('/register');
                     return;
                   }
-                  const ok = addToCart(product, quantity);
-                  if (ok) {
-                    navigate('/checkout');
-                  }
+                  navigate('/checkout', { state: { buyNowItem: { ...product, quantity } } });
                 }}
                 disabled={product.stock === 0}
               >
