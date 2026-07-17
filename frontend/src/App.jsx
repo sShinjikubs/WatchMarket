@@ -12,7 +12,9 @@ import ProductDetail from './pages/ProductDetail';
 import Checkout from './pages/Checkout';
 import MyOrders from './pages/MyOrders';
 import { CartProvider } from './CartContext';
+import { WishlistProvider } from './WishlistContext';
 import CartDrawer from './components/CartDrawer';
+import WishlistDrawer from './components/WishlistDrawer';
 import { api } from './api';
 
 // ─── Theme Context ───────────────────────────────────────────────────────────
@@ -73,6 +75,7 @@ const translations = {
     signOut: "🚪 ออกจากระบบ",
     all: "ทั้งหมด",
     cart: "ตะกร้าสินค้า",
+    wishlist: "รายการโปรด",
     checkout: "ดำเนินการชำระเงิน 💳",
     role: "บทบาท",
     welcome: "ยินดีต้อนรับ",
@@ -106,6 +109,7 @@ const translations = {
     signOut: "🚪 Sign Out",
     all: "All",
     cart: "Shopping Cart",
+    wishlist: "Wishlist",
     checkout: "Proceed to Checkout 💳",
     role: "Role",
     welcome: "Welcome",
@@ -235,19 +239,22 @@ export default function App() {
     <ThemeProvider>
       <LanguageProvider>
         <AuthProvider>
+        <WishlistProvider>
         <CartProvider>
           <BrowserRouter>
             {/* Global Cart Drawer — rendered once across all pages */}
             <CartDrawer />
+            {/* Global Wishlist Drawer */}
+            <WishlistDrawer />
 
             <Routes>
               {/* Public Auth Routes */}
               <Route path="/login" element={<GuestOnly><Login /></GuestOnly>} />
               <Route path="/register" element={<GuestOnly><Register /></GuestOnly>} />
 
-              {/* Customer (any logged-in user) */}
-              <Route path="/" element={<RequireAuth><Storefront /></RequireAuth>} />
-              <Route path="/product/:id" element={<RequireAuth><ProductDetail /></RequireAuth>} />
+              {/* Customer (anyone can browse, but checkout/cart action requires auth) */}
+              <Route path="/" element={<Storefront />} />
+              <Route path="/product/:id" element={<ProductDetail />} />
               <Route path="/profile" element={<RequireAuth><Profile /></RequireAuth>} />
               <Route path="/checkout" element={<RequireAuth><Checkout /></RequireAuth>} />
               <Route path="/my-orders" element={<RequireAuth><MyOrders /></RequireAuth>} />
@@ -265,6 +272,7 @@ export default function App() {
             </Routes>
           </BrowserRouter>
         </CartProvider>
+        </WishlistProvider>
         </AuthProvider>
       </LanguageProvider>
     </ThemeProvider>

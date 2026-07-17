@@ -57,6 +57,10 @@ export function CartProvider({ children }) {
     setCart((prev) => prev.filter((i) => i.id !== id));
   };
 
+  const removeSelectedFromCart = (ids) => {
+    setCart((prev) => prev.filter((i) => !ids.includes(i.id)));
+  };
+
   const clearCart = () => {
     setCart([]);
     sessionStorage.removeItem('watchmart_cart');
@@ -69,7 +73,7 @@ export function CartProvider({ children }) {
   return (
     <CartContext.Provider value={{
       cart, cartOpen, cartCount, cartTotal,
-      addToCart, changeQty, removeFromCart, clearCart,
+      addToCart, changeQty, removeFromCart, removeSelectedFromCart, clearCart,
       openCart, closeCart, toggleCart,
     }}>
       {children}

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../App';
 import { useCart } from '../CartContext';
 import { api } from '../api';
@@ -8,8 +8,14 @@ import { Icons } from '../components/Icons';
 
 export default function Checkout() {
   const { user } = useAuth();
-  const { cart, cartTotal, clearCart } = useCart();
+  const { cart: contextCart, cartTotal: contextCartTotal, clearCart, removeSelectedFromCart } = useCart();
   const navigate = useNavigate();
+  const location = useLocation();
+
+  const buyNowItem = location.state?.buyNowItem;
+  const stateItems = location.state?.checkoutItems;
+  const checkoutItems = buyNowItem ? [buyNowItem] : (stateItems ? stateItems : contextCart);
+  const checkoutTotal = buyNowItem ? buyNowItem.price * buyNowItem.quantity : (stateItems ? stateItems.reduce((s, i) => s + i.price * i.quantity, 0) : contextCartTotal);
 
   const [form, setForm] = useState({ email: '', address: '', payment: 'promptpay' });
   const [slipBase64, setSlipBase64] = useState(null);
@@ -26,7 +32,7 @@ export default function Checkout() {
   };
 
   useEffect(() => {
-    if (cart.length === 0 && !orderSuccess) {
+    if (checkoutItems.length === 0 && !orderSuccess) {
       navigate('/');
     }
     // Pre-fill email and address from profile
@@ -43,9 +49,9 @@ export default function Checkout() {
   }, []);
 
   useEffect(() => {
-    if (form.payment === 'promptpay' && cartTotal > 0) {
+    if (form.payment === 'promptpay' && checkoutTotal > 0) {
       setLoadingQR(true);
-      api.getPaymentQR(cartTotal)
+      api.getPaymentQR(checkoutTotal)
         .then(async (res) => {
           if (res.ok) {
             const data = await res.json();
@@ -61,7 +67,7 @@ export default function Checkout() {
           setLoadingQR(false);
         });
     }
-  }, [form.payment, cartTotal]);
+  }, [form.payment, checkoutTotal]);
 
   const handleSlip = (e) => {
     const file = e.target.files[0];
@@ -77,7 +83,7 @@ export default function Checkout() {
     try {
       const res = await api.createOrder({
         userId: user.username,
-        items: cart.map(({ id, name, price, quantity }) => ({ id, name, price, quantity })),
+        items: checkoutItems.map(({ id, name, price, quantity }) => ({ id, name, price, quantity })),
         email: form.email,
         address: form.address,
         payment: form.payment,
@@ -86,7 +92,13 @@ export default function Checkout() {
       if (res.ok) {
         const data = await res.json();
         setOrderId(data.id || 'ORD-' + Date.now());
-        clearCart();
+        if (buyNowItem) {
+          // Do nothing to cart
+        } else if (stateItems) {
+          removeSelectedFromCart(stateItems.map(i => i.id));
+        } else {
+          clearCart();
+        }
         setOrderSuccess(true);
       } else {
         const d = await res.json();
@@ -286,7 +298,7 @@ export default function Checkout() {
                     </div>
                   )}
 
-                  <div style={{ marginTop: '0.8rem', color: '#0c4a60', fontWeight: 700, fontSize: '1.2rem' }}>฿ {cartTotal.toLocaleString()}</div>
+                  <div style={{ marginTop: '0.8rem', color: '#0c4a60', fontWeight: 700, fontSize: '1.2rem' }}>฿ {checkoutTotal.toLocaleString()}</div>
                   <div style={{ color: '#666', fontSize: '0.8rem', marginTop: '0.3rem' }}>สแกน QR Code ด้านบนเพื่อชำระเงินและแนบสลิปด้านล่าง</div>
                   <div style={{ color: '#ff922b', fontSize: '0.7rem', marginTop: '0.3rem', fontWeight: 'bold' }}>⚠️ นี่คือระบบจำลองสำหรับโครงงาน CSI204 เท่านั้น ห้ามสแกนเพื่อโอนเงินจริง</div>
                 </div>
@@ -336,7 +348,7 @@ export default function Checkout() {
             <div style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid var(--glass-border)', borderRadius: '16px', padding: '1.8rem' }}>
               <h3 style={{ fontSize: '1.1rem', marginBottom: '1.2rem', color: 'var(--accent-gold)' }}>สรุปคำสั่งซื้อ</h3>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', marginBottom: '1.5rem' }}>
-                {cart.map((item) => (
+                {checkoutItems.map((item) => (
                   <div key={item.id} style={{ display: 'flex', gap: '0.8rem', alignItems: 'center' }}>
                     {item.image ? (
                       <img src={item.image} alt={item.name} style={{ width: '50px', height: '50px', objectFit: 'cover', borderRadius: '8px', flexShrink: 0 }} />
@@ -357,14 +369,14 @@ export default function Checkout() {
               </div>
               <div style={{ borderTop: '1px solid var(--glass-border)', paddingTop: '1rem' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem', color: 'var(--text-muted)', fontSize: '0.9rem' }}>
-                  <span>ราคาสินค้า</span><span>฿ {cartTotal.toLocaleString()}</span>
+                  <span>ราคาสินค้า</span><span>฿ {checkoutTotal.toLocaleString()}</span>
                 </div>
                 <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem', color: 'var(--text-muted)', fontSize: '0.9rem' }}>
                   <span>ค่าจัดส่ง</span><span style={{ color: '#51cf66' }}>ฟรี</span>
                 </div>
                 <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '1.2rem', fontWeight: 700, marginTop: '0.8rem', paddingTop: '0.8rem', borderTop: '1px solid var(--glass-border)' }}>
                   <span>ยอดรวม</span>
-                  <span style={{ color: 'var(--accent-gold)' }}>฿ {cartTotal.toLocaleString()}</span>
+                  <span style={{ color: 'var(--accent-gold)' }}>฿ {checkoutTotal.toLocaleString()}</span>
                 </div>
               </div>
             </div>

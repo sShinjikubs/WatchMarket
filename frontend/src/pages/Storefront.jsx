@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuth, useLanguage } from '../App';
 import { useCart } from '../CartContext';
+import { useWishlist } from '../WishlistContext';
 import { api } from '../api';
 import Header from '../components/Header';
 import { Icons } from '../components/Icons';
@@ -88,6 +89,7 @@ export default function Storefront() {
   const { t } = useLanguage();
   const navigate = useNavigate();
   const { addToCart } = useCart();
+  const { toggleWishlist, isInWishlist } = useWishlist();
   const [searchParams] = useSearchParams();
 
   const [products, setProducts] = useState([]);
@@ -149,6 +151,10 @@ export default function Storefront() {
 
   // ─── Cart Actions ─────────────────────────────────────────────────────────
   const handleAddToCart = (product) => {
+    if (!user) {
+      navigate('/register');
+      return;
+    }
     if (product.stock <= 0) return;
     const ok = addToCart(product, 1);
     if (ok) {
@@ -164,7 +170,7 @@ export default function Storefront() {
     const fullStars = Math.round(rating);
     for (let i = 1; i <= 5; i++) {
       stars.push(
-        <span key={i} style={{ color: i <= fullStars && fullStars > 0 ? 'var(--accent-gold)' : 'rgba(255,255,255,0.15)', marginRight: '2px', fontSize: '0.85rem' }}>
+        <span key={i} style={{ color: i <= fullStars && fullStars > 0 ? 'var(--accent-gold)' : 'var(--text-muted)', marginRight: '2px', fontSize: '0.85rem', opacity: i <= fullStars && fullStars > 0 ? 1 : 0.5 }}>
           ★
         </span>
       );
@@ -417,12 +423,55 @@ export default function Storefront() {
             <div className="products-grid">
               {recommendedProducts.map((p) => (
                 <div key={p.id} className="product-card" onClick={() => navigate(`/product/${p.id}`)} style={{ cursor: 'pointer', position: 'relative' }}>
+                  {(user?.role === 'user' || !user) && (
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        if (!user) {
+                          navigate('/register');
+                          return;
+                        }
+                        toggleWishlist(p);
+                      }}
+                      style={{
+                        position: 'absolute',
+                        top: '10px',
+                        right: '10px',
+                        background: 'rgba(31, 40, 51, 0.6)',
+                        backdropFilter: 'blur(5px)',
+                        border: '1px solid var(--glass-border)',
+                        borderRadius: '50%',
+                        width: '32px',
+                        height: '32px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        cursor: 'pointer',
+                        zIndex: 12,
+                        transition: 'transform 0.2s',
+                      }}
+                      className="hover-scale"
+                    >
+                      <svg
+                        width="16"
+                        height="16"
+                        viewBox="0 0 24 24"
+                        fill={isInWishlist(p.id) ? '#ff6b6b' : 'none'}
+                        stroke={isInWishlist(p.id) ? '#ff6b6b' : 'var(--text-light)'}
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      >
+                        <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
+                      </svg>
+                    </button>
+                  )}
                   <span style={{ position: 'absolute', top: '10px', left: '10px', background: 'var(--accent-gold)', color: '#0f172a', fontSize: '0.7rem', fontWeight: 'bold', padding: '0.2rem 0.5rem', borderRadius: '4px', zIndex: 10 }}>RECOMMENDED</span>
                   <div className="product-card-preview">
                     {p.image ? (
                       <img src={p.image} alt={p.name} style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center', display: 'block' }} />
                     ) : (
-                      <Icons.Watch style={{ width: '48px', height: '48px', color: 'rgba(255,255,255,0.15)' }} />
+                      <Icons.Watch style={{ width: '48px', height: '48px', color: 'var(--text-muted)', opacity: 0.5 }} />
                     )}
                   </div>
                   <div className="product-card-details">
@@ -465,12 +514,55 @@ export default function Storefront() {
             <div className="products-grid">
               {newArrivalsProducts.map((p) => (
                 <div key={p.id} className="product-card" onClick={() => navigate(`/product/${p.id}`)} style={{ cursor: 'pointer', position: 'relative' }}>
+                  {(user?.role === 'user' || !user) && (
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        if (!user) {
+                          navigate('/register');
+                          return;
+                        }
+                        toggleWishlist(p);
+                      }}
+                      style={{
+                        position: 'absolute',
+                        top: '10px',
+                        right: '10px',
+                        background: 'rgba(31, 40, 51, 0.6)',
+                        backdropFilter: 'blur(5px)',
+                        border: '1px solid var(--glass-border)',
+                        borderRadius: '50%',
+                        width: '32px',
+                        height: '32px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        cursor: 'pointer',
+                        zIndex: 12,
+                        transition: 'transform 0.2s',
+                      }}
+                      className="hover-scale"
+                    >
+                      <svg
+                        width="16"
+                        height="16"
+                        viewBox="0 0 24 24"
+                        fill={isInWishlist(p.id) ? '#ff6b6b' : 'none'}
+                        stroke={isInWishlist(p.id) ? '#ff6b6b' : 'var(--text-light)'}
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      >
+                        <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
+                      </svg>
+                    </button>
+                  )}
                   <span style={{ position: 'absolute', top: '10px', left: '10px', background: '#3b82f6', color: '#fff', fontSize: '0.7rem', fontWeight: 'bold', padding: '0.2rem 0.5rem', borderRadius: '4px', zIndex: 10 }}>NEW ARRIVAL</span>
                   <div className="product-card-preview">
                     {p.image ? (
                       <img src={p.image} alt={p.name} style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center', display: 'block' }} />
                     ) : (
-                      <Icons.Watch style={{ width: '48px', height: '48px', color: 'rgba(255,255,255,0.15)' }} />
+                      <Icons.Watch style={{ width: '48px', height: '48px', color: 'var(--text-muted)', opacity: 0.5 }} />
                     )}
                   </div>
                   <div className="product-card-details">
@@ -513,12 +605,55 @@ export default function Storefront() {
             <div className="products-grid">
               {promotionProducts.map((p) => (
                 <div key={p.id} className="product-card" onClick={() => navigate(`/product/${p.id}`)} style={{ cursor: 'pointer', position: 'relative' }}>
+                  {(user?.role === 'user' || !user) && (
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        if (!user) {
+                          navigate('/register');
+                          return;
+                        }
+                        toggleWishlist(p);
+                      }}
+                      style={{
+                        position: 'absolute',
+                        top: '10px',
+                        right: '10px',
+                        background: 'rgba(31, 40, 51, 0.6)',
+                        backdropFilter: 'blur(5px)',
+                        border: '1px solid var(--glass-border)',
+                        borderRadius: '50%',
+                        width: '32px',
+                        height: '32px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        cursor: 'pointer',
+                        zIndex: 12,
+                        transition: 'transform 0.2s',
+                      }}
+                      className="hover-scale"
+                    >
+                      <svg
+                        width="16"
+                        height="16"
+                        viewBox="0 0 24 24"
+                        fill={isInWishlist(p.id) ? '#ff6b6b' : 'none'}
+                        stroke={isInWishlist(p.id) ? '#ff6b6b' : 'var(--text-light)'}
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      >
+                        <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
+                      </svg>
+                    </button>
+                  )}
                   <span style={{ position: 'absolute', top: '10px', left: '10px', background: '#ef4444', color: '#fff', fontSize: '0.7rem', fontWeight: 'bold', padding: '0.2rem 0.5rem', borderRadius: '4px', zIndex: 10 }}>SALE -15%</span>
                   <div className="product-card-preview">
                     {p.image ? (
                       <img src={p.image} alt={p.name} style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center', display: 'block' }} />
                     ) : (
-                      <Icons.Watch style={{ width: '48px', height: '48px', color: 'rgba(255,255,255,0.15)' }} />
+                      <Icons.Watch style={{ width: '48px', height: '48px', color: 'var(--text-muted)', opacity: 0.5 }} />
                     )}
                   </div>
                   <div className="product-card-details">
@@ -558,7 +693,7 @@ export default function Storefront() {
           <div className="section-header">
             <h2 className="section-title">{search ? `ผลการค้นหาสำหรับ "${search}"` : 'สินค้าทั้งหมด'}</h2>
             <div className="filter-controls">
-              {[{ key: 'all', label: 'ทั้งหมด' }, { key: 'Luminox', label: 'LUMINOX' }, { key: 'Seiko', label: 'SEIKO' }, { key: 'TAG Heuer', label: 'TAG HEUER' }].map(({ key, label }) => (
+              {[{ key: 'all', label: 'ทั้งหมด' }, { key: 'Luminox', label: 'LUMINOX' }, { key: 'Seiko', label: 'SEIKO' }, { key: 'TAG Heuer', label: 'TAG HEUER' }, { key: 'Rolex', label: 'ROLEX' }].map(({ key, label }) => (
                 <button
                   key={key}
                   className={`filter-btn ${filter === key ? 'active' : ''}`}
@@ -576,7 +711,53 @@ export default function Storefront() {
                 ไม่พบสินค้าตรงตามเงื่อนไข
               </p>
             ) : filteredProducts.map((p) => (
-              <div key={p.id} className="product-card" onClick={() => navigate(`/product/${p.id}`)} style={{ cursor: 'pointer' }}>
+              <div key={p.id} className="product-card" onClick={() => navigate(`/product/${p.id}`)} style={{ cursor: 'pointer', position: 'relative' }}>
+                {(user?.role === 'user' || !user) && (
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      if (!user) {
+                        navigate('/register');
+                        return;
+                      }
+                      toggleWishlist(p);
+                    }}
+                    style={{
+                      position: 'absolute',
+                      top: '10px',
+                      right: '10px',
+                      background: 'rgba(31, 40, 51, 0.6)',
+                      backdropFilter: 'blur(5px)',
+                      border: '1px solid var(--glass-border)',
+                      borderRadius: '50%',
+                      width: '32px',
+                      height: '32px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      cursor: 'pointer',
+                      zIndex: 12,
+                      transition: 'transform 0.2s',
+                    }}
+                    className="hover-scale"
+                  >
+                    <svg
+                      width="16"
+                      height="16"
+                      viewBox="0 0 24 24"
+                      fill={isInWishlist(p.id) ? '#ff6b6b' : 'none'}
+                      stroke={isInWishlist(p.id) ? '#ff6b6b' : 'var(--text-light)'}
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    >
+                      <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
+                    </svg>
+                  </button>
+                )}
+                {newArrivalsProducts.some(item => item.id === p.id) && (
+                  <span style={{ position: 'absolute', top: '10px', left: '10px', background: '#3b82f6', color: '#fff', fontSize: '0.7rem', fontWeight: 'bold', padding: '0.2rem 0.5rem', borderRadius: '4px', zIndex: 10 }}>NEW</span>
+                )}
                 <div className="product-card-preview">
                   {p.image ? (
                     <img

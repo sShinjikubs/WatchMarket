@@ -101,6 +101,10 @@ export default function ProductDetail() {
   }, [id, navigate]);
 
   const handleAddToCart = () => {
+    if (!user) {
+      navigate('/register');
+      return;
+    }
     if (!product || product.stock <= 0) return;
     const ok = addToCart(product, quantity);
     if (ok) {
@@ -360,7 +364,13 @@ export default function ProductDetail() {
               </button>
               <button
                 className="btn btn-primary pd-btn-buy"
-                onClick={() => { handleAddToCart(); openCart(); }}
+                onClick={() => {
+                  if (!user) {
+                    navigate('/register');
+                    return;
+                  }
+                  navigate('/checkout', { state: { buyNowItem: { ...product, quantity } } });
+                }}
                 disabled={product.stock === 0}
               >
                 {product.stock === 0 ? 'สินค้าหมดชั่วคราว' : 'ซื้อเลย'}
