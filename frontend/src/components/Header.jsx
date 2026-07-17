@@ -576,25 +576,7 @@ export default function Header({ showCart, cartCount: cartCountProp, onCartClick
               <Icons.Search style={{ width: '15px', height: '15px' }} />
             </button>
           </form>
-          {/* Small Keywords Tag Row - SEIKO and LUMINOX only (Classic/Sport deleted) */}
-          <div style={{ display: 'flex', gap: '0.8rem', fontSize: '0.72rem', color: 'var(--text-muted)' }}>
-            {['SEIKO', 'LUMINOX', 'TAG HEUER'].map((kw) => (
-              <span
-                key={kw}
-                onClick={() => {
-                  if (location.pathname === '/') {
-                    setSearchParams({ search: kw });
-                  } else {
-                    navigate(`/?search=${kw}`);
-                  }
-                }}
-                style={{ cursor: 'pointer', transition: 'color 0.2s' }}
-                className="hover-gold-text"
-              >
-                {kw}
-              </span>
-            ))}
-          </div>
+
         </div>
 
         {/* Right side navigation & Actions */}
