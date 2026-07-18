@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useCart } from '../CartContext';
+import { useLanguage } from '../App';
 import { Icons } from './Icons';
 
 export default function CartDrawer() {
   const { cart, cartOpen, closeCart, changeQty, cartCount } = useCart();
   const navigate = useNavigate();
+  const { t, lang } = useLanguage();
   
   const [selectedIds, setSelectedIds] = useState([]);
 
@@ -73,7 +75,7 @@ export default function CartDrawer() {
         <div className="cart-header" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '1.2rem 1.5rem', borderBottom: '1px solid var(--glass-border)' }}>
           <h3 style={{ margin: 0, fontSize: '1.1rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
             <Icons.Cart style={{ color: 'var(--accent-gold)' }} />
-            <span>ตะกร้าสินค้า <span style={{ color: 'var(--accent-gold)', fontWeight: 400, fontSize: '0.9rem' }}>({selectedCount}/{cartCount} เลือก)</span></span>
+            <span>{t('cart')} <span style={{ color: 'var(--accent-gold)', fontWeight: 400, fontSize: '0.9rem' }}>{t('selectedCount').replace('{selected}', selectedCount).replace('{total}', cartCount)}</span></span>
           </h3>
           <button className="close-btn" onClick={closeCart} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-muted)', fontSize: '1.2rem' }}>✕</button>
         </div>
@@ -85,7 +87,7 @@ export default function CartDrawer() {
               <div style={{ marginBottom: '1rem', display: 'flex', justifyContent: 'center' }}>
                 <Icons.Cart style={{ width: '48px', height: '48px', color: 'rgba(255,255,255,0.15)' }} />
               </div>
-              <p>ตะกร้าสินค้าว่างเปล่า</p>
+              <p>{t('emptyCart')}</p>
             </div>
           ) : cart.map((item) => (
             <div key={item.id} className="cart-item" style={{ display: 'flex', gap: '0.6rem', alignItems: 'center', padding: '0.8rem', background: 'rgba(255,255,255,0.03)', borderRadius: '10px', border: '1px solid var(--glass-border)' }}>
@@ -110,14 +112,14 @@ export default function CartDrawer() {
               />
               
               {item.image ? (
-                <img src={item.image} alt={item.name} style={{ width: '52px', height: '52px', objectFit: 'cover', borderRadius: '8px', background: 'rgba(255,255,255,0.05)', flexShrink: 0 }} />
+                <img src={item.image} alt={lang === 'en' && item.nameEn ? item.nameEn : item.name} style={{ width: '52px', height: '52px', objectFit: 'cover', borderRadius: '8px', background: 'rgba(255,255,255,0.05)', flexShrink: 0 }} />
               ) : (
                 <div style={{ width: '52px', height: '52px', background: 'rgba(197,168,128,0.1)', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                   <Icons.Watch style={{ width: '22px', height: '22px', color: 'var(--accent-gold)' }} />
                 </div>
               )}
               <div style={{ flex: 1, minWidth: 0 }}>
-                <div style={{ fontWeight: 600, fontSize: '0.88rem', lineHeight: 1.3, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{item.name}</div>
+                <div style={{ fontWeight: 600, fontSize: '0.88rem', lineHeight: 1.3, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{lang === 'en' && item.nameEn ? item.nameEn : item.name}</div>
                 <div style={{ color: 'var(--accent-gold)', fontWeight: 700, fontSize: '0.9rem', marginTop: '0.2rem' }}>฿ {(item.price * item.quantity).toLocaleString()}</div>
                 <div style={{ color: 'var(--text-muted)', fontSize: '0.75rem' }}>฿ {item.price.toLocaleString()} × {item.quantity}</div>
               </div>
@@ -141,7 +143,7 @@ export default function CartDrawer() {
         {/* Footer */}
         <div className="cart-footer" style={{ padding: '1.2rem 1.5rem', borderTop: '1px solid var(--glass-border)', background: 'rgba(0,0,0,0.2)' }}>
           <div className="cart-total" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
-            <span style={{ color: 'var(--text-muted)' }}>ยอดรวมที่เลือก</span>
+            <span style={{ color: 'var(--text-muted)' }}>{t('selectedTotal')}</span>
             <span id="cart-total-price" style={{ fontSize: '1.3rem', fontWeight: 700, color: 'var(--accent-gold)' }}>฿ {selectedTotal.toLocaleString()}</span>
           </div>
           <button
@@ -150,7 +152,7 @@ export default function CartDrawer() {
             disabled={cart.length === 0 || selectedIds.length === 0}
             onClick={handleCheckout}
           >
-            ดำเนินการชำระเงิน 💳
+            {t('checkout')}
           </button>
         </div>
       </div>

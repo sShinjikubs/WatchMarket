@@ -32,6 +32,7 @@ const defaultProducts: Product[] = [
   {
     id: "1",
     name: "Luminox ASIA LITE 0320.AS (XS.0321.BO.AS)",
+    nameEn: "Luminox ASIA LITE 0320.AS (XS.0321.BO.AS)",
     brand: "Luminox",
     category: "classic",
     price: 9500,
@@ -42,6 +43,7 @@ const defaultProducts: Product[] = [
   {
     id: "2",
     name: "Luminox Bear Grylls Survival 3720 (XB.3729.NGU)",
+    nameEn: "Luminox Bear Grylls Survival 3720 (XB.3729.NGU)",
     brand: "Luminox",
     category: "sport",
     price: 17500,
@@ -52,6 +54,7 @@ const defaultProducts: Product[] = [
   {
     id: "3",
     name: "Luminox Sea Lion G Collection (X2.2055.1)",
+    nameEn: "Luminox Sea Lion G Collection (X2.2055.1)",
     brand: "Luminox",
     category: "classic",
     price: 8900,
@@ -62,6 +65,7 @@ const defaultProducts: Product[] = [
   {
     id: "4",
     name: "Luminox ICE-SAR 1080 Limited Edition (XL.1095)",
+    nameEn: "Luminox ICE-SAR 1080 Limited Edition (XL.1095)",
     brand: "Luminox",
     category: "elegant",
     price: 21900,
@@ -72,6 +76,7 @@ const defaultProducts: Product[] = [
   {
     id: "5",
     name: "Luminox Leatherback Sea Turtle Giant (XS.0325.GP)",
+    nameEn: "Luminox Leatherback Sea Turtle Giant (XS.0325.GP)",
     brand: "Luminox",
     category: "sport",
     price: 11200,
@@ -82,6 +87,7 @@ const defaultProducts: Product[] = [
   {
     id: "6",
     name: "Luminox Navy Seal 3500 (XS.3517.NM)",
+    nameEn: "Luminox Navy Seal 3500 (XS.3517.NM)",
     brand: "Luminox",
     category: "sport",
     price: 14800,
@@ -92,6 +98,7 @@ const defaultProducts: Product[] = [
   {
     id: "7",
     name: "Luminox Navy SEAL Foundation 3200 (XS.3228.NSF)",
+    nameEn: "Luminox Navy SEAL Foundation 3200 (XS.3228.NSF)",
     brand: "Luminox",
     category: "elegant",
     price: 24500,
@@ -102,6 +109,7 @@ const defaultProducts: Product[] = [
   {
     id: "8",
     name: "Luminox Pacific Diver 3120 (XS.3135)",
+    nameEn: "Luminox Pacific Diver 3120 (XS.3135)",
     brand: "Luminox",
     category: "elegant",
     price: 22000,
@@ -112,6 +120,7 @@ const defaultProducts: Product[] = [
   {
     id: "9",
     name: "Luminox Pacific Diver Ripple 39mm (XS.3122M)",
+    nameEn: "Luminox Pacific Diver Ripple 39mm (XS.3122M)",
     brand: "Luminox",
     category: "elegant",
     price: 23400,
@@ -122,6 +131,7 @@ const defaultProducts: Product[] = [
   {
     id: "10",
     name: "Luminox Red Bull AMPOL_26 Limited (XL.1970.ARB.N)",
+    nameEn: "Luminox Red Bull AMPOL_26 Limited (XL.1970.ARB.N)",
     brand: "Luminox",
     category: "elegant",
     price: 29800,
@@ -132,6 +142,7 @@ const defaultProducts: Product[] = [
   {
     id: "11",
     name: "Seiko Prospex Monster CMU 60th Anniversary",
+    nameEn: "Seiko Prospex Monster CMU 60th Anniversary",
     brand: "Seiko",
     category: "elegant",
     price: 28500,
@@ -142,6 +153,7 @@ const defaultProducts: Product[] = [
   {
     id: "12",
     name: "Seiko 5 Sports X HUF Limited Edition (SRPM09K)",
+    nameEn: "Seiko 5 Sports X HUF Limited Edition (SRPM09K)",
     brand: "Seiko",
     category: "sport",
     price: 13900,
@@ -152,6 +164,7 @@ const defaultProducts: Product[] = [
   {
     id: "13",
     name: "Seiko Prospex Speedtimer Solar Tokyo25 (SSC955P)",
+    nameEn: "Seiko Prospex Speedtimer Solar Tokyo25 (SSC955P)",
     brand: "Seiko",
     category: "elegant",
     price: 31500,
@@ -162,6 +175,7 @@ const defaultProducts: Product[] = [
   {
     id: "14",
     name: "Seiko 5 Sports Vintage Car Special (SRPL49K)",
+    nameEn: "Seiko 5 Sports Vintage Car Special (SRPL49K)",
     brand: "Seiko",
     category: "classic",
     price: 14500,
@@ -172,6 +186,7 @@ const defaultProducts: Product[] = [
   {
     id: "15",
     name: "Seiko 5 Sports x Poorboy Limited Edition (SRPM17K)",
+    nameEn: "Seiko 5 Sports x Poorboy Limited Edition (SRPM17K)",
     brand: "Seiko",
     category: "sport",
     price: 15200,
@@ -182,6 +197,7 @@ const defaultProducts: Product[] = [
   {
     id: "16",
     name: "Seiko Prospex Automatic Stainless Monster (SRPH75K)",
+    nameEn: "Seiko Prospex Automatic Stainless Monster (SRPH75K)",
     brand: "Seiko",
     category: "sport",
     price: 19800,
@@ -192,6 +208,7 @@ const defaultProducts: Product[] = [
   {
     id: "17",
     name: "Seiko Astron GPS Solar 145th Anniversary (HAB004J)",
+    nameEn: "Seiko Astron GPS Solar 145th Anniversary (HAB004J)",
     brand: "Seiko",
     category: "elegant",
     price: 115000,
@@ -202,6 +219,7 @@ const defaultProducts: Product[] = [
   {
     id: "18",
     name: "Seiko 5 Sports x POORBOY Limited Edition",
+    nameEn: "Seiko 5 Sports x POORBOY Limited Edition",
     brand: "Seiko",
     category: "sport",
     price: 14800,
@@ -212,6 +230,7 @@ const defaultProducts: Product[] = [
   {
     id: "19",
     name: "Seiko Monster Red The Fang Custom & Modify",
+    nameEn: "Seiko Monster Red The Fang Custom & Modify",
     brand: "Seiko",
     category: "sport",
     price: 18900,
@@ -222,6 +241,7 @@ const defaultProducts: Product[] = [
   {
     id: "20",
     name: "Seiko Prospex Divers 1965 Heritage Limited (HBC005J)",
+    nameEn: "Seiko Prospex Divers 1965 Heritage Limited (HBC005J)",
     brand: "Seiko",
     category: "elegant",
     price: 49500,
@@ -232,6 +252,7 @@ const defaultProducts: Product[] = [
   {
     id: "21",
     name: "TAG Heuer Aquaracer Professional 500 Date Automatic, 42 mm, Titanium",
+    nameEn: "TAG Heuer Aquaracer Professional 500 Date Automatic, 42 mm, Titanium",
     brand: "TAG Heuer",
     category: "sport",
     price: 135000,
@@ -242,6 +263,7 @@ const defaultProducts: Product[] = [
   {
     id: "22",
     name: "TAG Heuer Formula 1 Chronograph",
+    nameEn: "TAG Heuer Formula 1 Chronograph",
     brand: "TAG Heuer",
     category: "sport",
     price: 78000,
@@ -252,6 +274,7 @@ const defaultProducts: Product[] = [
   {
     id: "23",
     name: "TAG Heuer Formula 1 Chronograph Quartz, 43 mm, Steel",
+    nameEn: "TAG Heuer Formula 1 Chronograph Quartz, 43 mm, Steel",
     brand: "TAG Heuer",
     category: "sport",
     price: 85000,
@@ -262,6 +285,7 @@ const defaultProducts: Product[] = [
   {
     id: "24",
     name: "TAG Heuer Formula 1 Chronograph x Red Bull Racing Quartz, 43 mm, Steel",
+    nameEn: "TAG Heuer Formula 1 Chronograph x Red Bull Racing Quartz, 43 mm, Steel",
     brand: "TAG Heuer",
     category: "sport",
     price: 98000,
@@ -272,6 +296,7 @@ const defaultProducts: Product[] = [
   {
     id: "25",
     name: "TAG Heuer Formula 1 Date Automatic, 43 mm, Steel",
+    nameEn: "TAG Heuer Formula 1 Date Automatic, 43 mm, Steel",
     brand: "TAG Heuer",
     category: "classic",
     price: 110000,
@@ -282,6 +307,7 @@ const defaultProducts: Product[] = [
   {
     id: "26",
     name: "TAG Heuer Carrera Chronograph Automatic, 39 mm, Steel",
+    nameEn: "TAG Heuer Carrera Chronograph Automatic, 39 mm, Steel",
     brand: "TAG Heuer",
     category: "sport",
     price: 195000,
@@ -292,6 +318,7 @@ const defaultProducts: Product[] = [
   {
     id: "27",
     name: "TAG Heuer Carrera Chronograph x Porsche Automatic, 44 mm, Steel",
+    nameEn: "TAG Heuer Carrera Chronograph x Porsche Automatic, 44 mm, Steel",
     brand: "TAG Heuer",
     category: "sport",
     price: 285000,
@@ -302,6 +329,7 @@ const defaultProducts: Product[] = [
   {
     id: "28",
     name: "TAG Heuer Carrera Date Automatic, 36 mm, Steel",
+    nameEn: "TAG Heuer Carrera Date Automatic, 36 mm, Steel",
     brand: "TAG Heuer",
     category: "classic",
     price: 125000,
@@ -312,6 +340,7 @@ const defaultProducts: Product[] = [
   {
     id: "29",
     name: "TAG Heuer Formula 1 Chronograph Automatic, 44 mm, Steel",
+    nameEn: "TAG Heuer Formula 1 Chronograph Automatic, 44 mm, Steel",
     brand: "TAG Heuer",
     category: "sport",
     price: 95000,
@@ -322,6 +351,7 @@ const defaultProducts: Product[] = [
   {
     id: "30",
     name: "TAG Heuer Monaco Evergraph Automatic, 40 mm, Titanium",
+    nameEn: "TAG Heuer Monaco Evergraph Automatic, 40 mm, Titanium",
     brand: "TAG Heuer",
     category: "elegant",
     price: 320000,
@@ -332,6 +362,7 @@ const defaultProducts: Product[] = [
   {
     id: "31",
     name: "Rolex Submariner Date Vintage Matte Dial Yellow Patina Ref.16800",
+    nameEn: "Rolex Submariner Date Vintage Matte Dial Yellow Patina Ref.16800",
     brand: "Rolex",
     category: "sport",
     price: 345000,
@@ -342,6 +373,7 @@ const defaultProducts: Product[] = [
   {
     id: "32",
     name: "Rolex 16233 Oyster Datejust Automatic Cal.3135 หลักเพชร",
+    nameEn: "Rolex 16233 Oyster Datejust Automatic Cal.3135 Diamond Dial",
     brand: "Rolex",
     category: "elegant",
     price: 235000,
@@ -352,6 +384,7 @@ const defaultProducts: Product[] = [
   {
     id: "33",
     name: "ROLEX Datejust 68273 Year 1987 Automatic Date Unisex Size 31 mm. (Pre-owned)",
+    nameEn: "ROLEX Datejust 68273 Year 1987 Automatic Date Unisex Size 31 mm. (Pre-owned)",
     brand: "Rolex",
     category: "classic",
     price: 198000,
@@ -362,6 +395,7 @@ const defaultProducts: Product[] = [
   {
     id: "34",
     name: "ROLEX GMT-Master II 16713 Year 1991 X Serie Automatic Date Size 40 mm. (Pre-owned)",
+    nameEn: "ROLEX GMT-Master II 16713 Year 1991 X Serie Automatic Date Size 40 mm. (Pre-owned)",
     brand: "Rolex",
     category: "sport",
     price: 428000,
@@ -372,6 +406,7 @@ const defaultProducts: Product[] = [
   {
     id: "35",
     name: "Rolex Cosmograph Daytona Oyster, 40 มม., ทองคำ",
+    nameEn: "Rolex Cosmograph Daytona Oyster, 40 mm, Yellow Gold",
     brand: "Rolex",
     category: "sport",
     price: 1350000,
@@ -382,6 +417,7 @@ const defaultProducts: Product[] = [
   {
     id: "36",
     name: "Rolex Cosmograph Daytona Oyster, 40 มม., ทองคำและเพชร",
+    nameEn: "Rolex Cosmograph Daytona Oyster, 40 mm, Yellow Gold and Diamonds",
     brand: "Rolex",
     category: "elegant",
     price: 1650000,
@@ -392,6 +428,7 @@ const defaultProducts: Product[] = [
   {
     id: "37",
     name: "Rolex Cosmograph Daytona Oyster, 40 มม., แพลทินัม",
+    nameEn: "Rolex Cosmograph Daytona Oyster, 40 mm, Platinum",
     brand: "Rolex",
     category: "sport",
     price: 2200000,
@@ -402,6 +439,7 @@ const defaultProducts: Product[] = [
   {
     id: "38",
     name: "Rolex Day-Date 40 Oyster, 40 มม., แพลทินัม",
+    nameEn: "Rolex Day-Date 40 Oyster, 40 mm, Platinum",
     brand: "Rolex",
     category: "elegant",
     price: 1850000,
@@ -412,6 +450,7 @@ const defaultProducts: Product[] = [
   {
     id: "39",
     name: "Rolex Lady-Datejust Oyster, 28 มม., Oystersteel และทองคำ",
+    nameEn: "Rolex Lady-Datejust Oyster, 28 mm, Oystersteel andYellow Gold",
     brand: "Rolex",
     category: "classic",
     price: 380000,
@@ -422,6 +461,7 @@ const defaultProducts: Product[] = [
   {
     id: "40",
     name: "Rolex Sky-Dweller Oyster, 42 มม., เอเวอร์โรสโกลด์",
+    nameEn: "Rolex Sky-Dweller Oyster, 42 mm, Everose Gold",
     brand: "Rolex",
     category: "elegant",
     price: 1550000,
@@ -475,6 +515,7 @@ export const db = {
         CREATE TABLE IF NOT EXISTS products (
           id VARCHAR(50) PRIMARY KEY,
           name VARCHAR(100) NOT NULL,
+          name_en VARCHAR(100),
           brand VARCHAR(50) NOT NULL,
           category VARCHAR(50) NOT NULL,
           price NUMERIC(12, 2) NOT NULL,
@@ -488,6 +529,7 @@ export const db = {
       `);
 
       // Run migrates to make sure columns exist
+      await client.query('ALTER TABLE products ADD COLUMN IF NOT EXISTS name_en VARCHAR(100)');
       await client.query('ALTER TABLE products ADD COLUMN IF NOT EXISTS image VARCHAR(255)');
       await client.query('ALTER TABLE products ADD COLUMN IF NOT EXISTS image_back VARCHAR(255)');
 
@@ -568,10 +610,10 @@ export const db = {
       if (parseInt(prodCheck.rows[0].count) < defaultProducts.length) {
         for (const p of defaultProducts) {
           await client.query(
-            `INSERT INTO products (id, name, brand, category, price, stock, color, stroke_color, is_gold_face, image, image_back)
-             VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
+            `INSERT INTO products (id, name, name_en, brand, category, price, stock, color, stroke_color, is_gold_face, image, image_back)
+           VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
              ON CONFLICT (id) DO NOTHING`,
-            [p.id, p.name, p.brand, p.category, p.price, p.stock, p.color || '', p.strokeColor || '', p.isGoldFace || false, p.image || '', p.imageBack || '']
+            [p.id, p.name, p.nameEn || '', p.brand, p.category, p.price, p.stock, p.color || '', p.strokeColor || '', p.isGoldFace || false, p.image || '', p.imageBack || '']
           );
         }
         console.log('Seeded watch database with LUMINOX, SEIKO & TAG Heuer collections!');
@@ -594,13 +636,13 @@ export const db = {
 
   getProducts: async (): Promise<Product[]> => {
     const res = await pool.query(
-      `SELECT p.id, p.name, p.brand, p.category, CAST(p.price AS FLOAT) as price, p.stock, p.color,
+      `SELECT p.id, p.name, p.name_en as "nameEn", p.brand, p.category, CAST(p.price AS FLOAT) as price, p.stock, p.color,
               p.stroke_color as "strokeColor", p.is_gold_face as "isGoldFace", p.image, p.image_back as "imageBack",
               COALESCE(AVG(r.rating), 0.0) as rating,
               COUNT(r.id) as "reviewCount"
        FROM products p
        LEFT JOIN reviews r ON p.id = r.product_id
-       GROUP BY p.id, p.name, p.brand, p.category, p.price, p.stock, p.color, p.stroke_color, p.is_gold_face, p.image, p.image_back
+       GROUP BY p.id, p.name, p.name_en, p.brand, p.category, p.price, p.stock, p.color, p.stroke_color, p.is_gold_face, p.image, p.image_back
        ORDER BY length(p.id) ASC, p.id ASC`
     );
     return res.rows.map(row => ({
@@ -613,10 +655,11 @@ export const db = {
   saveProducts: async (products: Product[]): Promise<void> => {
     for (const p of products) {
       await pool.query(
-        `INSERT INTO products (id, name, brand, category, price, stock, color, stroke_color, is_gold_face, image, image_back)
-         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
+        `INSERT INTO products (id, name, name_en, brand, category, price, stock, color, stroke_color, is_gold_face, image, image_back)
+           VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
          ON CONFLICT (id) DO UPDATE SET
            name = EXCLUDED.name,
+           name_en = EXCLUDED.name_en,
            brand = EXCLUDED.brand,
            category = EXCLUDED.category,
            price = EXCLUDED.price,
@@ -626,7 +669,7 @@ export const db = {
            is_gold_face = EXCLUDED.is_gold_face,
            image = EXCLUDED.image,
            image_back = EXCLUDED.image_back`,
-        [p.id, p.name, p.brand, p.category, p.price, p.stock, p.color || '', p.strokeColor || '', p.isGoldFace || false, p.image || '', p.imageBack || '']
+        [p.id, p.name, p.nameEn || '', p.brand, p.category, p.price, p.stock, p.color || '', p.strokeColor || '', p.isGoldFace || false, p.image || '', p.imageBack || '']
       );
     }
   },
@@ -638,9 +681,9 @@ export const db = {
       await client.query('DELETE FROM products');
       for (const p of defaultProducts) {
         await client.query(
-          `INSERT INTO products (id, name, brand, category, price, stock, color, stroke_color, is_gold_face, image, image_back)
-           VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)`,
-          [p.id, p.name, p.brand, p.category, p.price, p.stock, p.color || '', p.strokeColor || '', p.isGoldFace || false, p.image || '', p.imageBack || '']
+          `INSERT INTO products (id, name, name_en, brand, category, price, stock, color, stroke_color, is_gold_face, image, image_back)
+           VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)`,
+          [p.id, p.name, p.nameEn || '', p.brand, p.category, p.price, p.stock, p.color || '', p.strokeColor || '', p.isGoldFace || false, p.image || '', p.imageBack || '']
         );
       }
       console.log(`Force reseeded ${defaultProducts.length} products (LUMINOX & SEIKO collections).`);
@@ -651,9 +694,9 @@ export const db = {
 
   addProduct: async (p: Product): Promise<void> => {
     await pool.query(
-      `INSERT INTO products (id, name, brand, category, price, stock, color, stroke_color, is_gold_face, image, image_back)
-       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)`,
-      [p.id, p.name, p.brand, p.category, p.price, p.stock, p.color || '', p.strokeColor || '', p.isGoldFace || false, p.image || '', p.imageBack || '']
+      `INSERT INTO products (id, name, name_en, brand, category, price, stock, color, stroke_color, is_gold_face, image, image_back)
+           VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)`,
+      [p.id, p.name, p.nameEn || '', p.brand, p.category, p.price, p.stock, p.color || '', p.strokeColor || '', p.isGoldFace || false, p.image || '', p.imageBack || '']
     );
   },
 

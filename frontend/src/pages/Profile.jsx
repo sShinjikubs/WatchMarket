@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useAuth } from '../App';
+import { useAuth, useLanguage } from '../App';
 import { api } from '../api';
 import Header from '../components/Header';
 import { Icons } from '../components/Icons';
@@ -7,6 +7,7 @@ import { useRef } from 'react';
 
 export default function Profile() {
   const { user, updateUser } = useAuth();
+  const { t } = useLanguage();
   const [form, setForm] = useState({ firstname: '', lastname: '', email: '', phone: '', address: '' });
   const [notification, setNotification] = useState(null);
   const fileInputRef = useRef(null);
@@ -39,9 +40,9 @@ export default function Profile() {
     try {
       const payload = { ...form, avatar: user.avatar }; // Preserve avatar if not modified
       const res = await api.saveProfile(user.username, payload);
-      if (res.ok) showNotif('บันทึกข้อมูลโปรไฟล์สำเร็จ!');
-      else showNotif('บันทึกข้อมูลไม่สำเร็จ', false);
-    } catch (_) { showNotif('เซิร์ฟเวอร์ขัดข้อง', false); }
+      if (res.ok) showNotif(t('profileSaveSuccess'));
+      else showNotif(t('profileSaveFail'), false);
+    } catch (_) { showNotif(t('serverError'), false); }
   };
 
   const handleAvatarChange = (e) => {
@@ -49,13 +50,13 @@ export default function Profile() {
     if (!file) return;
 
     if (!file.type.startsWith('image/')) {
-      showNotif('กรุณาอัปโหลดไฟล์รูปภาพเท่านั้น', false);
+      showNotif(t('imageUploadOnly'), false);
       return;
     }
     
     // ~2MB limit (2 * 1024 * 1024 bytes)
     if (file.size > 2097152) {
-      showNotif('ขนาดไฟล์ต้องไม่เกิน 2MB', false);
+      showNotif(t('fileSizeLimit'), false);
       return;
     }
 
@@ -67,12 +68,12 @@ export default function Profile() {
         const res = await api.saveProfile(user.username, payload);
         if (res.ok) {
           updateUser({ avatar: dataUrl });
-          showNotif('อัปโหลดรูปโปรไฟล์สำเร็จ!');
+          showNotif(t('avatarUploadSuccess'));
         } else {
-          showNotif('อัปโหลดไม่สำเร็จ', false);
+          showNotif(t('avatarUploadFail'), false);
         }
       } catch {
-        showNotif('เกิดข้อผิดพลาดในการเชื่อมต่อเซิร์ฟเวอร์', false);
+        showNotif(t('serverConnError'), false);
       }
     };
     reader.readAsDataURL(file);
@@ -84,12 +85,12 @@ export default function Profile() {
       const res = await api.saveProfile(user.username, payload);
       if (res.ok) {
         updateUser({ avatar: '' }); // Update context to reflect deletion
-        showNotif('ลบรูปโปรไฟล์สำเร็จ!');
+        showNotif(t('avatarDeleteSuccess'));
       } else {
-        showNotif('ลบรูปโปรไฟล์ไม่สำเร็จ', false);
+        showNotif(t('avatarDeleteFail'), false);
       }
     } catch {
-      showNotif('เกิดข้อผิดพลาดในการเชื่อมต่อเซิร์ฟเวอร์', false);
+      showNotif(t('serverConnError'), false);
     }
   };
 
@@ -102,46 +103,46 @@ export default function Profile() {
         <div className="page-header">
           <h1 className="page-title" style={{ display: 'inline-flex', alignItems: 'center', gap: '0.6rem' }}>
             <Icons.User style={{ color: 'var(--accent-gold)', width: '24px', height: '24px' }} />
-            <span>โปรไฟล์ของฉัน</span>
+            <span>{t('myProfileTitle')}</span>
           </h1>
-          <p className="page-subtitle">จัดการข้อมูลส่วนตัวและที่อยู่จัดส่ง</p>
+          <p className="page-subtitle">{t('profileSubtitle')}</p>
         </div>
 
         <div className="content-grid two-col">
           <div className="glass-card">
-            <h2 className="card-title">ข้อมูลส่วนตัว</h2>
+            <h2 className="card-title">{t('personalInfo')}</h2>
             <form onSubmit={handleSave} className="form-stack">
               <div className="form-row">
                 <div className="form-group">
-                  <label className="form-label">ชื่อจริง</label>
-                  <input className="form-input" value={form.firstname} onChange={set('firstname')} id="prof-firstname" placeholder="ชื่อจริง" />
+                  <label className="form-label">{t('firstName')}</label>
+                  <input className="form-input" value={form.firstname} onChange={set('firstname')} id="prof-firstname" placeholder={t('firstName')} />
                 </div>
                 <div className="form-group">
-                  <label className="form-label">นามสกุล</label>
-                  <input className="form-input" value={form.lastname} onChange={set('lastname')} id="prof-lastname" placeholder="นามสกุล" />
+                  <label className="form-label">{t('lastName')}</label>
+                  <input className="form-input" value={form.lastname} onChange={set('lastname')} id="prof-lastname" placeholder={t('lastName')} />
                 </div>
               </div>
               <div className="form-group">
-                <label className="form-label">อีเมล</label>
+                <label className="form-label">{t('email')}</label>
                 <input type="email" className="form-input" value={form.email} onChange={set('email')} id="prof-email" placeholder="email@example.com" />
               </div>
               <div className="form-group">
-                <label className="form-label">เบอร์โทรศัพท์</label>
-                <input className="form-input" value={form.phone} onChange={set('phone')} id="prof-phone" placeholder="08X-XXX-XXXX" />
+                <label className="form-label">{t('phoneNumber')}</label>
+                <input className="form-input" value={form.phone} onChange={set('phone')} id="prof-phone" placeholder={t('phonePlaceholder')} />
               </div>
               <div className="form-group">
-                <label className="form-label">ที่อยู่จัดส่ง</label>
-                <textarea className="form-input" rows={4} value={form.address} onChange={set('address')} id="prof-address" placeholder="บ้านเลขที่ ถนน แขวง/ตำบล เขต/อำเภอ จังหวัด รหัสไปรษณีย์" />
+                <label className="form-label">{t('shippingAddress')}</label>
+                <textarea className="form-input" rows={4} value={form.address} onChange={set('address')} id="prof-address" placeholder={t('addressPlaceholder')} />
               </div>
               <button type="submit" className="btn btn-primary" style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem' }}>
                 <Icons.Check />
-                <span>บันทึกข้อมูล</span>
+                <span>{t('saveDataBtn')}</span>
               </button>
             </form>
           </div>
 
           <div className="glass-card">
-            <h2 className="card-title">ข้อมูลบัญชี</h2>
+            <h2 className="card-title">{t('accountInfo')}</h2>
             <div style={{ display: 'flex', alignItems: 'center', gap: '1.2rem', marginBottom: '1.5rem' }}>
               
               <div style={{ position: 'relative' }}>
@@ -156,7 +157,7 @@ export default function Profile() {
                     backgroundSize: 'cover', backgroundPosition: 'center',
                     border: '2px solid var(--accent-gold)'
                   }}
-                  title="คลิกเพื่อเปลี่ยนรูปโปรไฟล์"
+                  title={t('clickToChangeAvatar')}
                 >
                   {!user?.avatar && user?.username?.charAt(0).toUpperCase()}
                 </div>
@@ -184,7 +185,7 @@ export default function Profile() {
                 </div>
                 {user?.avatar && (
                   <button onClick={handleDeleteAvatar} style={{ background: 'none', border: 'none', color: '#ef5350', fontSize: '0.8rem', cursor: 'pointer', marginTop: '0.5rem', padding: 0 }}>
-                    ลบรูปโปรไฟล์
+                    {t('deleteAvatarBtn')}
                   </button>
                 )}
               </div>
