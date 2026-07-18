@@ -690,8 +690,10 @@ export const db = {
       }
 
       console.log('PostgreSQL Database connected & tables initialized.');
-    } catch (err) {
-      console.error('Error during database initialization:', err);
+    } catch (err: any) {
+      console.warn('Postgres query failed during init, switching to Local JSON fallback:', err?.message || err);
+      useFallback = true;
+      readJsonDb();
     } finally {
       client.release();
     }
