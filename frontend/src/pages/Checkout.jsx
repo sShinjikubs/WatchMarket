@@ -19,6 +19,7 @@ export default function Checkout() {
   const checkoutTotal = buyNowItem ? buyNowItem.price * buyNowItem.quantity : (stateItems ? stateItems.reduce((s, i) => s + i.price * i.quantity, 0) : contextCartTotal);
 
   const [form, setForm] = useState({ email: '', address: '', payment: 'promptpay' });
+  const [emailSuggestions, setEmailSuggestions] = useState([]);
   const [slipBase64, setSlipBase64] = useState(null);
   const [notification, setNotification] = useState(null);
   const [submitting, setSubmitting] = useState(false);
@@ -195,16 +196,83 @@ export default function Checkout() {
             {/* Contact Info */}
             <div style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid var(--glass-border)', borderRadius: '16px', padding: '1.8rem' }}>
               <h3 style={{ fontSize: '1.1rem', marginBottom: '1.2rem', color: 'var(--accent-gold)' }}>{t('contactInfoTitle')}</h3>
-              <div className="form-group">
+              <div className="form-group" style={{ position: 'relative' }}>
                 <label className="form-label">{t('contactEmailLabel')}</label>
                 <input
                   className="form-input"
-                  type="email"
-                  placeholder="example@email.com"
+                  type="text"
+                  placeholder="example@gmail.com"
                   value={form.email}
-                  onChange={(e) => setForm((f) => ({ ...f, email: e.target.value }))}
+                  autoComplete="email"
+                  onChange={(e) => {
+                    const val = e.target.value;
+                    setForm((f) => ({ ...f, email: val }));
+                    if (val.includes('@')) {
+                      const [local, domainPart] = val.split('@');
+                      const allDomains = ['gmail.com', 'hotmail.com', 'outlook.com', 'yahoo.com', 'icloud.com', 'live.com', 'proton.me', 'me.com'];
+                      const filtered = allDomains.filter(d => d.startsWith(domainPart || ''));
+                      setEmailSuggestions(filtered.length > 0 ? filtered.map(d => `${local}@${d}`) : []);
+                    } else {
+                      setEmailSuggestions([]);
+                    }
+                  }}
+                  onBlur={() => setTimeout(() => setEmailSuggestions([]), 180)}
                   required
                 />
+                {emailSuggestions.length > 0 && (
+                  <div style={{
+                    position: 'absolute',
+                    top: '100%',
+                    left: 0,
+                    right: 0,
+                    background: 'var(--bg-secondary, #1a1b1e)',
+                    border: '1px solid var(--glass-border)',
+                    borderRadius: '8px',
+                    overflow: 'hidden',
+                    zIndex: 100,
+                    boxShadow: '0 8px 24px rgba(0,0,0,0.4)',
+                    marginTop: '4px',
+                  }}>
+                    {emailSuggestions.map((sug) => {
+                      const domain = sug.split('@')[1];
+                      const domainIcons = {
+                        'gmail.com': '🔴',
+                        'hotmail.com': '🔵',
+                        'outlook.com': '🔵',
+                        'yahoo.com': '🟣',
+                        'icloud.com': '⚪',
+                        'live.com': '🔵',
+                        'proton.me': '🟢',
+                        'me.com': '⚪',
+                      };
+                      return (
+                        <div
+                          key={sug}
+                          onMouseDown={() => {
+                            setForm((f) => ({ ...f, email: sug }));
+                            setEmailSuggestions([]);
+                          }}
+                          style={{
+                            padding: '0.65rem 1rem',
+                            cursor: 'pointer',
+                            fontSize: '0.88rem',
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '0.5rem',
+                            borderBottom: '1px solid rgba(255,255,255,0.04)',
+                            transition: 'background 0.15s',
+                          }}
+                          onMouseEnter={(e) => e.currentTarget.style.background = 'rgba(197,168,128,0.1)'}
+                          onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
+                        >
+                          <span>{domainIcons[domain] || '📧'}</span>
+                          <span style={{ color: 'var(--text-muted)' }}>{sug.split('@')[0]}</span>
+                          <span style={{ color: 'var(--accent-gold)', fontWeight: 600 }}>@{domain}</span>
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
               </div>
               <div className="form-group" style={{ marginTop: '1rem' }}>
                 <label className="form-label">{t('shippingAddressLabel')}</label>
@@ -281,7 +349,60 @@ export default function Checkout() {
 
                   <div style={{ marginTop: '0.8rem', color: '#0c4a60', fontWeight: 700, fontSize: '1.2rem' }}>฿ {checkoutTotal.toLocaleString()}</div>
                   <div style={{ color: '#666', fontSize: '0.8rem', marginTop: '0.3rem' }}>{t('scanQRInstruction')}</div>
-                  <div style={{ color: '#ff922b', fontSize: '0.7rem', marginTop: '0.3rem', fontWeight: 'bold' }}>{t('qrMockWarning')}</div>
+                </div>
+              )}
+
+              {/* Bank Account Details */}
+              {form.payment === 'bank_transfer' && (
+                <div style={{ 
+                  padding: '1.2rem', 
+                  background: 'rgba(255,255,255,0.02)', 
+                  border: '1px solid var(--glass-border)', 
+                  borderRadius: '12px', 
+                  marginBottom: '1.5rem' 
+                }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                    <div style={{ 
+                      width: '48px', 
+                      height: '48px', 
+                      background: '#138c45', 
+                      borderRadius: '10px', 
+                      display: 'flex', 
+                      alignItems: 'center', 
+                      justifyContent: 'center',
+                      fontWeight: 'bold',
+                      color: 'white',
+                      fontSize: '0.8rem',
+                      fontFamily: "'Oswald', sans-serif",
+                      flexShrink: 0
+                    }}>
+                      K-BANK
+                    </div>
+                    <div>
+                      <div style={{ fontWeight: 600, color: 'var(--accent-gold)', fontSize: '0.95rem' }}>
+                        ธนาคารกสิกรไทย (Kasikornbank)
+                      </div>
+                      <div style={{ fontSize: '1.15rem', fontWeight: 'bold', letterSpacing: '1px', margin: '0.2rem 0', color: '#f5f5f7' }}>
+                        012-3-45678-9
+                      </div>
+                      <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>
+                        ชื่อบัญชี: บจก. วอทช์มาร์ท จำกัด (WatchMart Co., Ltd.)
+                      </div>
+                    </div>
+                  </div>
+                  <div style={{ 
+                    marginTop: '0.8rem', 
+                    paddingTop: '0.8rem', 
+                    borderTop: '1px dashed var(--glass-border)', 
+                    display: 'flex', 
+                    justifyContent: 'space-between', 
+                    alignItems: 'center' 
+                  }}>
+                    <span style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>ยอดเงินที่ต้องโอน:</span>
+                    <span style={{ fontWeight: 'bold', fontSize: '1.15rem', color: 'var(--accent-gold)' }}>
+                      ฿ {checkoutTotal.toLocaleString()}
+                    </span>
+                  </div>
                 </div>
               )}
 

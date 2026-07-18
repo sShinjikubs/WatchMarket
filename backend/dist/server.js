@@ -17,33 +17,36 @@ app.use(express_1.default.json({ limit: '10mb' })); // Support base64 image slip
 // Authentication Endpoints
 // -------------------------------------------------------------
 app.post('/api/auth/login', async (req, res) => {
-    const { role, username, password } = req.body;
-    if (!username || !password || !role) {
+    const { username, password } = req.body;
+    if (!username || !password) {
         await database_1.db.addLog(`[SECURITY]: พยายามเข้าสู่ระบบแต่ข้อมูลไม่ครบถ้วน`);
-        return res.status(400).json({ error: 'Username, password, and role are required.' });
+        return res.status(400).json({ error: 'Username and password are required.' });
     }
     const users = await database_1.db.getUsers();
-    const matchedUser = users.find(u => u.username.toLowerCase() === username.toLowerCase() && u.role === role);
+    const matchedUser = users.find(u => u.username.toLowerCase() === username.toLowerCase());
     let isValid = false;
+    let finalRole = 'user';
     if (matchedUser) {
         if (matchedUser.password === password) {
             isValid = true;
+            finalRole = matchedUser.role;
         }
     }
-    else if (role === 'user' && password === '123456') {
+    else if (password === '123456') {
         // Legacy support: auto-create standard users that use default password
         const newUser = { username, password, role: 'user' };
         await database_1.db.addUser(newUser);
         isValid = true;
+        finalRole = 'user';
         await database_1.db.addLog(`[AUTH]: สร้างบัญชีผู้ใช้ใหม่โดยอัตโนมัติ: ${username}`);
     }
     if (isValid) {
-        await database_1.db.addLog(`[AUTH]: ผู้ใช้เข้าสู่ระบบสำเร็จในบทบาท ${role.toUpperCase()} (${username})`);
-        return res.json({ success: true, user: { username, role } });
+        await database_1.db.addLog(`[AUTH]: ผู้ใช้เข้าสู่ระบบสำเร็จในบทบาท ${finalRole.toUpperCase()} (${username})`);
+        return res.json({ success: true, user: { username, role: finalRole } });
     }
     else {
-        await database_1.db.addLog(`[SECURITY]: ความพยายามเข้าสู่ระบบล้มเหลวสำหรับบทบาท ${role.toUpperCase()} (ผู้ใช้: ${username})`);
-        return res.status(401).json({ error: 'ชื่อผู้ใช้งานหรือรหัสผ่านไม่ถูกต้อง' });
+        await database_1.db.addLog(`[SECURITY]: ความพยายามเข้าสู่ระบบล้มเหลว (ผู้ใช้: ${username})`);
+        return res.status(401).json({ error: 'Invalid username or password' });
     }
 });
 app.post('/api/auth/register', async (req, res) => {
@@ -67,12 +70,12 @@ app.post('/api/auth/register', async (req, res) => {
 app.get('/api/auth/profile/:username', async (req, res) => {
     const username = req.params.username;
     const profile = await database_1.db.getProfile(username);
-    return res.json(profile || { firstname: '', lastname: '', email: '', phone: '', address: '' });
+    return res.json(profile || { firstname: '', lastname: '', email: '', phone: '', address: '', avatar: '' });
 });
 app.post('/api/auth/profile/:username', async (req, res) => {
     const username = req.params.username;
-    const { firstname, lastname, email, phone, address } = req.body;
-    await database_1.db.saveProfile(username, { firstname, lastname, email, phone, address });
+    const { firstname, lastname, email, phone, address, avatar } = req.body;
+    await database_1.db.saveProfile(username, { firstname, lastname, email, phone, address, avatar });
     await database_1.db.addLog(`[PROFILE]: อัปเดตข้อมูลโปรไฟล์ของ ${username} เรียบร้อย`);
     return res.json({ success: true, message: 'บันทึกข้อมูลโปรไฟล์สำเร็จ' });
 });
@@ -536,6 +539,9 @@ app.post('/api/reviews', async (req, res) => {
 // Custom routes to serve docs kept in the root folder
 app.get('/analysis_design.md', (req, res) => {
     res.sendFile(path_1.default.join(__dirname, '..', '..', 'analysis_design.md'));
+});
+app.get('/workshop4_assessment.md', (req, res) => {
+    res.sendFile(path_1.default.join(__dirname, '..', '..', 'workshop4_assessment.md'));
 });
 app.get('/README.md', (req, res) => {
     res.sendFile(path_1.default.join(__dirname, '..', '..', 'README.md'));

@@ -1,0 +1,492 @@
+{
+  "users": [
+    {
+      "username": "admin",
+      "password": "admin123",
+      "role": "admin"
+    },
+    {
+      "username": "manager",
+      "password": "manager123",
+      "role": "manager"
+    },
+    {
+      "username": "buyer",
+      "password": "123456",
+      "role": "user"
+    },
+    {
+      "username": "seller",
+      "password": "123456",
+      "role": "user"
+    }
+  ],
+  "profiles": {},
+  "products": [
+    {
+      "id": "1",
+      "name": "Luminox ASIA LITE 0320.AS (XS.0321.BO.AS)",
+      "nameEn": "Luminox ASIA LITE 0320.AS (XS.0321.BO.AS)",
+      "brand": "Luminox",
+      "category": "classic",
+      "price": 9500,
+      "stock": 15,
+      "image": "/images/LUMINOX/Luminox นาฬิกาข้อมือ ASIA LITE 0320.AS SERIES (หน้าปัด 44 mm) รุ่น XS.0321.BO.AS หน้า.webp",
+      "imageBack": "/images/LUMINOX/Luminox นาฬิกาข้อมือ ASIA LITE 0320.AS SERIES (หน้าปัด 44 mm) รุ่น XS.0321.BO.AS หลัง.webp"
+    },
+    {
+      "id": "2",
+      "name": "Luminox Bear Grylls Survival 3720 (XB.3729.NGU)",
+      "nameEn": "Luminox Bear Grylls Survival 3720 (XB.3729.NGU)",
+      "brand": "Luminox",
+      "category": "sport",
+      "price": 17500,
+      "stock": 8,
+      "image": "/images/LUMINOX/Luminox นาฬิกาข้อมือ BEAR GRYLLS SURVIVAL 3720 SEA SERIES รุ่น XB.3729.NGU หน้า.webp",
+      "imageBack": "/images/LUMINOX/Luminox นาฬิกาข้อมือ BEAR GRYLLS SURVIVAL 3720 SEA SERIES รุ่น XB.3729.NGU หลัง.webp"
+    },
+    {
+      "id": "3",
+      "name": "Luminox Sea Lion G Collection (X2.2055.1)",
+      "nameEn": "Luminox Sea Lion G Collection (X2.2055.1)",
+      "brand": "Luminox",
+      "category": "classic",
+      "price": 8900,
+      "stock": 20,
+      "image": "/images/LUMINOX/Luminox นาฬิกาข้อมือ G collection Sea Lion รุ่น X2.2055.1 หน้า.webp",
+      "imageBack": "/images/LUMINOX/Luminox นาฬิกาข้อมือ G collection Sea Lion รุ่น X2.2055.1 หลัง.webp"
+    },
+    {
+      "id": "4",
+      "name": "Luminox ICE-SAR 1080 Limited Edition (XL.1095)",
+      "nameEn": "Luminox ICE-SAR 1080 Limited Edition (XL.1095)",
+      "brand": "Luminox",
+      "category": "elegant",
+      "price": 21900,
+      "stock": 5,
+      "image": "/images/LUMINOX/Luminox นาฬิกาข้อมือ ICE-SAR 1080 SERIES Limited Edition รุ่น XL.1095 หน้า.webp",
+      "imageBack": "/images/LUMINOX/Luminox นาฬิกาข้อมือ ICE-SAR 1080 SERIES Limited Edition รุ่น XL.1095 หลัง.webp"
+    },
+    {
+      "id": "5",
+      "name": "Luminox Leatherback Sea Turtle Giant (XS.0325.GP)",
+      "nameEn": "Luminox Leatherback Sea Turtle Giant (XS.0325.GP)",
+      "brand": "Luminox",
+      "category": "sport",
+      "price": 11200,
+      "stock": 12,
+      "image": "/images/LUMINOX/Luminox นาฬิกาข้อมือ LEATHERBACK SEA TURTLE GIANT 0320 SERIES (หน้าปัด 44 mm) รุ่น XS.0325.GP หน้า.webp",
+      "imageBack": "/images/LUMINOX/Luminox นาฬิกาข้อมือ LEATHERBACK SEA TURTLE GIANT 0320 SERIES (หน้าปัด 44 mm) รุ่น XS.0325.GP หลัง.webp"
+    },
+    {
+      "id": "6",
+      "name": "Luminox Navy Seal 3500 (XS.3517.NM)",
+      "nameEn": "Luminox Navy Seal 3500 (XS.3517.NM)",
+      "brand": "Luminox",
+      "category": "sport",
+      "price": 14800,
+      "stock": 10,
+      "image": "/images/LUMINOX/Luminox นาฬิกาข้อมือ NAVY SEAL 3500 SERIES รุ่น XS.3517.NM หน้า.webp",
+      "imageBack": "/images/LUMINOX/Luminox นาฬิกาข้อมือ NAVY SEAL 3500 SERIES รุ่น XS.3517.NM หลัง.webp"
+    },
+    {
+      "id": "7",
+      "name": "Luminox Navy SEAL Foundation 3200 (XS.3228.NSF)",
+      "nameEn": "Luminox Navy SEAL Foundation 3200 (XS.3228.NSF)",
+      "brand": "Luminox",
+      "category": "elegant",
+      "price": 24500,
+      "stock": 7,
+      "image": "/images/LUMINOX/Luminox นาฬิกาข้อมือ Navy SEAL Foundation 3200 SERIES รุ่น XS.3228.NSF หน้า.webp",
+      "imageBack": "/images/LUMINOX/Luminox นาฬิกาข้อมือ Navy SEAL Foundation 3200 SERIES รุ่น XS.3228.NSF หลัง.webp"
+    },
+    {
+      "id": "8",
+      "name": "Luminox Pacific Diver 3120 (XS.3135)",
+      "nameEn": "Luminox Pacific Diver 3120 (XS.3135)",
+      "brand": "Luminox",
+      "category": "elegant",
+      "price": 22000,
+      "stock": 9,
+      "image": "/images/LUMINOX/Luminox นาฬิกาข้อมือ PACIFIC DIVER 3120 SERIES รุ่น XS.3135 หน้า.webp",
+      "imageBack": "/images/LUMINOX/Luminox นาฬิกาข้อมือ PACIFIC DIVER 3120 SERIES รุ่น XS.3135 หลัง.webp"
+    },
+    {
+      "id": "9",
+      "name": "Luminox Pacific Diver Ripple 39mm (XS.3122M)",
+      "nameEn": "Luminox Pacific Diver Ripple 39mm (XS.3122M)",
+      "brand": "Luminox",
+      "category": "elegant",
+      "price": 23400,
+      "stock": 6,
+      "image": "/images/LUMINOX/Luminox นาฬิกาข้อมือ PACIFIC DIVER RIPPLE 39MM 3120 SERIES รุ่น XS.3122M หน้า.webp",
+      "imageBack": "/images/LUMINOX/Luminox นาฬิกาข้อมือ PACIFIC DIVER RIPPLE 39MM 3120 SERIES รุ่น XS.3122M หลัง.webp"
+    },
+    {
+      "id": "10",
+      "name": "Luminox Red Bull AMPOL_26 Limited (XL.1970.ARB.N)",
+      "nameEn": "Luminox Red Bull AMPOL_26 Limited (XL.1970.ARB.N)",
+      "brand": "Luminox",
+      "category": "elegant",
+      "price": 29800,
+      "stock": 3,
+      "image": "/images/LUMINOX/Luminox นาฬิกาข้อมือ Red Bull AMPOL_26 รุ่น XL.1970.ARB.N LIMITED EDITION หน้า.webp",
+      "imageBack": "/images/LUMINOX/Luminox นาฬิกาข้อมือ Red Bull AMPOL_26 รุ่น XL.1970.ARB.N LIMITED EDITION หลัง.webp"
+    },
+    {
+      "id": "11",
+      "name": "Seiko Prospex Monster CMU 60th Anniversary",
+      "nameEn": "Seiko Prospex Monster CMU 60th Anniversary",
+      "brand": "Seiko",
+      "category": "elegant",
+      "price": 28500,
+      "stock": 4,
+      "image": "/images/SEIKO/SEIKO PROSPEX MONSTER CMU 60th Anniversary Limited Edition หน้า.webp",
+      "imageBack": "/images/SEIKO/SEIKO PROSPEX MONSTER CMU 60th Anniversary Limited Edition หลัง.webp"
+    },
+    {
+      "id": "12",
+      "name": "Seiko 5 Sports X HUF Limited Edition (SRPM09K)",
+      "nameEn": "Seiko 5 Sports X HUF Limited Edition (SRPM09K)",
+      "brand": "Seiko",
+      "category": "sport",
+      "price": 13900,
+      "stock": 14,
+      "image": "/images/SEIKO/SEIKO นาฬิกาข้อมือผู้ชาย 5 Sports X HUF Limited Edition รุ่น SRPM09K 39.4 มม. สีเขียว หน้า.webp",
+      "imageBack": "/images/SEIKO/SEIKO นาฬิกาข้อมือผู้ชาย 5 Sports X HUF Limited Edition รุ่น SRPM09K 39.4 มม. สีเขียว หลัง.webp"
+    },
+    {
+      "id": "13",
+      "name": "Seiko Prospex Speedtimer Solar Tokyo25 (SSC955P)",
+      "nameEn": "Seiko Prospex Speedtimer Solar Tokyo25 (SSC955P)",
+      "brand": "Seiko",
+      "category": "elegant",
+      "price": 31500,
+      "stock": 8,
+      "image": "/images/SEIKO/SEIKO นาฬิกาข้อมือผู้ชาย Prospex Speedtimer Solar Chronograph World Athletics Championships Tokyo25 Limited Edition รุ่น SSC955P ขนาด 39 มม. สีม่วง หน้า.webp",
+      "imageBack": "/images/SEIKO/SEIKO นาฬิกาข้อมือผู้ชาย Prospex Speedtimer Solar Chronograph World Athletics Championships Tokyo25 Limited Edition รุ่น SSC955P ขนาด 39 มม. สีม่วง หลัง.webp"
+    },
+    {
+      "id": "14",
+      "name": "Seiko 5 Sports Vintage Car Special (SRPL49K)",
+      "nameEn": "Seiko 5 Sports Vintage Car Special (SRPL49K)",
+      "brand": "Seiko",
+      "category": "classic",
+      "price": 14500,
+      "stock": 11,
+      "image": "/images/SEIKO/SEIKO นาฬิกาข้อมือผู้ชาย Seiko 5 Sports Vintage Car Special Edition รุ่น SRPL49K ขนาด 42.5 มม. สีเงิน หน้า.webp",
+      "imageBack": "/images/SEIKO/SEIKO นาฬิกาข้อมือผู้ชาย Seiko 5 Sports Vintage Car Special Edition รุ่น SRPL49K ขนาด 42.5 มม. สีเงิน หลัง.webp"
+    },
+    {
+      "id": "15",
+      "name": "Seiko 5 Sports x Poorboy Limited Edition (SRPM17K)",
+      "nameEn": "Seiko 5 Sports x Poorboy Limited Edition (SRPM17K)",
+      "brand": "Seiko",
+      "category": "sport",
+      "price": 15200,
+      "stock": 9,
+      "image": "/images/SEIKO/SEIKO นาฬิกาข้อมือผู้ชาย Seiko 5 Sports x Poorboy Limited Edition รุ่น SRPM17K 42.5 มม. สีเขียว หน้า.webp",
+      "imageBack": "/images/SEIKO/SEIKO นาฬิกาข้อมือผู้ชาย Seiko 5 Sports x Poorboy Limited Edition รุ่น SRPM17K 42.5 มม. สีเขียว หลัง.webp"
+    },
+    {
+      "id": "16",
+      "name": "Seiko Prospex Automatic Stainless Monster (SRPH75K)",
+      "nameEn": "Seiko Prospex Automatic Stainless Monster (SRPH75K)",
+      "brand": "Seiko",
+      "category": "sport",
+      "price": 19800,
+      "stock": 6,
+      "image": "/images/SEIKO/SEIKOนาฬิกาข้อมือผู้ชายอัตโนมัติ Prospex สแตนเลส รุ่น SRPH75K ขนาด 42.4 มม. หน้า.webp",
+      "imageBack": "/images/SEIKO/SEIKO นาฬิกาข้อมือผู้ชายอัตโนมัติ Prospex สแตนเลส รุ่น SRPH75K ขนาด 42.4 มม. หลัง.webp"
+    },
+    {
+      "id": "17",
+      "name": "Seiko Astron GPS Solar 145th Anniversary (HAB004J)",
+      "nameEn": "Seiko Astron GPS Solar 145th Anniversary (HAB004J)",
+      "brand": "Seiko",
+      "category": "elegant",
+      "price": 115000,
+      "stock": 2,
+      "image": "/images/SEIKO/SEIKO นาฬืกาข้อมือผู้ชาย Astron GPS Solar 145th Anniversary Limited Edition รุ่น HAB004J 43.4 มม. สีเงิน หน้า.webp",
+      "imageBack": "/images/SEIKO/SEIKO นาฬืกาข้อมือผู้ชาย Astron GPS Solar 145th Anniversary Limited Edition รุ่น HAB004J 43.4 มม. สีเงิน หลัง.webp"
+    },
+    {
+      "id": "18",
+      "name": "Seiko 5 Sports x POORBOY Limited Edition",
+      "nameEn": "Seiko 5 Sports x POORBOY Limited Edition",
+      "brand": "Seiko",
+      "category": "sport",
+      "price": 14800,
+      "stock": 7,
+      "image": "/images/SEIKO/Seiko 5 Sports x POORBOY Limited Edition หน้า.webp",
+      "imageBack": "/images/SEIKO/Seiko 5 Sports x POORBOY Limited Edition หลัง.webp"
+    },
+    {
+      "id": "19",
+      "name": "Seiko Monster Red The Fang Custom & Modify",
+      "nameEn": "Seiko Monster Red The Fang Custom & Modify",
+      "brand": "Seiko",
+      "category": "sport",
+      "price": 18900,
+      "stock": 5,
+      "image": "/images/SEIKO/Seiko Custom & Modify Monster เขี้ยวแดง Red The Fang หน้า.webp",
+      "imageBack": "/images/SEIKO/Seiko Custom & Modify Monster เขี้ยวแดง Red The Fang หลัง.webp"
+    },
+    {
+      "id": "20",
+      "name": "Seiko Prospex Divers 1965 Heritage Limited (HBC005J)",
+      "nameEn": "Seiko Prospex Divers 1965 Heritage Limited (HBC005J)",
+      "brand": "Seiko",
+      "category": "elegant",
+      "price": 49500,
+      "stock": 3,
+      "image": "/images/SEIKO/นาฬิกาข้อมือผู้ชาย Prospex Divers Watch 1965 Heritage Limited Edition 145th Anniversary รุ่น HBC005J ขนาด 40 มม. สีขาว หน้า.webp",
+      "imageBack": "/images/SEIKO/นาฬิกาข้อมือผู้ชาย Prospex Divers Watch 1965 Heritage Limited Edition 145th Anniversary รุ่น HBC005J ขนาด 40 มม. สีขาว หลัง.webp"
+    },
+    {
+      "id": "21",
+      "name": "TAG Heuer Aquaracer Professional 500 Date Automatic, 42 mm, Titanium",
+      "nameEn": "TAG Heuer Aquaracer Professional 500 Date Automatic, 42 mm, Titanium",
+      "brand": "TAG Heuer",
+      "category": "sport",
+      "price": 135000,
+      "stock": 5,
+      "image": "/images/TAG Heuer/TAG Heuer Aquaracer Professional 500 Date Automatic, 42 mm, Titanium Front.avif",
+      "imageBack": "/images/TAG Heuer/TAG Heuer Aquaracer Professional 500 Date Automatic, 42 mm, Titanium back.avif"
+    },
+    {
+      "id": "22",
+      "name": "TAG Heuer Formula 1 Chronograph",
+      "nameEn": "TAG Heuer Formula 1 Chronograph",
+      "brand": "TAG Heuer",
+      "category": "sport",
+      "price": 78000,
+      "stock": 10,
+      "image": "/images/TAG Heuer/TAG Heuer Formula 1 Chronograph  Front.avif",
+      "imageBack": "/images/TAG Heuer/TAG Heuer Formula 1 Chronograph Bank.avif"
+    },
+    {
+      "id": "23",
+      "name": "TAG Heuer Formula 1 Chronograph Quartz, 43 mm, Steel",
+      "nameEn": "TAG Heuer Formula 1 Chronograph Quartz, 43 mm, Steel",
+      "brand": "TAG Heuer",
+      "category": "sport",
+      "price": 85000,
+      "stock": 8,
+      "image": "/images/TAG Heuer/TAG Heuer Formula 1 Chronograph Quartz, 43 mm, Steel Front.avif",
+      "imageBack": "/images/TAG Heuer/TAG Heuer Formula 1 Chronograph Quartz, 43 mm, Steel Back.avif"
+    },
+    {
+      "id": "24",
+      "name": "TAG Heuer Formula 1 Chronograph x Red Bull Racing Quartz, 43 mm, Steel",
+      "nameEn": "TAG Heuer Formula 1 Chronograph x Red Bull Racing Quartz, 43 mm, Steel",
+      "brand": "TAG Heuer",
+      "category": "sport",
+      "price": 98000,
+      "stock": 6,
+      "image": "/images/TAG Heuer/TAG Heuer Formula 1 Chronograph x Red Bull Racing Quartz, 43 mm, Steel  Front.avif",
+      "imageBack": "/images/TAG Heuer/TAG Heuer Formula 1 Chronograph x Red Bull Racing Quartz, 43 mm, Steel back.avif"
+    },
+    {
+      "id": "25",
+      "name": "TAG Heuer Formula 1 Date Automatic, 43 mm, Steel",
+      "nameEn": "TAG Heuer Formula 1 Date Automatic, 43 mm, Steel",
+      "brand": "TAG Heuer",
+      "category": "classic",
+      "price": 110000,
+      "stock": 7,
+      "image": "/images/TAG Heuer/TAG Heuer Formula 1 Date Automatic, 43 mm, Steel Front.avif",
+      "imageBack": "/images/TAG Heuer/TAG Heuer Formula 1 Date Automatic, 43 mm, Steel Bacnk.avif"
+    },
+    {
+      "id": "26",
+      "name": "TAG Heuer Carrera Chronograph Automatic, 39 mm, Steel",
+      "nameEn": "TAG Heuer Carrera Chronograph Automatic, 39 mm, Steel",
+      "brand": "TAG Heuer",
+      "category": "sport",
+      "price": 195000,
+      "stock": 4,
+      "image": "/images/TAG Heuer/More/TAG Heuer Carrera Chronograph Automatic, 39 mm, Steel Front.avif",
+      "imageBack": "/images/TAG Heuer/More/TAG Heuer Carrera Chronograph Automatic, 39 mm, Steel Back.avif"
+    },
+    {
+      "id": "27",
+      "name": "TAG Heuer Carrera Chronograph x Porsche Automatic, 44 mm, Steel",
+      "nameEn": "TAG Heuer Carrera Chronograph x Porsche Automatic, 44 mm, Steel",
+      "brand": "TAG Heuer",
+      "category": "sport",
+      "price": 285000,
+      "stock": 3,
+      "image": "/images/TAG Heuer/More/TAG Heuer Carrera Chronograph x Porsche Automatic, 44 mm, Steel Front.avif",
+      "imageBack": "/images/TAG Heuer/More/TAG Heuer Carrera Chronograph x Porsche Automatic, 44 mm, Steel back.avif"
+    },
+    {
+      "id": "28",
+      "name": "TAG Heuer Carrera Date Automatic, 36 mm, Steel",
+      "nameEn": "TAG Heuer Carrera Date Automatic, 36 mm, Steel",
+      "brand": "TAG Heuer",
+      "category": "classic",
+      "price": 125000,
+      "stock": 6,
+      "image": "/images/TAG Heuer/More/TAG Heuer Carrera Date Automatic, 36 mm, Steel Front.avif",
+      "imageBack": "/images/TAG Heuer/More/TAG Heuer Carrera Date Automatic, 36 mm, Steel back.avif"
+    },
+    {
+      "id": "29",
+      "name": "TAG Heuer Formula 1 Chronograph Automatic, 44 mm, Steel",
+      "nameEn": "TAG Heuer Formula 1 Chronograph Automatic, 44 mm, Steel",
+      "brand": "TAG Heuer",
+      "category": "sport",
+      "price": 95000,
+      "stock": 5,
+      "image": "/images/TAG Heuer/More/TAG Heuer Formula 1 Chronograph Automatic, 44 mm, Steel Front.avif",
+      "imageBack": "/images/TAG Heuer/More/TAG Heuer Formula 1 Chronograph Automatic, 44 mm, Steel Back.avif"
+    },
+    {
+      "id": "30",
+      "name": "TAG Heuer Monaco Evergraph Automatic, 40 mm, Titanium",
+      "nameEn": "TAG Heuer Monaco Evergraph Automatic, 40 mm, Titanium",
+      "brand": "TAG Heuer",
+      "category": "elegant",
+      "price": 320000,
+      "stock": 2,
+      "image": "/images/TAG Heuer/More/TAG Heuer Monaco Evergraph Automatic, 40 mm, Titanium Front.avif",
+      "imageBack": "/images/TAG Heuer/More/TAG Heuer Monaco Evergraph Automatic, 40 mm, Titanium back.avif"
+    },
+    {
+      "id": "31",
+      "name": "Rolex Submariner Date Vintage Matte Dial Yellow Patina Ref.16800",
+      "nameEn": "Rolex Submariner Date Vintage Matte Dial Yellow Patina Ref.16800",
+      "brand": "Rolex",
+      "category": "sport",
+      "price": 345000,
+      "stock": 5,
+      "image": "/images/Rolex/Rolex Submariner Date Vintage Matte Dial Yellow Patina Ref.16800 หน้า.png",
+      "imageBack": "/images/Rolex/Rolex Submariner Date Vintage Matte Dial Yellow Patina Ref.16800 หลัง.png"
+    },
+    {
+      "id": "32",
+      "name": "Rolex 16233 Oyster Datejust Automatic Cal.3135 หลักเพชร",
+      "nameEn": "Rolex 16233 Oyster Datejust Automatic Cal.3135 Diamond Dial",
+      "brand": "Rolex",
+      "category": "elegant",
+      "price": 235000,
+      "stock": 4,
+      "image": "/images/Rolex/Rolex 16233 Oyster Datejust Automatic Cal.3135 หลักเพชร หน้า.png",
+      "imageBack": "/images/Rolex/Rolex 16233 Oyster Datejust Automatic Cal.3135 หลักเพชร หลัง.png"
+    },
+    {
+      "id": "33",
+      "name": "ROLEX Datejust 68273 Year 1987 Automatic Date Unisex Size 31 mm. (Pre-owned)",
+      "nameEn": "ROLEX Datejust 68273 Year 1987 Automatic Date Unisex Size 31 mm. (Pre-owned)",
+      "brand": "Rolex",
+      "category": "classic",
+      "price": 198000,
+      "stock": 3,
+      "image": "/images/Rolex/ROLEX Datejust 68273 Year 1987 Automatic Date Unisex Size 31 mm. (Pre-owned) หน้า.webp",
+      "imageBack": "/images/Rolex/ROLEX Datejust 68273 Year 1987 Automatic Date Unisex Size 31 mm. (Pre-owned) หลัง.webp"
+    },
+    {
+      "id": "34",
+      "name": "ROLEX GMT-Master II 16713 Year 1991 X Serie Automatic Date Size 40 mm. (Pre-owned)",
+      "nameEn": "ROLEX GMT-Master II 16713 Year 1991 X Serie Automatic Date Size 40 mm. (Pre-owned)",
+      "brand": "Rolex",
+      "category": "sport",
+      "price": 428000,
+      "stock": 2,
+      "image": "/images/Rolex/ROLEX GMT-Master II 16713 Year 1991 X Serie Automatic Date Size 40 mm. (Pre-owned) หน้า.webp",
+      "imageBack": "/images/Rolex/ROLEX GMT-Master II 16713 Year 1991 X Serie Automatic Date Size 40 mm. (Pre-owned) หลัง.webp"
+    },
+    {
+      "id": "35",
+      "name": "Rolex Cosmograph Daytona Oyster, 40 มม., ทองคำ",
+      "nameEn": "Rolex Cosmograph Daytona Oyster, 40 mm, Yellow Gold",
+      "brand": "Rolex",
+      "category": "sport",
+      "price": 1350000,
+      "stock": 3,
+      "image": "/images/Rolex/Rolex Cosmograph Daytona Oyster, 40 มม., ทองคำ.png",
+      "imageBack": "/images/Rolex/Rolex Cosmograph Daytona Oyster, 40 มม., ทองคำ.png"
+    },
+    {
+      "id": "36",
+      "name": "Rolex Cosmograph Daytona Oyster, 40 มม., ทองคำและเพชร",
+      "nameEn": "Rolex Cosmograph Daytona Oyster, 40 mm, Yellow Gold and Diamonds",
+      "brand": "Rolex",
+      "category": "elegant",
+      "price": 1650000,
+      "stock": 1,
+      "image": "/images/Rolex/Rolex Cosmograph Daytona Oyster, 40 มม., ทองคำและเพชร.png",
+      "imageBack": "/images/Rolex/Rolex Cosmograph Daytona Oyster, 40 มม., ทองคำและเพชร.png"
+    },
+    {
+      "id": "37",
+      "name": "Rolex Cosmograph Daytona Oyster, 40 มม., แพลทินัม",
+      "nameEn": "Rolex Cosmograph Daytona Oyster, 40 mm, Platinum",
+      "brand": "Rolex",
+      "category": "sport",
+      "price": 2200000,
+      "stock": 2,
+      "image": "/images/Rolex/Rolex Cosmograph Daytona Oyster, 40 มม., แพลทินัม.png",
+      "imageBack": "/images/Rolex/Rolex Cosmograph Daytona Oyster, 40 มม., แพลทินัม.png"
+    },
+    {
+      "id": "38",
+      "name": "Rolex Day-Date 40 Oyster, 40 มม., แพลทินัม",
+      "nameEn": "Rolex Day-Date 40 Oyster, 40 mm, Platinum",
+      "brand": "Rolex",
+      "category": "elegant",
+      "price": 1850000,
+      "stock": 3,
+      "image": "/images/Rolex/Rolex Day-Date 40 Oyster, 40 มม., แพลทินัม.png",
+      "imageBack": "/images/Rolex/Rolex Day-Date 40 Oyster, 40 มม., แพลทินัม.png"
+    },
+    {
+      "id": "39",
+      "name": "Rolex Lady-Datejust Oyster, 28 มม., Oystersteel และทองคำ",
+      "nameEn": "Rolex Lady-Datejust Oyster, 28 mm, Oystersteel andYellow Gold",
+      "brand": "Rolex",
+      "category": "classic",
+      "price": 380000,
+      "stock": 4,
+      "image": "/images/Rolex/Rolex Lady-Datejust Oyster, 28 มม., Oystersteel และทองคำ.png",
+      "imageBack": "/images/Rolex/Rolex Lady-Datejust Oyster, 28 มม., Oystersteel และทองคำ.png"
+    },
+    {
+      "id": "40",
+      "name": "Rolex Sky-Dweller Oyster, 42 มม., เอเวอร์โรสโกลด์",
+      "nameEn": "Rolex Sky-Dweller Oyster, 42 mm, Everose Gold",
+      "brand": "Rolex",
+      "category": "elegant",
+      "price": 1550000,
+      "stock": 2,
+      "image": "/images/Rolex/Rolex Sky-Dweller Oyster, 42 มม., เอเวอร์โรสโกลด์.png",
+      "imageBack": "/images/Rolex/Rolex Sky-Dweller Oyster, 42 มม., เอเวอร์โรสโกลด์.png"
+    }
+  ],
+  "orders": [],
+  "pendingWatches": [],
+  "blacklist": [
+    {
+      "email": "bad@mail.com",
+      "nationalId": "1-1111-11111-11-1",
+      "reason": "มีประวัติฉ้อโกงบัตรประชาชน"
+    },
+    {
+      "email": "fraud@watch.com",
+      "nationalId": "2-2222-22222-22-2",
+      "reason": "มีประวัติส่งนาฬิกาปลอมเลียนแบบ"
+    }
+  ],
+  "logs": [
+    {
+      "timestamp": "2026-07-18T15:54:07.684Z",
+      "message": "[AUTH]: ผู้ใช้ blacklisted ออกจากระบบ"
+    },
+    {
+      "timestamp": "2026-07-18T15:58:08.598Z",
+      "message": "[AUTH]: ผู้ใช้เข้าสู่ระบบสำเร็จในบทบาท USER (buyer)"
+    }
+  ],
+  "reviews": []
+}

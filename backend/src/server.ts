@@ -633,6 +633,10 @@ app.get('/analysis_design.md', (req, res) => {
   res.sendFile(path.join(__dirname, '..', '..', 'analysis_design.md'));
 });
 
+app.get('/workshop4_assessment.md', (req, res) => {
+  res.sendFile(path.join(__dirname, '..', '..', 'workshop4_assessment.md'));
+});
+
 app.get('/README.md', (req, res) => {
   res.sendFile(path.join(__dirname, '..', '..', 'README.md'));
 });
@@ -646,10 +650,10 @@ app.get('*', (req, res) => {
 });
 
 // Initialize database tables, then start listening
-db.initDb().then(() => {
+db.initDb().catch(err => {
+  console.warn('initDb failed, switching to Local JSON fallback:', err?.message || err);
+}).finally(() => {
   app.listen(PORT, () => {
     console.log(`WatchMart backend server running on port ${PORT}`);
   });
-}).catch(err => {
-  console.error("Failed to initialize database:", err);
 });

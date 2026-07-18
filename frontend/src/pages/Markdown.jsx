@@ -125,6 +125,9 @@ export default function MarkdownViewer() {
             <button className={`btn ${fileName === 'analysis_design.md' ? 'btn-primary' : 'btn-secondary'}`} onClick={() => loadDoc('analysis_design.md')}>
               {t('analysisDesignDocBtn')}
             </button>
+            <button className={`btn ${fileName === 'workshop4_assessment.md' ? 'btn-primary' : 'btn-secondary'}`} onClick={() => loadDoc('workshop4_assessment.md')}>
+              📄 Workshop #4
+            </button>
             <button className={`btn ${fileName === 'README.md' ? 'btn-primary' : 'btn-secondary'}`} onClick={() => loadDoc('README.md')}>
               {t('readmeDocBtn')}
             </button>

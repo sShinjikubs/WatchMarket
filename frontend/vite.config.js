@@ -14,6 +14,10 @@ export default defineConfig({
         target: 'http://localhost:3000',
         changeOrigin: true,
       },
+      '/workshop4_assessment.md': {
+        target: 'http://localhost:3000',
+        changeOrigin: true,
+      },
       '/README.md': {
         target: 'http://localhost:3000',
         changeOrigin: true,

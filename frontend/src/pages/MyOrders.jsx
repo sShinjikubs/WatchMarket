@@ -226,6 +226,43 @@ export default function MyOrders() {
                   </div>
                   {getRemainingTimeText(ord.date) !== t('paymentExpired') ? (
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', marginTop: '0.5rem' }}>
+                      {ord.payment === 'bank_transfer' && (
+                        <div style={{ 
+                          padding: '1rem', 
+                          background: 'rgba(255,255,255,0.02)', 
+                          border: '1px solid var(--glass-border)', 
+                          borderRadius: '10px', 
+                          marginBottom: '0.8rem' 
+                        }}>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '0.8rem' }}>
+                            <div style={{ 
+                              width: '40px', 
+                              height: '40px', 
+                              background: '#138c45', 
+                              borderRadius: '8px', 
+                              display: 'flex', 
+                              alignItems: 'center', 
+                              justifyContent: 'center',
+                              fontWeight: 'bold',
+                              color: 'white',
+                              fontSize: '0.7rem',
+                              fontFamily: "'Oswald', sans-serif",
+                              flexShrink: 0
+                            }}>
+                              K-BANK
+                            </div>
+                            <div style={{ fontSize: '0.82rem' }}>
+                              <div style={{ fontWeight: 600, color: 'var(--accent-gold)' }}>ธนาคารกสิกรไทย (Kasikornbank)</div>
+                              <div style={{ fontWeight: 'bold', letterSpacing: '1px', margin: '0.1rem 0', color: '#f5f5f7' }}>
+                                012-3-45678-9
+                              </div>
+                              <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
+                                ชื่อบัญชี: บจก. วอทช์มาร์ท จำกัด
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      )}
                       <input
                         type="file"
                         accept="image/*"
