@@ -12,7 +12,7 @@ const HERO_SLIDES = [
   {
     title: "TAG HEUER CARRERA",
     subtitle: "X PORSCHE AUTOMATIC",
-    desc: "ดีไซน์สปอร์ตหรูหราสะท้อนประวัติศาสตร์ความเร็ว คอนเซปต์ระดับเวิลด์คลาสในหน้าปัดกลไกโครโนกราฟคาลิเบอร์สุดหรู",
+    desc: "Luxury sport design reflecting racing history, a world-class concept in a premium chronograph dial.",
     image: "/images/TAG Heuer/More/TAG Heuer Carrera Chronograph x Porsche Automatic, 44 mm, Steel Front.avif",
     bg: "linear-gradient(135deg, #181d2c 0%, #151515 100%)",
     accent: "var(--accent-gold)",
@@ -21,7 +21,7 @@ const HERO_SLIDES = [
   {
     title: "SEIKO PROSPEX",
     subtitle: "MONSTER CMU 60TH ANNIVERSARY",
-    desc: "รุ่นลิมิเต็ดเอดิชันฉลองครบรอบ 60 ปี รังสรรค์ความแข็งแกร่งด้วยกลไกจักรกลและวัสดุสแตนเลสสตีลชั้นเลิศ",
+    desc: "Limited edition celebrating the 60th anniversary, crafted with strength using high-quality mechanics and stainless steel.",
     image: "/images/SEIKO/SEIKO PROSPEX MONSTER CMU 60th Anniversary Limited Edition หน้า.webp",
     bg: "linear-gradient(135deg, #112233 0%, #0a111a 100%)",
     accent: "#ff6b6b",
@@ -30,7 +30,7 @@ const HERO_SLIDES = [
   {
     title: "LUMINOX NAVY SEAL",
     subtitle: "BEAR GRYLLS SURVIVAL",
-    desc: "นาฬิกายอดมนุษย์ผู้รอดชีวิต ดำน้ำลึก 200 เมตร พร้อมเทคโนโลยีหลอดแก๊สเรืองแสงทริเทียมสว่างไร้ขีดจำกัดนาน 25 ปี",
+    desc: "The ultimate survivor watch, water-resistant to 200m, featuring tritium gas tubes providing illumination for up to 25 years.",
     image: "/images/LUMINOX/Luminox นาฬิกาข้อมือ BEAR GRYLLS SURVIVAL 3720 SEA SERIES รุ่น XB.3729.NGU หน้า.webp",
     bg: "linear-gradient(135deg, #1a221f 0%, #111513 100%)",
     accent: "#4ade80",
@@ -158,9 +158,9 @@ export default function Storefront() {
     if (product.stock <= 0) return;
     const ok = addToCart(product, 1);
     if (ok) {
-      showNotif(`เพิ่ม "${product.name}" ลงตะกร้าแล้ว`);
+      showNotif(`Added "${product.name}" to cart`);
     } else {
-      showNotif(`สินค้า "${product.name}" ในคลังหมดแล้ว!`, false);
+      showNotif(`Product "${product.name}" is out of stock!`, false);
     }
   };
 
@@ -179,7 +179,7 @@ export default function Storefront() {
       <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', margin: '0.3rem 0 0 0', lineHeight: 1 }}>
         <div style={{ display: 'inline-flex' }}>{stars}</div>
         <span style={{ color: 'var(--text-light)', fontSize: '0.78rem', fontWeight: 'bold' }}>{roundedRating}</span>
-        <span style={{ color: 'var(--text-muted)', fontSize: '0.72rem' }}>({count > 0 ? `${count} รีวิว` : '0 รีวิว'})</span>
+        <span style={{ color: 'var(--text-muted)', fontSize: '0.72rem' }}>({count > 0 ? `${count} reviews` : '0 reviews'})</span>
       </div>
     );
   };
@@ -298,7 +298,7 @@ export default function Storefront() {
                 if (matched) navigate(`/product/${matched.id}`);
               }}
             >
-              ดูข้อมูลสินค้าข้อมือ
+              View Details
             </button>
           </div>
 
@@ -417,7 +417,7 @@ export default function Storefront() {
                   <Icons.Star style={{ color: 'var(--accent-gold)' }} />
                   <span>{t('recommended')}</span>
                 </h2>
-                <p style={{ color: 'var(--text-muted)', fontSize: '0.85rem', marginTop: '0.3rem' }}>นาฬิกาหรูคัดสรรระดับพรีเมียมที่เป็นที่นิยมที่สุด</p>
+                <p style={{ color: 'var(--text-muted)', fontSize: '0.85rem', marginTop: '0.3rem' }}>Our most popular premium curated luxury watches</p>
               </div>
             </div>
             <div className="products-grid">
@@ -428,8 +428,8 @@ export default function Storefront() {
                       onClick={(e) => {
                         e.stopPropagation();
                         if (!user) {
-                          navigate('/register');
-                          return;
+                           navigate('/register');
+                           return;
                         }
                         toggleWishlist(p);
                       }}
@@ -481,7 +481,7 @@ export default function Storefront() {
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '1rem' }}>
                       <span className="product-card-price">฿ {p.price.toLocaleString()}</span>
                       <span className="product-card-stock" style={{ color: p.stock === 0 ? '#ff6b6b' : p.stock <= 3 ? '#ff922b' : '#51cf66' }}>
-                        {p.stock === 0 ? 'หมดสต็อก' : `สต็อก: ${p.stock} เรือน`}
+                        {p.stock === 0 ? 'Out of Stock' : `Stock: ${p.stock} units`}
                       </span>
                     </div>
                     <button
@@ -490,7 +490,7 @@ export default function Storefront() {
                       disabled={p.stock === 0}
                       onClick={(e) => { e.stopPropagation(); handleAddToCart(p); }}
                     >
-                      {p.stock === 0 ? 'สินค้าหมดชั่วคราว' : 'ใส่ตะกร้าสินค้า'}
+                      {p.stock === 0 ? 'Out of Stock' : 'Add to Cart'}
                     </button>
                   </div>
                 </div>

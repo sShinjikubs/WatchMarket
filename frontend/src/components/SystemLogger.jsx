@@ -37,7 +37,7 @@ export default function SystemLogger({ className }) {
       <ul className="log-list" ref={listRef}>
         {logs.length === 0 && (
           <li className="log-entry" style={{ color: 'var(--text-muted)' }}>
-            ไม่มี log ในระบบ
+            No system logs found
           </li>
         )}
         {logs.map((log, i) => (
