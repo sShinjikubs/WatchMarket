@@ -27,11 +27,67 @@ const pool = new Pool({
   }
 });
 
+let useFallback = false;
+
+const JSON_DB_FILE = path.join(__dirname, '..', 'db.json');
+
+interface JSONSchema {
+  users: User[];
+  profiles: Record<string, Profile>;
+  products: Product[];
+  orders: Order[];
+  pendingWatches: PendingWatch[];
+  blacklist: BlacklistEntry[];
+  logs: LogEntry[];
+  reviews: any[];
+}
+
+function readJsonDb(): JSONSchema {
+  if (!fs.existsSync(JSON_DB_FILE)) {
+    const initialData: JSONSchema = {
+      users: defaultUsers,
+      profiles: {},
+      products: defaultProducts,
+      orders: [],
+      pendingWatches: [],
+      blacklist: defaultBlacklist,
+      logs: [],
+      reviews: []
+    };
+    fs.writeFileSync(JSON_DB_FILE, JSON.stringify(initialData, null, 2), 'utf-8');
+    return initialData;
+  }
+  try {
+    const raw = fs.readFileSync(JSON_DB_FILE, 'utf-8');
+    return JSON.parse(raw);
+  } catch (err) {
+    return {
+      users: defaultUsers,
+      profiles: {},
+      products: defaultProducts,
+      orders: [],
+      pendingWatches: [],
+      blacklist: defaultBlacklist,
+      logs: [],
+      reviews: []
+    };
+  }
+}
+
+function writeJsonDb(data: JSONSchema) {
+  try {
+    fs.writeFileSync(JSON_DB_FILE, JSON.stringify(data, null, 2), 'utf-8');
+  } catch (err) {
+    console.error("Failed to write to JSON DB", err);
+  }
+}
+
 // Seeds
 const defaultProducts: Product[] = [
   {
     id: "1",
     name: "Luminox ASIA LITE 0320.AS (XS.0321.BO.AS)",
+    nameEn: "Luminox ASIA LITE 0320.AS (XS.0321.BO.AS)",
     brand: "Luminox",
     category: "classic",
     price: 9500,
@@ -42,6 +98,7 @@ const defaultProducts: Product[] = [
   {
     id: "2",
     name: "Luminox Bear Grylls Survival 3720 (XB.3729.NGU)",
+    nameEn: "Luminox Bear Grylls Survival 3720 (XB.3729.NGU)",
     brand: "Luminox",
     category: "sport",
     price: 17500,
@@ -52,6 +109,7 @@ const defaultProducts: Product[] = [
   {
     id: "3",
     name: "Luminox Sea Lion G Collection (X2.2055.1)",
+    nameEn: "Luminox Sea Lion G Collection (X2.2055.1)",
     brand: "Luminox",
     category: "classic",
     price: 8900,
@@ -62,6 +120,7 @@ const defaultProducts: Product[] = [
   {
     id: "4",
     name: "Luminox ICE-SAR 1080 Limited Edition (XL.1095)",
+    nameEn: "Luminox ICE-SAR 1080 Limited Edition (XL.1095)",
     brand: "Luminox",
     category: "elegant",
     price: 21900,
@@ -72,6 +131,7 @@ const defaultProducts: Product[] = [
   {
     id: "5",
     name: "Luminox Leatherback Sea Turtle Giant (XS.0325.GP)",
+    nameEn: "Luminox Leatherback Sea Turtle Giant (XS.0325.GP)",
     brand: "Luminox",
     category: "sport",
     price: 11200,
@@ -82,6 +142,7 @@ const defaultProducts: Product[] = [
   {
     id: "6",
     name: "Luminox Navy Seal 3500 (XS.3517.NM)",
+    nameEn: "Luminox Navy Seal 3500 (XS.3517.NM)",
     brand: "Luminox",
     category: "sport",
     price: 14800,
@@ -92,6 +153,7 @@ const defaultProducts: Product[] = [
   {
     id: "7",
     name: "Luminox Navy SEAL Foundation 3200 (XS.3228.NSF)",
+    nameEn: "Luminox Navy SEAL Foundation 3200 (XS.3228.NSF)",
     brand: "Luminox",
     category: "elegant",
     price: 24500,
@@ -102,6 +164,7 @@ const defaultProducts: Product[] = [
   {
     id: "8",
     name: "Luminox Pacific Diver 3120 (XS.3135)",
+    nameEn: "Luminox Pacific Diver 3120 (XS.3135)",
     brand: "Luminox",
     category: "elegant",
     price: 22000,
@@ -112,6 +175,7 @@ const defaultProducts: Product[] = [
   {
     id: "9",
     name: "Luminox Pacific Diver Ripple 39mm (XS.3122M)",
+    nameEn: "Luminox Pacific Diver Ripple 39mm (XS.3122M)",
     brand: "Luminox",
     category: "elegant",
     price: 23400,
@@ -122,6 +186,7 @@ const defaultProducts: Product[] = [
   {
     id: "10",
     name: "Luminox Red Bull AMPOL_26 Limited (XL.1970.ARB.N)",
+    nameEn: "Luminox Red Bull AMPOL_26 Limited (XL.1970.ARB.N)",
     brand: "Luminox",
     category: "elegant",
     price: 29800,
@@ -132,6 +197,7 @@ const defaultProducts: Product[] = [
   {
     id: "11",
     name: "Seiko Prospex Monster CMU 60th Anniversary",
+    nameEn: "Seiko Prospex Monster CMU 60th Anniversary",
     brand: "Seiko",
     category: "elegant",
     price: 28500,
@@ -142,6 +208,7 @@ const defaultProducts: Product[] = [
   {
     id: "12",
     name: "Seiko 5 Sports X HUF Limited Edition (SRPM09K)",
+    nameEn: "Seiko 5 Sports X HUF Limited Edition (SRPM09K)",
     brand: "Seiko",
     category: "sport",
     price: 13900,
@@ -152,6 +219,7 @@ const defaultProducts: Product[] = [
   {
     id: "13",
     name: "Seiko Prospex Speedtimer Solar Tokyo25 (SSC955P)",
+    nameEn: "Seiko Prospex Speedtimer Solar Tokyo25 (SSC955P)",
     brand: "Seiko",
     category: "elegant",
     price: 31500,
@@ -162,6 +230,7 @@ const defaultProducts: Product[] = [
   {
     id: "14",
     name: "Seiko 5 Sports Vintage Car Special (SRPL49K)",
+    nameEn: "Seiko 5 Sports Vintage Car Special (SRPL49K)",
     brand: "Seiko",
     category: "classic",
     price: 14500,
@@ -172,6 +241,7 @@ const defaultProducts: Product[] = [
   {
     id: "15",
     name: "Seiko 5 Sports x Poorboy Limited Edition (SRPM17K)",
+    nameEn: "Seiko 5 Sports x Poorboy Limited Edition (SRPM17K)",
     brand: "Seiko",
     category: "sport",
     price: 15200,
@@ -182,6 +252,7 @@ const defaultProducts: Product[] = [
   {
     id: "16",
     name: "Seiko Prospex Automatic Stainless Monster (SRPH75K)",
+    nameEn: "Seiko Prospex Automatic Stainless Monster (SRPH75K)",
     brand: "Seiko",
     category: "sport",
     price: 19800,
@@ -192,6 +263,7 @@ const defaultProducts: Product[] = [
   {
     id: "17",
     name: "Seiko Astron GPS Solar 145th Anniversary (HAB004J)",
+    nameEn: "Seiko Astron GPS Solar 145th Anniversary (HAB004J)",
     brand: "Seiko",
     category: "elegant",
     price: 115000,
@@ -202,6 +274,7 @@ const defaultProducts: Product[] = [
   {
     id: "18",
     name: "Seiko 5 Sports x POORBOY Limited Edition",
+    nameEn: "Seiko 5 Sports x POORBOY Limited Edition",
     brand: "Seiko",
     category: "sport",
     price: 14800,
@@ -212,6 +285,7 @@ const defaultProducts: Product[] = [
   {
     id: "19",
     name: "Seiko Monster Red The Fang Custom & Modify",
+    nameEn: "Seiko Monster Red The Fang Custom & Modify",
     brand: "Seiko",
     category: "sport",
     price: 18900,
@@ -222,6 +296,7 @@ const defaultProducts: Product[] = [
   {
     id: "20",
     name: "Seiko Prospex Divers 1965 Heritage Limited (HBC005J)",
+    nameEn: "Seiko Prospex Divers 1965 Heritage Limited (HBC005J)",
     brand: "Seiko",
     category: "elegant",
     price: 49500,
@@ -232,6 +307,7 @@ const defaultProducts: Product[] = [
   {
     id: "21",
     name: "TAG Heuer Aquaracer Professional 500 Date Automatic, 42 mm, Titanium",
+    nameEn: "TAG Heuer Aquaracer Professional 500 Date Automatic, 42 mm, Titanium",
     brand: "TAG Heuer",
     category: "sport",
     price: 135000,
@@ -242,6 +318,7 @@ const defaultProducts: Product[] = [
   {
     id: "22",
     name: "TAG Heuer Formula 1 Chronograph",
+    nameEn: "TAG Heuer Formula 1 Chronograph",
     brand: "TAG Heuer",
     category: "sport",
     price: 78000,
@@ -252,6 +329,7 @@ const defaultProducts: Product[] = [
   {
     id: "23",
     name: "TAG Heuer Formula 1 Chronograph Quartz, 43 mm, Steel",
+    nameEn: "TAG Heuer Formula 1 Chronograph Quartz, 43 mm, Steel",
     brand: "TAG Heuer",
     category: "sport",
     price: 85000,
@@ -262,6 +340,7 @@ const defaultProducts: Product[] = [
   {
     id: "24",
     name: "TAG Heuer Formula 1 Chronograph x Red Bull Racing Quartz, 43 mm, Steel",
+    nameEn: "TAG Heuer Formula 1 Chronograph x Red Bull Racing Quartz, 43 mm, Steel",
     brand: "TAG Heuer",
     category: "sport",
     price: 98000,
@@ -272,6 +351,7 @@ const defaultProducts: Product[] = [
   {
     id: "25",
     name: "TAG Heuer Formula 1 Date Automatic, 43 mm, Steel",
+    nameEn: "TAG Heuer Formula 1 Date Automatic, 43 mm, Steel",
     brand: "TAG Heuer",
     category: "classic",
     price: 110000,
@@ -282,6 +362,7 @@ const defaultProducts: Product[] = [
   {
     id: "26",
     name: "TAG Heuer Carrera Chronograph Automatic, 39 mm, Steel",
+    nameEn: "TAG Heuer Carrera Chronograph Automatic, 39 mm, Steel",
     brand: "TAG Heuer",
     category: "sport",
     price: 195000,
@@ -292,6 +373,7 @@ const defaultProducts: Product[] = [
   {
     id: "27",
     name: "TAG Heuer Carrera Chronograph x Porsche Automatic, 44 mm, Steel",
+    nameEn: "TAG Heuer Carrera Chronograph x Porsche Automatic, 44 mm, Steel",
     brand: "TAG Heuer",
     category: "sport",
     price: 285000,
@@ -302,6 +384,7 @@ const defaultProducts: Product[] = [
   {
     id: "28",
     name: "TAG Heuer Carrera Date Automatic, 36 mm, Steel",
+    nameEn: "TAG Heuer Carrera Date Automatic, 36 mm, Steel",
     brand: "TAG Heuer",
     category: "classic",
     price: 125000,
@@ -312,6 +395,7 @@ const defaultProducts: Product[] = [
   {
     id: "29",
     name: "TAG Heuer Formula 1 Chronograph Automatic, 44 mm, Steel",
+    nameEn: "TAG Heuer Formula 1 Chronograph Automatic, 44 mm, Steel",
     brand: "TAG Heuer",
     category: "sport",
     price: 95000,
@@ -322,6 +406,7 @@ const defaultProducts: Product[] = [
   {
     id: "30",
     name: "TAG Heuer Monaco Evergraph Automatic, 40 mm, Titanium",
+    nameEn: "TAG Heuer Monaco Evergraph Automatic, 40 mm, Titanium",
     brand: "TAG Heuer",
     category: "elegant",
     price: 320000,
@@ -332,6 +417,7 @@ const defaultProducts: Product[] = [
   {
     id: "31",
     name: "Rolex Submariner Date Vintage Matte Dial Yellow Patina Ref.16800",
+    nameEn: "Rolex Submariner Date Vintage Matte Dial Yellow Patina Ref.16800",
     brand: "Rolex",
     category: "sport",
     price: 345000,
@@ -342,6 +428,7 @@ const defaultProducts: Product[] = [
   {
     id: "32",
     name: "Rolex 16233 Oyster Datejust Automatic Cal.3135 หลักเพชร",
+    nameEn: "Rolex 16233 Oyster Datejust Automatic Cal.3135 Diamond Dial",
     brand: "Rolex",
     category: "elegant",
     price: 235000,
@@ -352,6 +439,7 @@ const defaultProducts: Product[] = [
   {
     id: "33",
     name: "ROLEX Datejust 68273 Year 1987 Automatic Date Unisex Size 31 mm. (Pre-owned)",
+    nameEn: "ROLEX Datejust 68273 Year 1987 Automatic Date Unisex Size 31 mm. (Pre-owned)",
     brand: "Rolex",
     category: "classic",
     price: 198000,
@@ -362,6 +450,7 @@ const defaultProducts: Product[] = [
   {
     id: "34",
     name: "ROLEX GMT-Master II 16713 Year 1991 X Serie Automatic Date Size 40 mm. (Pre-owned)",
+    nameEn: "ROLEX GMT-Master II 16713 Year 1991 X Serie Automatic Date Size 40 mm. (Pre-owned)",
     brand: "Rolex",
     category: "sport",
     price: 428000,
@@ -372,6 +461,7 @@ const defaultProducts: Product[] = [
   {
     id: "35",
     name: "Rolex Cosmograph Daytona Oyster, 40 มม., ทองคำ",
+    nameEn: "Rolex Cosmograph Daytona Oyster, 40 mm, Yellow Gold",
     brand: "Rolex",
     category: "sport",
     price: 1350000,
@@ -382,6 +472,7 @@ const defaultProducts: Product[] = [
   {
     id: "36",
     name: "Rolex Cosmograph Daytona Oyster, 40 มม., ทองคำและเพชร",
+    nameEn: "Rolex Cosmograph Daytona Oyster, 40 mm, Yellow Gold and Diamonds",
     brand: "Rolex",
     category: "elegant",
     price: 1650000,
@@ -392,6 +483,7 @@ const defaultProducts: Product[] = [
   {
     id: "37",
     name: "Rolex Cosmograph Daytona Oyster, 40 มม., แพลทินัม",
+    nameEn: "Rolex Cosmograph Daytona Oyster, 40 mm, Platinum",
     brand: "Rolex",
     category: "sport",
     price: 2200000,
@@ -402,6 +494,7 @@ const defaultProducts: Product[] = [
   {
     id: "38",
     name: "Rolex Day-Date 40 Oyster, 40 มม., แพลทินัม",
+    nameEn: "Rolex Day-Date 40 Oyster, 40 mm, Platinum",
     brand: "Rolex",
     category: "elegant",
     price: 1850000,
@@ -412,6 +505,7 @@ const defaultProducts: Product[] = [
   {
     id: "39",
     name: "Rolex Lady-Datejust Oyster, 28 มม., Oystersteel และทองคำ",
+    nameEn: "Rolex Lady-Datejust Oyster, 28 mm, Oystersteel andYellow Gold",
     brand: "Rolex",
     category: "classic",
     price: 380000,
@@ -422,6 +516,7 @@ const defaultProducts: Product[] = [
   {
     id: "40",
     name: "Rolex Sky-Dweller Oyster, 42 มม., เอเวอร์โรสโกลด์",
+    nameEn: "Rolex Sky-Dweller Oyster, 42 mm, Everose Gold",
     brand: "Rolex",
     category: "elegant",
     price: 1550000,
@@ -445,7 +540,15 @@ const defaultUsers: User[] = [
 
 export const db = {
   initDb: async (): Promise<void> => {
-    const client = await pool.connect();
+    let client;
+    try {
+      client = await pool.connect();
+    } catch (err: any) {
+      console.warn('Postgres connection failed, falling back to Local JSON Database (db.json):', err.message);
+      useFallback = true;
+      readJsonDb();
+      return;
+    }
     try {
       // 1. Users Table
       await client.query(`
@@ -475,6 +578,7 @@ export const db = {
         CREATE TABLE IF NOT EXISTS products (
           id VARCHAR(50) PRIMARY KEY,
           name VARCHAR(100) NOT NULL,
+          name_en VARCHAR(100),
           brand VARCHAR(50) NOT NULL,
           category VARCHAR(50) NOT NULL,
           price NUMERIC(12, 2) NOT NULL,
@@ -488,6 +592,7 @@ export const db = {
       `);
 
       // Run migrates to make sure columns exist
+      await client.query('ALTER TABLE products ADD COLUMN IF NOT EXISTS name_en VARCHAR(100)');
       await client.query('ALTER TABLE products ADD COLUMN IF NOT EXISTS image VARCHAR(255)');
       await client.query('ALTER TABLE products ADD COLUMN IF NOT EXISTS image_back VARCHAR(255)');
 
@@ -568,10 +673,10 @@ export const db = {
       if (parseInt(prodCheck.rows[0].count) < defaultProducts.length) {
         for (const p of defaultProducts) {
           await client.query(
-            `INSERT INTO products (id, name, brand, category, price, stock, color, stroke_color, is_gold_face, image, image_back)
-             VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
+            `INSERT INTO products (id, name, name_en, brand, category, price, stock, color, stroke_color, is_gold_face, image, image_back)
+           VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
              ON CONFLICT (id) DO NOTHING`,
-            [p.id, p.name, p.brand, p.category, p.price, p.stock, p.color || '', p.strokeColor || '', p.isGoldFace || false, p.image || '', p.imageBack || '']
+            [p.id, p.name, p.nameEn || '', p.brand, p.category, p.price, p.stock, p.color || '', p.strokeColor || '', p.isGoldFace || false, p.image || '', p.imageBack || '']
           );
         }
         console.log('Seeded watch database with LUMINOX, SEIKO & TAG Heuer collections!');
@@ -585,22 +690,38 @@ export const db = {
       }
 
       console.log('PostgreSQL Database connected & tables initialized.');
-    } catch (err) {
-      console.error('Error during database initialization:', err);
+    } catch (err: any) {
+      console.warn('Postgres query failed during init, switching to Local JSON fallback:', err?.message || err);
+      useFallback = true;
+      readJsonDb();
     } finally {
       client.release();
     }
   },
 
   getProducts: async (): Promise<Product[]> => {
+    if (useFallback) {
+      const data = readJsonDb();
+      return data.products.map(p => {
+        const prodReviews = data.reviews.filter(r => r.productId === p.id);
+        const avgRating = prodReviews.length > 0
+          ? prodReviews.reduce((sum, r) => sum + r.rating, 0) / prodReviews.length
+          : 0.0;
+        return {
+          ...p,
+          rating: avgRating,
+          reviewCount: prodReviews.length
+        };
+      });
+    }
     const res = await pool.query(
-      `SELECT p.id, p.name, p.brand, p.category, CAST(p.price AS FLOAT) as price, p.stock, p.color,
+      `SELECT p.id, p.name, p.name_en as "nameEn", p.brand, p.category, CAST(p.price AS FLOAT) as price, p.stock, p.color,
               p.stroke_color as "strokeColor", p.is_gold_face as "isGoldFace", p.image, p.image_back as "imageBack",
               COALESCE(AVG(r.rating), 0.0) as rating,
               COUNT(r.id) as "reviewCount"
        FROM products p
        LEFT JOIN reviews r ON p.id = r.product_id
-       GROUP BY p.id, p.name, p.brand, p.category, p.price, p.stock, p.color, p.stroke_color, p.is_gold_face, p.image, p.image_back
+       GROUP BY p.id, p.name, p.name_en, p.brand, p.category, p.price, p.stock, p.color, p.stroke_color, p.is_gold_face, p.image, p.image_back
        ORDER BY length(p.id) ASC, p.id ASC`
     );
     return res.rows.map(row => ({
@@ -611,12 +732,26 @@ export const db = {
   },
 
   saveProducts: async (products: Product[]): Promise<void> => {
+    if (useFallback) {
+      const data = readJsonDb();
+      for (const p of products) {
+        const idx = data.products.findIndex(pr => pr.id === p.id);
+        if (idx > -1) {
+          data.products[idx] = { ...data.products[idx], ...p };
+        } else {
+          data.products.push(p);
+        }
+      }
+      writeJsonDb(data);
+      return;
+    }
     for (const p of products) {
       await pool.query(
-        `INSERT INTO products (id, name, brand, category, price, stock, color, stroke_color, is_gold_face, image, image_back)
-         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
+        `INSERT INTO products (id, name, name_en, brand, category, price, stock, color, stroke_color, is_gold_face, image, image_back)
+           VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
          ON CONFLICT (id) DO UPDATE SET
            name = EXCLUDED.name,
+           name_en = EXCLUDED.name_en,
            brand = EXCLUDED.brand,
            category = EXCLUDED.category,
            price = EXCLUDED.price,
@@ -626,21 +761,28 @@ export const db = {
            is_gold_face = EXCLUDED.is_gold_face,
            image = EXCLUDED.image,
            image_back = EXCLUDED.image_back`,
-        [p.id, p.name, p.brand, p.category, p.price, p.stock, p.color || '', p.strokeColor || '', p.isGoldFace || false, p.image || '', p.imageBack || '']
+        [p.id, p.name, p.nameEn || '', p.brand, p.category, p.price, p.stock, p.color || '', p.strokeColor || '', p.isGoldFace || false, p.image || '', p.imageBack || '']
       );
     }
   },
 
   forceReseedProducts: async (): Promise<void> => {
+    if (useFallback) {
+      const data = readJsonDb();
+      data.products = [...defaultProducts];
+      data.reviews = [];
+      writeJsonDb(data);
+      return;
+    }
     const client = await pool.connect();
     try {
       await client.query('DELETE FROM reviews');
       await client.query('DELETE FROM products');
       for (const p of defaultProducts) {
         await client.query(
-          `INSERT INTO products (id, name, brand, category, price, stock, color, stroke_color, is_gold_face, image, image_back)
-           VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)`,
-          [p.id, p.name, p.brand, p.category, p.price, p.stock, p.color || '', p.strokeColor || '', p.isGoldFace || false, p.image || '', p.imageBack || '']
+          `INSERT INTO products (id, name, name_en, brand, category, price, stock, color, stroke_color, is_gold_face, image, image_back)
+           VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)`,
+          [p.id, p.name, p.nameEn || '', p.brand, p.category, p.price, p.stock, p.color || '', p.strokeColor || '', p.isGoldFace || false, p.image || '', p.imageBack || '']
         );
       }
       console.log(`Force reseeded ${defaultProducts.length} products (LUMINOX & SEIKO collections).`);
@@ -650,14 +792,29 @@ export const db = {
   },
 
   addProduct: async (p: Product): Promise<void> => {
+    if (useFallback) {
+      const data = readJsonDb();
+      data.products.push(p);
+      writeJsonDb(data);
+      return;
+    }
     await pool.query(
-      `INSERT INTO products (id, name, brand, category, price, stock, color, stroke_color, is_gold_face, image, image_back)
-       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)`,
-      [p.id, p.name, p.brand, p.category, p.price, p.stock, p.color || '', p.strokeColor || '', p.isGoldFace || false, p.image || '', p.imageBack || '']
+      `INSERT INTO products (id, name, name_en, brand, category, price, stock, color, stroke_color, is_gold_face, image, image_back)
+           VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)`,
+      [p.id, p.name, p.nameEn || '', p.brand, p.category, p.price, p.stock, p.color || '', p.strokeColor || '', p.isGoldFace || false, p.image || '', p.imageBack || '']
     );
   },
 
   updateProduct: async (id: string, p: Partial<Product>): Promise<void> => {
+    if (useFallback) {
+      const data = readJsonDb();
+      const idx = data.products.findIndex(pr => pr.id === id);
+      if (idx > -1) {
+        data.products[idx] = { ...data.products[idx], ...p };
+        writeJsonDb(data);
+      }
+      return;
+    }
     const fields: string[] = [];
     const values: any[] = [];
     let idx = 1;
@@ -680,15 +837,36 @@ export const db = {
   },
 
   deleteProduct: async (id: string): Promise<void> => {
+    if (useFallback) {
+      const data = readJsonDb();
+      data.products = data.products.filter(pr => pr.id !== id);
+      data.reviews = data.reviews.filter(r => r.productId !== id);
+      writeJsonDb(data);
+      return;
+    }
     await pool.query('DELETE FROM products WHERE id = $1', [id]);
   },
 
   getUsers: async (): Promise<User[]> => {
+    if (useFallback) {
+      const data = readJsonDb();
+      return data.users;
+    }
     const res = await pool.query('SELECT username, password, role FROM users');
     return res.rows;
   },
 
   updateUser: async (username: string, role: string, password?: string): Promise<void> => {
+    if (useFallback) {
+      const data = readJsonDb();
+      const idx = data.users.findIndex(u => u.username === username);
+      if (idx > -1) {
+        data.users[idx].role = role as any;
+        if (password) data.users[idx].password = password;
+        writeJsonDb(data);
+      }
+      return;
+    }
     if (password) {
       await pool.query('UPDATE users SET role = $1, password = $2 WHERE username = $3', [role, password, username]);
     } else {
@@ -697,10 +875,32 @@ export const db = {
   },
 
   deleteUser: async (username: string): Promise<void> => {
+    if (useFallback) {
+      const data = readJsonDb();
+      data.users = data.users.filter(u => u.username !== username);
+      if (data.profiles[username]) {
+        delete data.profiles[username];
+      }
+      writeJsonDb(data);
+      return;
+    }
     await pool.query('DELETE FROM users WHERE username = $1', [username]);
   },
 
   saveUsers: async (users: User[]): Promise<void> => {
+    if (useFallback) {
+      const data = readJsonDb();
+      for (const u of users) {
+        const idx = data.users.findIndex(us => us.username === u.username);
+        if (idx > -1) {
+          data.users[idx] = { ...data.users[idx], ...u };
+        } else {
+          data.users.push(u);
+        }
+      }
+      writeJsonDb(data);
+      return;
+    }
     for (const u of users) {
       await pool.query(
         'INSERT INTO users (username, password, role) VALUES ($1, $2, $3) ON CONFLICT (username) DO UPDATE SET password = EXCLUDED.password, role = EXCLUDED.role',
@@ -710,10 +910,20 @@ export const db = {
   },
 
   addUser: async (u: User): Promise<void> => {
+    if (useFallback) {
+      const data = readJsonDb();
+      data.users.push(u);
+      writeJsonDb(data);
+      return;
+    }
     await pool.query('INSERT INTO users (username, password, role) VALUES ($1, $2, $3)', [u.username, u.password, u.role]);
   },
 
   getProfiles: async (): Promise<Record<string, Profile>> => {
+    if (useFallback) {
+      const data = readJsonDb();
+      return data.profiles;
+    }
     const res = await pool.query('SELECT username, firstname, lastname, email, phone, address, avatar FROM profiles');
     const profiles: Record<string, Profile> = {};
     res.rows.forEach(row => {
@@ -730,15 +940,27 @@ export const db = {
   },
 
   getProfile: async (username: string): Promise<Profile | null> => {
+    if (useFallback) {
+      const data = readJsonDb();
+      return data.profiles[username] || null;
+    }
     const res = await pool.query('SELECT firstname, lastname, email, phone, address, avatar FROM profiles WHERE username = $1', [username]);
     if (res.rows.length === 0) return null;
     return res.rows[0];
   },
 
   saveProfile: async (username: string, profile: Profile): Promise<void> => {
-    // If avatar is not undefined, we update it. If it is undefined, we keep the existing one.
-    // So we use COALESCE for avatar when undefined is passed. Wait, if it's undefined, we can't easily use COALESCE if we just pass null from JS because we want to distinguish '' (delete) from undefined (ignore).
-    // Let's check if profile.avatar is undefined.
+    if (useFallback) {
+      const data = readJsonDb();
+      const existing = data.profiles[username] || { firstname: '', lastname: '', email: '', phone: '', address: '', avatar: '' };
+      data.profiles[username] = {
+        ...existing,
+        ...profile,
+        avatar: profile.avatar !== undefined ? profile.avatar : existing.avatar
+      };
+      writeJsonDb(data);
+      return;
+    }
     if (profile.avatar !== undefined) {
       await pool.query(
         `INSERT INTO profiles (username, firstname, lastname, email, phone, address, avatar)
@@ -768,17 +990,42 @@ export const db = {
   },
 
   saveProfiles: async (profiles: Record<string, Profile>): Promise<void> => {
+    if (useFallback) {
+      const data = readJsonDb();
+      for (const username of Object.keys(profiles)) {
+        data.profiles[username] = { ...(data.profiles[username] || {}), ...profiles[username] };
+      }
+      writeJsonDb(data);
+      return;
+    }
     for (const username of Object.keys(profiles)) {
       await db.saveProfile(username, profiles[username]);
     }
   },
 
   getOrders: async (): Promise<Order[]> => {
+    if (useFallback) {
+      const data = readJsonDb();
+      return data.orders;
+    }
     const res = await pool.query('SELECT id, user_id as "userId", items, CAST(total AS FLOAT) as total, email, address, payment, status, date, slip FROM orders');
     return res.rows;
   },
 
   saveOrders: async (orders: Order[]): Promise<void> => {
+    if (useFallback) {
+      const data = readJsonDb();
+      for (const o of orders) {
+        const idx = data.orders.findIndex(ord => ord.id === o.id);
+        if (idx > -1) {
+          data.orders[idx] = { ...data.orders[idx], ...o };
+        } else {
+          data.orders.push(o);
+        }
+      }
+      writeJsonDb(data);
+      return;
+    }
     for (const o of orders) {
       await pool.query(
         `INSERT INTO orders (id, user_id, items, total, email, address, payment, status, date, slip)
@@ -792,6 +1039,12 @@ export const db = {
   },
 
   addOrder: async (o: Order): Promise<void> => {
+    if (useFallback) {
+      const data = readJsonDb();
+      data.orders.push(o);
+      writeJsonDb(data);
+      return;
+    }
     await pool.query(
       'INSERT INTO orders (id, user_id, items, total, email, address, payment, status, date, slip) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)',
       [o.id, o.userId, JSON.stringify(o.items), o.total, o.email, o.address, o.payment, o.status, o.date, o.slip]
@@ -799,14 +1052,37 @@ export const db = {
   },
 
   updateOrderStatus: async (id: string, status: string): Promise<void> => {
+    if (useFallback) {
+      const data = readJsonDb();
+      const idx = data.orders.findIndex(ord => ord.id === id);
+      if (idx > -1) {
+        data.orders[idx].status = status;
+        writeJsonDb(data);
+      }
+      return;
+    }
     await pool.query('UPDATE orders SET status = $1 WHERE id = $2', [status, id]);
   },
 
   updateOrderSlip: async (id: string, slip: string, status: string): Promise<void> => {
+    if (useFallback) {
+      const data = readJsonDb();
+      const idx = data.orders.findIndex(ord => ord.id === id);
+      if (idx > -1) {
+        data.orders[idx].slip = slip;
+        data.orders[idx].status = status;
+        writeJsonDb(data);
+      }
+      return;
+    }
     await pool.query('UPDATE orders SET slip = $1, status = $2 WHERE id = $3', [slip, status, id]);
   },
 
   getPendingWatches: async (): Promise<PendingWatch[]> => {
+    if (useFallback) {
+      const data = readJsonDb();
+      return data.pendingWatches;
+    }
     const res = await pool.query(
       `SELECT id, brand, model, CAST(price AS FLOAT) as price, proposed_banding as "proposedBanding",
               dial_color as "dialColor", description, seller_name as "sellerName", seller_email as "sellerEmail",
@@ -816,6 +1092,19 @@ export const db = {
   },
 
   savePendingWatches: async (watches: PendingWatch[]): Promise<void> => {
+    if (useFallback) {
+      const data = readJsonDb();
+      for (const w of watches) {
+        const idx = data.pendingWatches.findIndex(wat => wat.id === w.id);
+        if (idx > -1) {
+          data.pendingWatches[idx] = { ...data.pendingWatches[idx], ...w };
+        } else {
+          data.pendingWatches.push(w);
+        }
+      }
+      writeJsonDb(data);
+      return;
+    }
     for (const w of watches) {
       await pool.query(
         `INSERT INTO pending_watches (id, brand, model, price, proposed_banding, dial_color, description, seller_name, seller_email, inspection_status, import_status, date)
@@ -829,6 +1118,16 @@ export const db = {
   },
 
   addPendingWatch: async (w: PendingWatch): Promise<void> => {
+    if (useFallback) {
+      const data = readJsonDb();
+      data.pendingWatches.push({
+        ...w,
+        inspectionStatus: w.inspectionStatus || 'pending',
+        importStatus: w.importStatus || 'pending'
+      });
+      writeJsonDb(data);
+      return;
+    }
     await pool.query(
       `INSERT INTO pending_watches (id, brand, model, price, proposed_banding, dial_color, description, seller_name, seller_email, inspection_status, import_status, date)
        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)`,
@@ -837,19 +1136,54 @@ export const db = {
   },
 
   updatePendingWatchInspection: async (id: string, status: 'passed' | 'failed'): Promise<void> => {
+    if (useFallback) {
+      const data = readJsonDb();
+      const idx = data.pendingWatches.findIndex(w => w.id === id);
+      if (idx > -1) {
+        data.pendingWatches[idx].inspectionStatus = status;
+        writeJsonDb(data);
+      }
+      return;
+    }
     await pool.query('UPDATE pending_watches SET inspection_status = $1 WHERE id = $2', [status, id]);
   },
 
   updatePendingWatchImport: async (id: string, status: 'imported'): Promise<void> => {
+    if (useFallback) {
+      const data = readJsonDb();
+      const idx = data.pendingWatches.findIndex(w => w.id === id);
+      if (idx > -1) {
+        data.pendingWatches[idx].importStatus = status;
+        writeJsonDb(data);
+      }
+      return;
+    }
     await pool.query('UPDATE pending_watches SET import_status = $1 WHERE id = $2', [status, id]);
   },
 
   getBlacklist: async (): Promise<BlacklistEntry[]> => {
+    if (useFallback) {
+      const data = readJsonDb();
+      return data.blacklist;
+    }
     const res = await pool.query('SELECT email, national_id as "nationalId", reason FROM blacklist');
     return res.rows;
   },
 
   saveBlacklist: async (blacklist: BlacklistEntry[]): Promise<void> => {
+    if (useFallback) {
+      const data = readJsonDb();
+      for (const b of blacklist) {
+        const idx = data.blacklist.findIndex(bl => bl.email === b.email);
+        if (idx > -1) {
+          data.blacklist[idx] = { ...data.blacklist[idx], ...b };
+        } else {
+          data.blacklist.push(b);
+        }
+      }
+      writeJsonDb(data);
+      return;
+    }
     for (const b of blacklist) {
       await pool.query(
         'INSERT INTO blacklist (email, national_id, reason) VALUES ($1, $2, $3) ON CONFLICT (email) DO UPDATE SET national_id = EXCLUDED.national_id, reason = EXCLUDED.reason',
@@ -859,6 +1193,10 @@ export const db = {
   },
 
   getLogs: async (): Promise<LogEntry[]> => {
+    if (useFallback) {
+      const data = readJsonDb();
+      return data.logs;
+    }
     const res = await pool.query('SELECT timestamp, message FROM logs ORDER BY timestamp ASC');
     return res.rows.map(row => ({
       timestamp: row.timestamp.toISOString(),
@@ -867,7 +1205,16 @@ export const db = {
   },
 
   saveLogs: async (logs: LogEntry[]): Promise<void> => {
-    // Avoid double inserts, typically log addition is via addLog
+    if (useFallback) {
+      const data = readJsonDb();
+      for (const l of logs) {
+        if (!data.logs.some(lo => lo.timestamp === l.timestamp && lo.message === l.message)) {
+          data.logs.push(l);
+        }
+      }
+      writeJsonDb(data);
+      return;
+    }
     for (const l of logs) {
       await pool.query('INSERT INTO logs (timestamp, message) VALUES ($1, $2) ON CONFLICT DO NOTHING', [l.timestamp, l.message]);
     }
@@ -875,10 +1222,23 @@ export const db = {
 
   addLog: async (message: string): Promise<void> => {
     console.log(`[LOG]: ${message}`);
+    if (useFallback) {
+      const data = readJsonDb();
+      data.logs.push({
+        timestamp: new Date().toISOString(),
+        message
+      });
+      writeJsonDb(data);
+      return;
+    }
     await pool.query('INSERT INTO logs (message) VALUES ($1)', [message]);
   },
 
   getReviews: async (productId: string): Promise<Review[]> => {
+    if (useFallback) {
+      const data = readJsonDb();
+      return data.reviews.filter(r => r.productId === productId).reverse();
+    }
     const res = await pool.query(
       `SELECT id, product_id as "productId", username, rating, comment, date 
        FROM reviews WHERE product_id = $1 ORDER BY id DESC`,
@@ -888,6 +1248,15 @@ export const db = {
   },
 
   addReview: async (r: Review): Promise<void> => {
+    if (useFallback) {
+      const data = readJsonDb();
+      data.reviews.push({
+        ...r,
+        id: data.reviews.length + 1
+      });
+      writeJsonDb(data);
+      return;
+    }
     await pool.query(
       `INSERT INTO reviews (product_id, username, rating, comment, date)
        VALUES ($1, $2, $3, $4, $5)`,

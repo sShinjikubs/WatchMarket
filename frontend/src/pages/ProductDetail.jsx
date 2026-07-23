@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { useAuth } from '../App';
+import { useAuth, useLanguage } from '../App';
 import { useCart } from '../CartContext';
 import { api } from '../api';
 import Header from '../components/Header';
@@ -60,6 +60,7 @@ export default function ProductDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
   const { user } = useAuth();
+  const { t, lang } = useLanguage();
   const { addToCart, openCart } = useCart();
   
   const [product, setProduct] = useState(null);
@@ -109,21 +110,21 @@ export default function ProductDetail() {
     const ok = addToCart(product, quantity);
     if (ok) {
       setAddedToCart(true);
-      showNotif(`เพิ่ม "${product.name}" × ${quantity} เข้าตะกร้าแล้ว!`);
+      showNotif(t('addedToCartToast').replace('{name}', product.name).replace('{qty}', quantity));
       setTimeout(() => setAddedToCart(false), 2000);
     } else {
-      showNotif('สินค้าในคลังหมดแล้ว!', false);
+      showNotif(t('outOfStockToast'), false);
     }
   };
 
   const handleSubmitReview = async (e) => {
     e.preventDefault();
     if (!user) {
-      showNotif('โปรดเข้าสู่ระบบเพื่อเขียนรีวิว', false);
+      showNotif(t('loginToReviewToast'), false);
       return;
     }
     if (!newComment.trim()) {
-      showNotif('โปรดกรอกข้อคิดเห็นรีวิว', false);
+      showNotif(t('enterReviewToast'), false);
       return;
     }
 
@@ -135,22 +136,22 @@ export default function ProductDetail() {
         comment: newComment.trim(),
       });
       if (res.ok) {
-        showNotif('ส่งรีวิวสำเร็จ! 🎉');
+        showNotif(t('reviewSubmitSuccess'));
         setNewComment('');
         setNewRating(5);
         refreshReviews();
       } else {
-        showNotif('ไม่สามารถส่งรีวิวได้', false);
+        showNotif(t('reviewSubmitFail'), false);
       }
     } catch (_) {
-      showNotif('เกิดข้อผิดพลาดกับเซิร์ฟเวอร์', false);
+      showNotif(t('serverErrorGeneric'), false);
     }
   };
 
   const categoryLabel = (cat) =>
-    cat === 'classic' ? 'Classic (ต่ำกว่า ฿25,000)' :
-    cat === 'sport'   ? 'Sport (฿25,000 – ฿100,000)' :
-                        'Elegant (฿100,000+)';
+    cat === 'classic' ? t('bandingClassic') :
+    cat === 'sport'   ? t('bandingSport') :
+                        t('bandingElegant');
 
   // Calculate average rating
   const avgRating = reviews.length > 0 
@@ -162,7 +163,7 @@ export default function ProductDetail() {
       <div className="page-wrapper">
         <Header />
         <div className="main-content" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-          <div style={{ color: 'var(--text-muted)', fontSize: '1.2rem' }}>กำลังโหลดข้อมูลสินค้า...</div>
+          <div style={{ color: 'var(--text-muted)', fontSize: '1.2rem' }}>{t('loadingProduct')}</div>
         </div>
       </div>
     );
@@ -178,11 +179,11 @@ export default function ProductDetail() {
       <main className="main-content">
         {/* Breadcrumb */}
         <nav className="pd-breadcrumb">
-          <button onClick={() => navigate('/')} className="pd-breadcrumb-link">🏠 หน้าหลัก</button>
+          <button onClick={() => navigate('/')} className="pd-breadcrumb-link">{t('homeBreadcrumb')}</button>
           <span className="pd-breadcrumb-sep">›</span>
           <span style={{ color: 'var(--accent-gold)' }}>{product.brand}</span>
           <span className="pd-breadcrumb-sep">›</span>
-          <span>{product.name}</span>
+          <span>{lang === 'en' && product.nameEn ? product.nameEn : product.name}</span>
         </nav>
 
         {/* Main Product Layout */}
@@ -193,7 +194,7 @@ export default function ProductDetail() {
               {product.image ? (
                 <img 
                   src={selectedImage || product.image} 
-                  alt={product.name} 
+                  alt={lang === 'en' && product.nameEn ? product.nameEn : product.name} 
                   style={{ maxWidth: '100%', maxHeight: '320px', objectFit: 'contain', borderRadius: '8px' }} 
                 />
               ) : (
@@ -223,9 +224,9 @@ export default function ProductDetail() {
                       gap: '0.4rem',
                       transition: 'all 0.2s',
                     }}
-                  >
-                    🔍 ดูภาพหน้าปัด
-                  </button>
+                    >
+                      {t('viewFrontImage')}
+                    </button>
                   {product.imageBack && (
                     <button 
                       className="btn"
@@ -246,9 +247,9 @@ export default function ProductDetail() {
                         gap: '0.4rem',
                         transition: 'all 0.2s',
                       }}
-                    >
-                      🔍 ดูภาพฝาหลัง
-                    </button>
+                      >
+                        {t('viewBackImage')}
+                      </button>
                   )}
                 </div>
 
@@ -290,7 +291,7 @@ export default function ProductDetail() {
             </div>
 
             {/* Name */}
-            <h1 className="pd-title">{product.name}</h1>
+            <h1 className="pd-title">{lang === 'en' && product.nameEn ? product.nameEn : product.name}</h1>
 
             {/* Rating Section */}
             <div className="pd-rating-row">
@@ -299,32 +300,32 @@ export default function ProductDetail() {
               </span>
               <StarRating rating={avgRating} size="1.2rem" />
               <span className="pd-rating-count" style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>
-                ({reviews.length} รีวิวจากผู้ใช้)
+                {t('reviewsCount').replace('{count}', reviews.length)}
               </span>
               <span className="pd-divider">|</span>
               <span style={{ color: '#51cf66', fontSize: '0.85rem' }}>
-                {product.stock > 0 ? `มีสินค้า ${product.stock} เรือน` : 'สินค้าหมดชั่วคราว'}
+                {product.stock > 0 ? t('inStockCount').replace('{count}', product.stock) : t('outOfStockText')}
               </span>
             </div>
 
             {/* Price */}
             <div className="pd-price-box">
               <div className="pd-price">฿ {product.price.toLocaleString()}</div>
-              <div className="pd-price-note">ราคารวม VAT 7% · จัดส่งฟรี</div>
+              <div className="pd-price-note">{t('priceVatFreeShipping')}</div>
             </div>
 
             {/* Guarantee */}
             <div className="pd-guarantee-row">
-              <div className="pd-guarantee-item">🛡️ รับประกันของแท้ 100%</div>
-              <div className="pd-guarantee-item">🔄 คืนสินค้าภายใน 15 วัน</div>
-              <div className="pd-guarantee-item">🚚 จัดส่งถึงมือ 1–3 วัน</div>
+              <div className="pd-guarantee-item">{t('guaranteeAuthentic')}</div>
+              <div className="pd-guarantee-item">{t('guaranteeReturn')}</div>
+              <div className="pd-guarantee-item">{t('guaranteeShipping')}</div>
             </div>
 
             <div className="pd-divider-line" />
 
             {/* Quantity Selector */}
             <div className="pd-qty-row">
-              <span className="pd-qty-label">จำนวน</span>
+              <span className="pd-qty-label">{t('quantityLabel')}</span>
               <div className="pd-qty-control">
                 <button
                   className="pd-qty-btn"
@@ -339,7 +340,7 @@ export default function ProductDetail() {
                 >+</button>
               </div>
               <span style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>
-                สต็อกมี {product.stock} เรือน
+                {t('stockAvailable').replace('{count}', product.stock)}
               </span>
             </div>
 
@@ -353,12 +354,12 @@ export default function ProductDetail() {
                 {addedToCart ? (
                   <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem' }}>
                     <Icons.Check style={{ color: '#0f172a' }} />
-                    <span>เพิ่มแล้ว!</span>
+                    <span>{t('addedBtn')}</span>
                   </span>
                 ) : (
                   <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem' }}>
                     <Icons.Cart />
-                    <span>เพิ่มในตะกร้า</span>
+                    <span>{t('addToCartBtn')}</span>
                   </span>
                 )}
               </button>
@@ -373,7 +374,7 @@ export default function ProductDetail() {
                 }}
                 disabled={product.stock === 0}
               >
-                {product.stock === 0 ? 'สินค้าหมดชั่วคราว' : 'ซื้อเลย'}
+                {product.stock === 0 ? t('outOfStockText') : t('buyNowBtn')}
               </button>
             </div>
 
@@ -389,7 +390,7 @@ export default function ProductDetail() {
               </div>
               <div className="pd-shop-row" style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
                 <Icons.Settings style={{ color: 'var(--accent-gold)' }} />
-                <span>หมวด: <strong>{product.category?.toUpperCase()}</strong></span>
+                <span>{t('categoryLabelText')} <strong>{product.category?.toUpperCase()}</strong></span>
               </div>
             </div>
           </div>
@@ -397,19 +398,20 @@ export default function ProductDetail() {
 
         {/* Bottom — Description */}
         <div className="glass-card" style={{ marginTop: '2rem' }}>
-          <h2 className="card-title">รายละเอียดสินค้า</h2>
+          <h2 className="card-title">{t('productDetailTitle')}</h2>
           <div className="pd-description">
-            <p>
-              <strong>{product.brand} {product.name}</strong> เป็นนาฬิกาหรูระดับ{' '}
-              {product.category === 'elegant' ? 'สูงสุด' : product.category === 'sport' ? 'กลางถึงสูง' : 'เริ่มต้น'}
-              ในกลุ่ม <strong>{categoryLabel(product.category)}</strong> จาก WatchMart Premium Collection
-            </p>
+            <p dangerouslySetInnerHTML={{ __html: t('productDescText')
+                .replace('{brand}', `<strong>${product.brand}</strong>`)
+                .replace('{name}', `<strong>${lang === 'en' && product.nameEn ? product.nameEn : product.name}</strong>`)
+                .replace('{level}', product.category === 'elegant' ? t('levelHigh') : product.category === 'sport' ? t('levelMedium') : t('levelEntry'))
+                .replace('{cat}', `<strong>${categoryLabel(product.category)}</strong>`)
+            }}></p>
             <div className="pd-specs-grid">
-              <div className="pd-spec"><span className="pd-spec-key">แบรนด์</span><span>{product.brand}</span></div>
-              <div className="pd-spec"><span className="pd-spec-key">รุ่น</span><span>{product.name}</span></div>
-              <div className="pd-spec"><span className="pd-spec-key">หมวดหมู่</span><span>{product.category?.toUpperCase()}</span></div>
-              <div className="pd-spec"><span className="pd-spec-key">ราคา</span><span>฿ {product.price.toLocaleString()}</span></div>
-              <div className="pd-spec"><span className="pd-spec-key">สต็อก</span><span>{product.stock} เรือน</span></div>
+              <div className="pd-spec"><span className="pd-spec-key">{t('brandLabel')}</span><span>{product.brand}</span></div>
+              <div className="pd-spec"><span className="pd-spec-key">{t('modelLabel')}</span><span>{lang === 'en' && product.nameEn ? product.nameEn : product.name}</span></div>
+              <div className="pd-spec"><span className="pd-spec-key">{t('categoryLabelSpec')}</span><span>{product.category?.toUpperCase()}</span></div>
+              <div className="pd-spec"><span className="pd-spec-key">{t('priceCol')}</span><span>฿ {product.price.toLocaleString()}</span></div>
+              <div className="pd-spec"><span className="pd-spec-key">{t('stockLabel')}</span><span>{t('stockCount').replace('{count}', product.stock)}</span></div>
               <div className="pd-spec"><span className="pd-spec-key">Product ID</span><span style={{ fontFamily: 'monospace', fontSize: '0.85rem' }}>{product.id}</span></div>
             </div>
           </div>
@@ -417,19 +419,19 @@ export default function ProductDetail() {
 
         {/* Reviews Section */}
         <div className="glass-card" style={{ marginTop: '2rem' }}>
-          <h2 className="card-title">💬 รีวิวสินค้า ({reviews.length})</h2>
+          <h2 className="card-title">{t('reviewsTitle').replace('{count}', reviews.length)}</h2>
           
           <div className="content-grid two-col" style={{ gap: '2rem', alignItems: 'start' }}>
             
             {/* Submit Review Form */}
             <div>
               <h3 style={{ fontSize: '1.1rem', marginBottom: '1rem', color: 'var(--text-light)' }}>
-                ✍️ เขียนรีวิวของคุณ
+                {t('writeReviewTitle')}
               </h3>
               {user ? (
                 <form onSubmit={handleSubmitReview} className="form-stack">
                   <div className="form-group">
-                    <label className="form-label">ให้คะแนนสินค้า</label>
+                    <label className="form-label">{t('rateProductLabel')}</label>
                     <div style={{ display: 'flex', gap: '0.5rem', marginTop: '0.3rem' }}>
                       {[1, 2, 3, 4, 5].map((val) => (
                         <button
@@ -453,11 +455,11 @@ export default function ProductDetail() {
                   </div>
                   
                   <div className="form-group">
-                    <label className="form-label">ความคิดเห็น</label>
+                    <label className="form-label">{t('commentLabel')}</label>
                     <textarea
                       className="form-input"
                       rows={4}
-                      placeholder="บอกเล่าความรู้สึกและประสบการณ์เกี่ยวกับนาฬิกาเรือนนี้..."
+                      placeholder={t('commentPlaceholder')}
                       value={newComment}
                       onChange={(e) => setNewComment(e.target.value)}
                       required
@@ -465,12 +467,12 @@ export default function ProductDetail() {
                   </div>
                   
                   <button type="submit" className="btn btn-primary" style={{ alignSelf: 'flex-start', padding: '0.6rem 1.5rem' }}>
-                    ส่งรีวิว
+                    {t('submitReviewBtn')}
                   </button>
                 </form>
               ) : (
                 <div style={{ padding: '1.5rem', background: 'rgba(255,255,255,0.02)', borderRadius: '8px', border: '1px dashed var(--glass-border)', color: 'var(--text-muted)' }}>
-                  โปรด <button onClick={() => navigate('/login')} className="pd-breadcrumb-link" style={{ textDecoration: 'underline', color: 'var(--accent-gold)' }}>เข้าสู่ระบบ</button> เพื่อร่วมเขียนรีวิวสินค้า
+                  {t('please')} <button onClick={() => navigate('/login')} className="pd-breadcrumb-link" style={{ textDecoration: 'underline', color: 'var(--accent-gold)' }}>{t('loginLink')}</button> {t('toWriteReview')}
                 </div>
               )}
             </div>
@@ -479,12 +481,12 @@ export default function ProductDetail() {
             <div>
               <h3 style={{ fontSize: '1.1rem', marginBottom: '1rem', color: 'var(--text-light)', display: 'inline-flex', alignItems: 'center', gap: '0.4rem' }}>
                 <Icons.Star style={{ color: 'var(--accent-gold)' }} />
-                <span>รีวิวทั้งหมดจากลูกค้า</span>
+                <span>{t('allCustomerReviews')}</span>
               </h3>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', maxHeight: '400px', overflowY: 'auto', paddingRight: '0.5rem' }}>
                 {reviews.length === 0 ? (
                   <p style={{ color: 'var(--text-muted)', fontStyle: 'italic', padding: '1rem 0' }}>
-                    ยังไม่มีใครรีวิวสินค้านี้ มาร่วมเป็นคนแรกที่รีวิวกัน!
+                    {t('noReviewsYet')}
                   </p>
                 ) : (
                   reviews.map((r) => (

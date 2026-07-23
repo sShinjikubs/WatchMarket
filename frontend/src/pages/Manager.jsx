@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { api } from '../api';
-import { useAuth } from '../App';
+import { useAuth, useLanguage } from '../App';
 import Header from '../components/Header';
 import { Icons } from '../components/Icons';
 import SystemLogger from '../components/SystemLogger';
@@ -123,6 +123,7 @@ function drawTrendChart(canvas, orders) {
 // ─── Manager Component ────────────────────────────────────────────────────────
 export default function Manager() {
   const { user } = useAuth();
+  const { t, lang } = useLanguage();
   const [products, setProducts] = useState([]);
   const [orders, setOrders] = useState([]);
   const [pendingWatches, setPendingWatches] = useState([]);
@@ -184,51 +185,51 @@ export default function Manager() {
     try {
       const res = editingProduct ? await api.updateProduct(editingProduct, payload) : await api.addProduct(payload);
       if (res.ok) {
-        showNotif(editingProduct ? 'อัปเดตสำเร็จ!' : 'เพิ่มสินค้าสำเร็จ!');
+        showNotif(editingProduct ? t('updateSuccess') : t('addProductSuccess'));
         refreshData(); resetForm();
-      } else { const d = await res.json(); showNotif(d.error || 'บันทึกไม่สำเร็จ', false); }
-    } catch (_) { showNotif('เซิร์ฟเวอร์ขัดข้อง', false); }
+      } else { const d = await res.json(); showNotif(d.error || t('saveFailed'), false); }
+    } catch (_) { showNotif(t('serverErrorGeneric'), false); }
   };
 
   const handleDelete = async (id) => {
     const prod = products.find((p) => p.id === id);
-    if (!confirm(`ลบ "${prod?.name}"?`)) return;
+    if (!confirm(t('deleteConfirm').replace('{name}', prod?.name))) return;
     const res = await api.deleteProduct(id);
-    if (res.ok) { showNotif('ลบสำเร็จ', false); refreshData(); }
-    else showNotif('ลบไม่สำเร็จ', false);
+    if (res.ok) { showNotif(t('deleteSuccess'), false); refreshData(); }
+    else showNotif(t('deleteFailed'), false);
   };
 
   const shipOrder = async (id) => {
     const res = await api.shipOrder(id);
     if (res.ok) {
-      showNotif('จัดส่งพัสดุสำเร็จ!');
+      showNotif(t('shipSuccess'));
       refreshData();
     } else {
       const d = await res.json();
-      showNotif(d.error || 'อัปเดตสถานะล้มเหลว', false);
+      showNotif(d.error || t('updateStatusFail'), false);
     }
   };
 
   const approveSlip = async (id) => {
     const res = await api.managerApproveOrder(id);
     if (res.ok) {
-      showNotif('อนุมัติสลิปสำเร็จ — รอ Admin ยืนยัน');
+      showNotif(t('approveSlipSuccess'));
       refreshData();
     } else {
       const d = await res.json();
-      showNotif(d.error || 'ไม่สามารถอนุมัติได้', false);
+      showNotif(d.error || t('approveSlipFail'), false);
     }
   };
 
   const rejectSlip = async (id) => {
     const note = rejectNotes[id] || '';
     if (!note.trim()) {
-      showNotif('กรุณาระบุเหตุผลการปฏิเสธ', false);
+      showNotif(t('rejectReasonRequired'), false);
       return;
     }
     const res = await api.managerRejectOrder(id, note);
     if (res.ok) {
-      showNotif('ปฏิเสธสลิปแล้ว — ออเดอร์ถูกยกเลิก', false);
+      showNotif(t('rejectSlipSuccess'), false);
       refreshData();
       setRejectNotes(prev => {
         const n = {...prev};
@@ -237,7 +238,7 @@ export default function Manager() {
       });
     } else {
       const d = await res.json();
-      showNotif(d.error || 'ไม่สามารถปฏิเสธได้', false);
+      showNotif(d.error || t('rejectSlipFail'), false);
     }
   };
 
@@ -251,8 +252,8 @@ export default function Manager() {
       return {
         ...p,
         history: origin
-          ? [`ผู้เสนอขาย: ${origin.sellerName} (${origin.sellerEmail}) เมื่อ ${origin.date}`, 'ผู้ตรวจสภาพ: เจ้าหน้าที่ฝ่ายประเมิน (APPROVED)', 'ผู้นำเข้า: Admin บันทึกเข้าคลังแล้ว']
-          : ['ผู้เสนอขาย: สินค้าระบบดั้งเดิม (Initial Inventory)', 'ผู้ตรวจสภาพ: เจ้าหน้าที่ตรวจระบบคลัง', 'ผู้นำเข้า: Manager CRUD'],
+          ? [t('auditSellerOrigin').replace('{name}', origin.sellerName).replace('{email}', origin.sellerEmail).replace('{date}', origin.date), t('auditInspectorApproved'), t('auditImporterAdmin')]
+          : [t('auditInitialOrigin'), t('auditInitialInspector'), t('auditInitialImporter')],
       };
     });
 
@@ -265,16 +266,16 @@ export default function Manager() {
         <div className="page-header">
           <h1 className="page-title" style={{ display: 'inline-flex', alignItems: 'center', gap: '0.6rem' }}>
             <Icons.Chart style={{ color: 'var(--accent-gold)', width: '24px', height: '24px' }} />
-            <span>Manager Dashboard</span>
+            <span>{t('mgrDashboardTitle')}</span>
           </h1>
-          <p className="page-subtitle">บริหารสินค้าคงคลัง วิเคราะห์ยอดขาย และตรวจสอบราคา</p>
+          <p className="page-subtitle">{t('mgrDashboardSubtitle')}</p>
         </div>
 
         {/* Stats */}
         <div className="stats-grid">
-          <div className="stat-card"><div className="stat-value" id="mgr-total-sales">฿ {totalSales.toLocaleString()}</div><div className="stat-label">ยอดขายรวม</div></div>
-          <div className="stat-card"><div className="stat-value" id="mgr-total-orders">{orders.length} รายการ</div><div className="stat-label">คำสั่งซื้อทั้งหมด</div></div>
-          <div className="stat-card"><div className="stat-value" id="mgr-product-types">{products.length} รุ่น</div><div className="stat-label">สินค้าในคลัง</div></div>
+          <div className="stat-card"><div className="stat-value" id="mgr-total-sales">฿ {totalSales.toLocaleString()}</div><div className="stat-label">{t('totalSalesLabel')}</div></div>
+          <div className="stat-card"><div className="stat-value" id="mgr-total-orders">{t('orderCount').replace('{count}', orders.length)}</div><div className="stat-label">{t('totalOrdersLabel')}</div></div>
+          <div className="stat-card"><div className="stat-value" id="mgr-product-types">{t('productModelCount').replace('{count}', products.length)}</div><div className="stat-label">{t('inventoryProductsLabel')}</div></div>
         </div>
 
         {/* Charts */}
@@ -282,14 +283,14 @@ export default function Manager() {
           <div className="glass-card">
             <h2 className="card-title" style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem' }}>
               <Icons.Chart style={{ color: 'var(--accent-gold)' }} />
-              <span>ยอดขายแยกตามแบรนด์</span>
+              <span>{t('salesByBrandTitle')}</span>
             </h2>
             <canvas ref={barRef} id="salesChart" width="460" height="260" style={{ width: '100%' }} />
           </div>
           <div className="glass-card">
             <h2 className="card-title" style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem' }}>
               <Icons.Chart style={{ color: 'var(--accent-gold)' }} />
-              <span>แนวโน้มยอดขาย 7 วันล่าสุด</span>
+              <span>{t('salesTrend7DaysTitle')}</span>
             </h2>
             <canvas ref={trendRef} id="salesTrendChart" width="460" height="260" style={{ width: '100%' }} />
           </div>
@@ -299,8 +300,8 @@ export default function Manager() {
           {user?.role === 'manager' && !editingProduct ? (
             <div className="glass-card" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '3rem', minHeight: '350px', textAlign: 'center', color: 'var(--text-muted)' }}>
               <Icons.Watch style={{ width: '48px', height: '48px', color: 'rgba(255,255,255,0.15)', marginBottom: '1.5rem' }} />
-              <h3 style={{ color: 'var(--accent-gold)', marginBottom: '0.5rem' }}>ระบบจัดการคลังสำหรับผู้จัดการ</h3>
-              <p style={{ fontStyle: 'italic', fontSize: '0.88rem', maxWidth: '300px', lineHeight: 1.5 }}>กรุณากดปุ่ม "แก้ไขสต็อก" ท้ายรายชื่อสินค้าในตารางด้านขวา เพื่อปรับปรุงจำนวนสต็อกสินค้าคงเหลือ</p>
+              <h3 style={{ color: 'var(--accent-gold)', marginBottom: '0.5rem' }}>{t('mgrInventorySystemTitle')}</h3>
+              <p style={{ fontStyle: 'italic', fontSize: '0.88rem', maxWidth: '300px', lineHeight: 1.5 }}>{t('mgrInventorySystemDesc')}</p>
             </div>
           ) : (
             <div className="glass-card">
@@ -308,51 +309,51 @@ export default function Manager() {
                 {editingProduct ? (
                   <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem' }}>
                     <Icons.Edit style={{ color: 'var(--accent-gold)' }} />
-                    <span>แก้ไข: {productForm.name}</span>
+                    <span>{t('editProductTitle').replace('{name}', productForm.name)}</span>
                   </span>
                 ) : (
                   <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem' }}>
                     <Icons.Plus style={{ color: 'var(--accent-gold)' }} />
-                    <span>เพิ่มสินค้าใหม่</span>
+                    <span>{t('addNewProductTitle')}</span>
                   </span>
                 )}
               </h2>
               {user?.role !== 'admin' && (
                 <div style={{ padding: '0.6rem 0.8rem', background: 'rgba(255,107,107,0.06)', border: '1px solid rgba(255,107,107,0.15)', borderRadius: '8px', color: '#ff6b6b', fontSize: '0.78rem', display: 'flex', alignItems: 'center', gap: '0.4rem', marginBottom: '1.2rem' }}>
                   <Icons.Info style={{ flexShrink: 0 }} />
-                  <span>สิทธิ์ผู้จัดการ: แก้ไขได้เฉพาะสต็อกสินค้าเท่านั้น ช่องอื่นสามารถแก้ไขได้โดยแอดมิน</span>
+                  <span>{t('mgrPermissionWarning')}</span>
                 </div>
               )}
               <form onSubmit={handleProductSubmit} className="form-stack" id="product-form">
                 <div className="form-group">
-                  <label className="form-label">ชื่อสินค้า</label>
+                  <label className="form-label">{t('productNameLabel')}</label>
                   <input className="form-input" value={productForm.name} onChange={setForm('name')} required id="prod-name" disabled={user?.role !== 'admin'} />
                 </div>
                 <div className="form-group">
-                  <label className="form-label">แบรนด์</label>
+                  <label className="form-label">{t('brandLabel')}</label>
                   <input className="form-input" value={productForm.brand} onChange={setForm('brand')} required id="prod-brand" disabled={user?.role !== 'admin'} />
                 </div>
                 <div className="form-group">
-                  <label className="form-label">ราคา (บาท)</label>
+                  <label className="form-label">{t('priceThbLabel')}</label>
                   <input type="number" className="form-input" value={productForm.price} onChange={setForm('price')} required id="prod-price" disabled={user?.role !== 'admin'} />
                 </div>
                 <div className="form-group">
-                  <label className="form-label">สต็อก (เรือน)</label>
+                  <label className="form-label">{t('stockQtyLabel')}</label>
                   <input type="number" className="form-input" value={productForm.stock} onChange={setForm('stock')} required id="prod-stock" />
                 </div>
                 <div className="form-group">
-                  <label className="form-label">รูปภาพหน้าปัด (เช่น /images/LUMINOX/name.webp)</label>
+                  <label className="form-label">{t('frontImageLabel')}</label>
                   <input className="form-input" value={productForm.image} onChange={setForm('image')} id="prod-image" disabled={user?.role !== 'admin'} />
                 </div>
                 <div className="form-group">
-                  <label className="form-label">รูปภาพฝาหลัง (เช่น /images/LUMINOX/name_back.webp)</label>
+                  <label className="form-label">{t('backImageLabel')}</label>
                   <input className="form-input" value={productForm.imageBack} onChange={setForm('imageBack')} id="prod-image-back" disabled={user?.role !== 'admin'} />
                 </div>
                 <div className="btn-group">
                   <button type="submit" className="btn btn-primary" id="btn-submit-form">
-                    {editingProduct ? (user?.role === 'admin' ? 'อัปเดตข้อมูล' : 'บันทึกสต็อกสินค้า') : 'บันทึกข้อมูลสินค้า'}
+                    {editingProduct ? (user?.role === 'admin' ? t('updateDataBtn') : t('saveStockBtn')) : t('saveProductInfoBtn')}
                   </button>
-                  {editingProduct && <button type="button" className="btn btn-secondary" onClick={resetForm}>ยกเลิก</button>}
+                  {editingProduct && <button type="button" className="btn btn-secondary" onClick={resetForm}>{t('cancelBtn')}</button>}
                 </div>
               </form>
             </div>
@@ -362,7 +363,7 @@ export default function Manager() {
           <div className="glass-card">
             <h2 className="card-title" style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem' }}>
               <Icons.Package style={{ color: 'var(--accent-gold)' }} />
-              <span>สินค้าคงคลัง</span>
+              <span>{t('inventoryTitle')}</span>
             </h2>
             <div className="table-responsive">
               <table className="data-table">
@@ -371,15 +372,15 @@ export default function Manager() {
                     <th>
                       <Icons.Watch style={{ width: '16px', height: '16px', color: 'var(--accent-gold)' }} />
                     </th>
-                    <th>สินค้า</th>
-                    <th>ราคา</th>
-                    <th>สต็อก</th>
-                    <th>จัดการ</th>
+                    <th>{t('productCol')}</th>
+                    <th>{t('priceCol')}</th>
+                    <th>{t('stockCol')}</th>
+                    <th>{t('manageCol')}</th>
                   </tr>
                 </thead>
                 <tbody id="manager-inventory-table">
                   {products.length === 0 ? (
-                    <tr><td colSpan={5} style={{ textAlign: 'center', color: 'var(--text-muted)' }}>ไม่มีสินค้าในคลัง</td></tr>
+                    <tr><td colSpan={5} style={{ textAlign: 'center', color: 'var(--text-muted)' }}>{t('noProductsInInventory')}</td></tr>
                   ) : [...products].sort((a, b) => {
                     if (a.id === editingProduct) return -1;
                     if (b.id === editingProduct) return 1;
@@ -396,21 +397,21 @@ export default function Manager() {
                     >
                       <td style={{ textAlign: 'center' }}>
                         {p.image ? (
-                          <img src={p.image} alt={p.name} style={{ width: '40px', height: '40px', objectFit: 'contain', background: 'rgba(255,255,255,0.02)', borderRadius: '6px', border: '1px solid var(--glass-border)' }} />
+                          <img src={p.image} alt={lang === 'en' && p.nameEn ? p.nameEn : p.name} style={{ width: '40px', height: '40px', objectFit: 'contain', background: 'rgba(255,255,255,0.02)', borderRadius: '6px', border: '1px solid var(--glass-border)' }} />
                         ) : (
                           <Icons.Watch style={{ width: '22px', height: '22px', color: 'rgba(255,255,255,0.15)' }} />
                         )}
                       </td>
-                      <td><strong>{p.name}</strong><br /><span style={{ color: 'var(--text-muted)', fontSize: '0.8rem' }}>{p.brand}</span></td>
+                      <td><strong>{lang === 'en' && p.nameEn ? p.nameEn : p.name}</strong><br /><span style={{ color: 'var(--text-muted)', fontSize: '0.8rem' }}>{p.brand}</span></td>
                       <td><strong>฿ {p.price?.toLocaleString()}</strong></td>
-                      <td><span style={{ fontWeight: 700, color: p.stock <= 3 ? '#ff6b6b' : '#f5f5f7' }}>{p.stock} เรือน</span>{p.stock <= 3 && <><br /><small style={{ color: '#ff6b6b', display: 'inline-flex', alignItems: 'center', gap: '0.2rem' }}><Icons.Info style={{ width: '12px', height: '12px' }} /> ใกล้หมด</small></>}</td>
+                      <td><span style={{ fontWeight: 700, color: p.stock <= 3 ? '#ff6b6b' : '#f5f5f7' }}>{t('stockLeft').replace('{count}', p.stock)}</span>{p.stock <= 3 && <><br /><small style={{ color: '#ff6b6b', display: 'inline-flex', alignItems: 'center', gap: '0.2rem' }}><Icons.Info style={{ width: '12px', height: '12px' }} /> {t('lowStockWarning')}</small></>}</td>
                       <td>
                         <div className="btn-group">
                           <button className="btn btn-secondary" style={{ padding: '0.3rem 0.6rem', fontSize: '0.8rem' }} onClick={() => startEdit(p)}>
-                            {user?.role === 'admin' ? 'แก้ไข' : 'แก้ไขสต็อก'}
+                            {user?.role === 'admin' ? t('editBtn') : t('editStockBtn')}
                           </button>
                           {user?.role === 'admin' && (
-                            <button className="btn btn-danger" style={{ padding: '0.3rem 0.6rem', fontSize: '0.8rem' }} onClick={() => handleDelete(p.id)}>ลบ</button>
+                            <button className="btn btn-danger" style={{ padding: '0.3rem 0.6rem', fontSize: '0.8rem' }} onClick={() => handleDelete(p.id)}>{t('deleteBtn')}</button>
                           )}
                         </div>
                       </td>
@@ -426,64 +427,64 @@ export default function Manager() {
         <div className="glass-card">
           <h2 className="card-title" style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem' }}>
             <Icons.Book style={{ color: 'var(--accent-gold)' }} />
-            <span>รายการใบสั่งซื้อและการจัดส่ง</span>
+            <span>{t('ordersAndShippingTitle')}</span>
           </h2>
           <div className="table-responsive">
             <table className="data-table">
               <thead>
                 <tr>
                   <th>Order ID</th>
-                  <th>สินค้า / ที่อยู่</th>
-                  <th>ยอดรวม</th>
-                  <th>สถานะ</th>
-                  <th>ช่องทาง</th>
-                  <th>ดำเนินการ</th>
+                  <th>{t('productAddressCol')}</th>
+                  <th>{t('totalAmountCol')}</th>
+                  <th>{t('statusCol')}</th>
+                  <th>{t('channelCol')}</th>
+                  <th>{t('actionCol')}</th>
                 </tr>
               </thead>
               <tbody id="manager-orders-table">
                 {orders.length === 0 ? (
-                  <tr><td colSpan={6} style={{ textAlign: 'center', color: 'var(--text-muted)' }}>ไม่มีรายการใบสั่งซื้อ</td></tr>
+                  <tr><td colSpan={6} style={{ textAlign: 'center', color: 'var(--text-muted)' }}>{t('noOrdersList')}</td></tr>
                 ) : orders.map((ord) => (
                   <tr key={ord.id}>
                     <td><strong>{ord.id}</strong></td>
                     <td>
-                      <div style={{ fontSize: '0.85rem' }}>{ord.items?.map((i) => `${i.name} (${i.quantity} เรือน)`).join(', ')}</div>
+                      <div style={{ fontSize: '0.85rem' }}>{ord.items?.map((i) => `${lang === 'en' && i.nameEn ? i.nameEn : i.name} (${t('stockLeft').replace('{count}', i.quantity)})`).join(', ')}</div>
                       <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '0.2rem' }}>
-                        ผู้ซื้อ: {ord.email} | ที่อยู่: {ord.address}
+                        {t('buyerAddressLabel').replace('{email}', ord.email).replace('{address}', ord.address)}
                       </div>
                     </td>
                     <td><strong>฿ {ord.total?.toLocaleString()}</strong></td>
                     <td>
-                      {ord.status === 'pending_payment' && <span className="badge" style={{ background: 'rgba(255,165,0,0.18)', color: '#ffa94d', border: '1px solid #ffa94d55' }}>รอชำระเงิน</span>}
-                      {ord.status === 'pending_review' && <span className="badge" style={{ background: 'rgba(59,130,246,0.18)', color: '#60a5fa', border: '1px solid #60a5fa55' }}>รอตรวจสลิป</span>}
-                      {ord.status === 'manager_approved' && <span className="badge" style={{ background: 'rgba(59,130,246,0.18)', color: '#60a5fa', border: '1px solid #60a5fa55' }}>รอ Admin ยืนยัน</span>}
-                      {ord.status === 'confirmed' && <span className="badge badge-paid">เตรียมส่ง (ยืนยันแล้ว)</span>}
-                      {ord.status === 'shipped' && <span className="badge badge-shipped">ส่งแล้ว</span>}
-                      {ord.status === 'cancelled' && <span className="badge badge-cancelled">ยกเลิก</span>}
-                      {ord.status === 'paid' && <span className="badge badge-paid">เตรียมส่ง</span>}
+                      {ord.status === 'pending_payment' && <span className="badge" style={{ background: 'rgba(255,165,0,0.18)', color: '#ffa94d', border: '1px solid #ffa94d55' }}>{t('statusPendingPayment')}</span>}
+                      {ord.status === 'pending_review' && <span className="badge" style={{ background: 'rgba(59,130,246,0.18)', color: '#60a5fa', border: '1px solid #60a5fa55' }}>{t('statusPendingReview')}</span>}
+                      {ord.status === 'manager_approved' && <span className="badge" style={{ background: 'rgba(59,130,246,0.18)', color: '#60a5fa', border: '1px solid #60a5fa55' }}>{t('statusManagerApproved')}</span>}
+                      {ord.status === 'confirmed' && <span className="badge badge-paid">{t('statusConfirmedReadyToShip')}</span>}
+                      {ord.status === 'shipped' && <span className="badge badge-shipped">{t('statusShipped')}</span>}
+                      {ord.status === 'cancelled' && <span className="badge badge-cancelled">{t('statusCancelled')}</span>}
+                      {ord.status === 'paid' && <span className="badge badge-paid">{t('statusPaidReadyToShip')}</span>}
                     </td>
                     <td>
                       <small style={{ color: 'var(--text-muted)', fontFamily: 'monospace' }}>{ord.payment?.toUpperCase()}</small>
-                      {ord.slip && <><br /><button className="btn btn-secondary" style={{ padding: '0.15rem 0.4rem', fontSize: '0.75rem', marginTop: '0.3rem' }} onClick={() => setSlipModal(slipModal === ord.id ? null : ord.id)}>ดูสลิป</button></>}
+                      {ord.slip && <><br /><button className="btn btn-secondary" style={{ padding: '0.15rem 0.4rem', fontSize: '0.75rem', marginTop: '0.3rem' }} onClick={() => setSlipModal(slipModal === ord.id ? null : ord.id)}>{t('viewSlipBtn')}</button></>}
                     </td>
                     <td style={{ minWidth: '220px' }}>
                       {ord.slip && slipModal === ord.id && (
                         <div style={{ marginBottom: '0.4rem', borderRadius: '8px', overflow: 'hidden', border: '1px solid var(--glass-border)', maxWidth: '180px' }}>
-                          <img src={ord.slip} alt="สลิป" style={{ width: '100%', display: 'block' }} />
+                          <img src={ord.slip} alt="slip" style={{ width: '100%', display: 'block' }} />
                         </div>
                       )}
                       {ord.status === 'pending_payment' && (
-                        <span style={{ color: '#ffa94d', fontSize: '0.8rem' }}>ลูกค้ายกยอดรอโอนเงิน (ภายใน 24 ชม.)</span>
+                        <span style={{ color: '#ffa94d', fontSize: '0.8rem' }}>{t('customerPendingTransfer')}</span>
                       )}
                       {ord.status === 'pending_review' && (
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
                           <div style={{ display: 'flex', gap: '0.4rem', flexWrap: 'wrap' }}>
-                            <button className="btn btn-primary" style={{ padding: '0.25rem 0.6rem', fontSize: '0.8rem', background: 'linear-gradient(135deg,#22c55e,#16a34a)', border: 'none' }} onClick={() => approveSlip(ord.id)}>อนุมัติสลิป</button>
-                            <button className="btn btn-secondary" style={{ padding: '0.25rem 0.6rem', fontSize: '0.8rem', background: 'rgba(239,68,68,0.15)', color: '#f87171', border: '1px solid #f8717155' }} onClick={() => rejectSlip(ord.id)}>ปฏิเสธ</button>
+                            <button className="btn btn-primary" style={{ padding: '0.25rem 0.6rem', fontSize: '0.8rem', background: 'linear-gradient(135deg,#22c55e,#16a34a)', border: 'none' }} onClick={() => approveSlip(ord.id)}>{t('approveSlipBtn')}</button>
+                            <button className="btn btn-secondary" style={{ padding: '0.25rem 0.6rem', fontSize: '0.8rem', background: 'rgba(239,68,68,0.15)', color: '#f87171', border: '1px solid #f8717155' }} onClick={() => rejectSlip(ord.id)}>{t('rejectSlipBtn')}</button>
                           </div>
                           <input
                             type="text"
-                            placeholder="เหตุผลปฏิเสธ..."
+                            placeholder={t('rejectReasonPlaceholder')}
                             value={rejectNotes[ord.id] || ''}
                             onChange={e => setRejectNotes(prev => ({...prev, [ord.id]: e.target.value}))}
                             style={{ padding: '0.3rem 0.5rem', fontSize: '0.78rem', borderRadius: '6px', border: '1px solid var(--glass-border)', background: 'rgba(255,255,255,0.05)', color: 'var(--text-primary)', width: '100%' }}
@@ -491,18 +492,18 @@ export default function Manager() {
                         </div>
                       )}
                       {ord.status === 'manager_approved' && (
-                        <span style={{ color: '#60a5fa', fontSize: '0.8rem' }}>รอ Admin ยืนยันขั้นสุดท้าย...</span>
+                        <span style={{ color: '#60a5fa', fontSize: '0.8rem' }}>{t('waitAdminFinalConfirm')}</span>
                       )}
                       {(ord.status === 'confirmed' || ord.status === 'paid') && (
-                        <button className="btn btn-primary" style={{ padding: '0.25rem 0.6rem', fontSize: '0.8rem' }} onClick={() => shipOrder(ord.id)}>จัดส่ง</button>
+                        <button className="btn btn-primary" style={{ padding: '0.25rem 0.6rem', fontSize: '0.8rem' }} onClick={() => shipOrder(ord.id)}>{t('shipBtn')}</button>
                       )}
                       {ord.status === 'shipped' && (
                         <span style={{ color: '#4ade80', fontSize: '0.8rem', fontWeight: 700, display: 'inline-flex', alignItems: 'center', gap: '0.2rem' }}>
-                          <Icons.Check /><span>นำจ่ายแล้ว</span>
+                          <Icons.Check /><span>{t('deliveredStatusLabel')}</span>
                         </span>
                       )}
                       {ord.status === 'cancelled' && (
-                        <span style={{ color: 'var(--text-muted)', fontSize: '0.8rem' }}>ยกเลิกแล้ว</span>
+                        <span style={{ color: 'var(--text-muted)', fontSize: '0.8rem' }}>{t('cancelledStatusLabel')}</span>
                       )}
                     </td>
                   </tr>

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { useAuth } from '../App';
+import { useAuth, useLanguage } from '../App';
 import { useCart } from '../CartContext';
 import { api } from '../api';
 import Header from '../components/Header';
@@ -8,6 +8,7 @@ import { Icons } from '../components/Icons';
 
 export default function Checkout() {
   const { user } = useAuth();
+  const { t, lang } = useLanguage();
   const { cart: contextCart, cartTotal: contextCartTotal, clearCart, removeSelectedFromCart } = useCart();
   const navigate = useNavigate();
   const location = useLocation();
@@ -18,6 +19,7 @@ export default function Checkout() {
   const checkoutTotal = buyNowItem ? buyNowItem.price * buyNowItem.quantity : (stateItems ? stateItems.reduce((s, i) => s + i.price * i.quantity, 0) : contextCartTotal);
 
   const [form, setForm] = useState({ email: '', address: '', payment: 'promptpay' });
+  const [emailSuggestions, setEmailSuggestions] = useState([]);
   const [slipBase64, setSlipBase64] = useState(null);
   const [notification, setNotification] = useState(null);
   const [submitting, setSubmitting] = useState(false);
@@ -57,11 +59,11 @@ export default function Checkout() {
             const data = await res.json();
             setQrCode(data.qrCode);
           } else {
-            showNotif('ไม่สามารถสร้าง QR Code ได้', false);
+            showNotif(t('loadQRFail').replace('❌ ', ''), false);
           }
         })
         .catch(() => {
-          showNotif('เชื่อมต่อระบบชำระเงินล้มเหลว', false);
+          showNotif(t('serverErrorGeneric'), false);
         })
         .finally(() => {
           setLoadingQR(false);
@@ -102,10 +104,10 @@ export default function Checkout() {
         setOrderSuccess(true);
       } else {
         const d = await res.json();
-        showNotif(d.error || 'การสั่งซื้อล้มเหลว', false);
+        showNotif(d.error || t('checkoutFailedToast'), false);
       }
     } catch {
-      showNotif('เซิร์ฟเวอร์ขัดข้อง กรุณาลองใหม่', false);
+      showNotif(t('serverErrorGeneric'), false);
     } finally {
       setSubmitting(false);
     }
@@ -113,44 +115,24 @@ export default function Checkout() {
 
   // ─── Success Screen ────────────────────────────────────────────────────────
   if (orderSuccess) {
-    let title = "สั่งซื้อสำเร็จ! 🎉";
+    let title = t('orderSuccessTitle1');
     let icon = "🛍️";
-    let desc = (
-      <>
-        ระบบได้รับคำสั่งซื้อของท่านเรียบร้อยแล้ว<br />
-        ขอบพระคุณที่ไว้วางใจเลือกซื้อสินค้ากับ WatchMart
-      </>
-    );
+    let desc = <span dangerouslySetInnerHTML={{ __html: t('orderSuccessDesc1') }} />;
 
     if (form.payment === 'promptpay' || form.payment === 'bank_transfer') {
       if (slipBase64) {
-        title = "ส่งหลักฐานสำเร็จ! ⏳";
+        title = t('orderSuccessTitle2');
         icon = "⏳";
-        desc = (
-          <>
-            ระบบได้รับหลักฐานการชำระเงินของท่านแล้ว<br />
-            กำลังอยู่ระหว่างการตรวจสอบความถูกต้องโดย Manager & Admin
-          </>
-        );
+        desc = <span dangerouslySetInnerHTML={{ __html: t('orderSuccessDesc2') }} />;
       } else {
-        title = "สั่งซื้อสำเร็จ! 💸";
+        title = t('orderSuccessTitle3');
         icon = "💸";
-        desc = (
-          <>
-            กรุณาชำระเงินและแนบสลิปการโอนเงิน**ภายใน 24 ชั่วโมง**<br />
-            โดยท่านสามารถแนบสลิปได้ที่หน้า <strong>"ประวัติใบสั่งซื้อของฉัน"</strong>
-          </>
-        );
+        desc = <span dangerouslySetInnerHTML={{ __html: t('orderSuccessDesc3') }} />;
       }
     } else if (form.payment === 'cod') {
-      title = "สั่งซื้อสำเร็จ! 📦";
+      title = t('orderSuccessTitle4');
       icon = "📦";
-      desc = (
-        <>
-          เรากำลังเตรียมจัดส่งสินค้าของท่าน<br />
-          กรุณาชำระเงินสดปลายทางเมื่อพัสดุจัดส่งถึงมือท่าน
-        </>
-      );
+      desc = <span dangerouslySetInnerHTML={{ __html: t('orderSuccessDesc4') }} />;
     }
 
     return (
@@ -169,7 +151,7 @@ export default function Checkout() {
             </p>
             {orderId && (
               <div style={{ background: 'rgba(255,169,77,0.08)', border: '1px solid rgba(255,169,77,0.3)', borderRadius: '10px', padding: '1rem', marginBottom: '2rem' }}>
-                <div style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>หมายเลขออเดอร์ของคุณ</div>
+                <div style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>{t('orderIdLabel')}</div>
                 <div style={{ fontWeight: 'bold', fontSize: '1.1rem', color: 'var(--accent-gold)', fontFamily: 'monospace' }}>{orderId}</div>
               </div>
             )}
@@ -178,7 +160,7 @@ export default function Checkout() {
               style={{ padding: '0.9rem 2.5rem', fontSize: '1rem' }}
               onClick={() => navigate('/')}
             >
-              กลับไปที่ร้านค้า 🏠
+              {t('backToStoreBtn')}
             </button>
           </div>
         </main>
@@ -197,14 +179,14 @@ export default function Checkout() {
       <main className="main-content">
         {/* Breadcrumb */}
         <nav style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '2rem', fontSize: '0.9rem', color: 'var(--text-muted)' }}>
-          <button onClick={() => navigate('/')} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-muted)', padding: 0 }}>🏠 หน้าหลัก</button>
+          <button onClick={() => navigate('/')} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-muted)', padding: 0 }}>{t('homeBreadcrumb')}</button>
           <span>›</span>
-          <button onClick={() => navigate(-1)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-muted)', padding: 0 }}>ตะกร้าสินค้า</button>
+          <button onClick={() => navigate(-1)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-muted)', padding: 0 }}>{t('cart')}</button>
           <span>›</span>
-          <span style={{ color: 'var(--accent-gold)' }}>ชำระเงิน</span>
+          <span style={{ color: 'var(--accent-gold)' }}>{t('checkout').replace(' 💳', '')}</span>
         </nav>
 
-        <h1 style={{ fontSize: '1.8rem', fontWeight: 700, marginBottom: '2rem' }}>💳 ชำระเงินและยืนยันคำสั่งซื้อ</h1>
+        <h1 style={{ fontSize: '1.8rem', fontWeight: 700, marginBottom: '2rem' }}>{t('checkoutConfirmTitle')}</h1>
 
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 380px', gap: '2rem', alignItems: 'start' }}>
 
@@ -213,24 +195,91 @@ export default function Checkout() {
 
             {/* Contact Info */}
             <div style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid var(--glass-border)', borderRadius: '16px', padding: '1.8rem' }}>
-              <h3 style={{ fontSize: '1.1rem', marginBottom: '1.2rem', color: 'var(--accent-gold)' }}>📋 ข้อมูลติดต่อ</h3>
-              <div className="form-group">
-                <label className="form-label">อีเมลติดต่อ *</label>
+              <h3 style={{ fontSize: '1.1rem', marginBottom: '1.2rem', color: 'var(--accent-gold)' }}>{t('contactInfoTitle')}</h3>
+              <div className="form-group" style={{ position: 'relative' }}>
+                <label className="form-label">{t('contactEmailLabel')}</label>
                 <input
                   className="form-input"
-                  type="email"
-                  placeholder="example@email.com"
+                  type="text"
+                  placeholder="example@gmail.com"
                   value={form.email}
-                  onChange={(e) => setForm((f) => ({ ...f, email: e.target.value }))}
+                  autoComplete="email"
+                  onChange={(e) => {
+                    const val = e.target.value;
+                    setForm((f) => ({ ...f, email: val }));
+                    if (val.includes('@')) {
+                      const [local, domainPart] = val.split('@');
+                      const allDomains = ['gmail.com', 'hotmail.com', 'outlook.com', 'yahoo.com', 'icloud.com', 'live.com', 'proton.me', 'me.com'];
+                      const filtered = allDomains.filter(d => d.startsWith(domainPart || ''));
+                      setEmailSuggestions(filtered.length > 0 ? filtered.map(d => `${local}@${d}`) : []);
+                    } else {
+                      setEmailSuggestions([]);
+                    }
+                  }}
+                  onBlur={() => setTimeout(() => setEmailSuggestions([]), 180)}
                   required
                 />
+                {emailSuggestions.length > 0 && (
+                  <div style={{
+                    position: 'absolute',
+                    top: '100%',
+                    left: 0,
+                    right: 0,
+                    background: 'var(--bg-secondary, #1a1b1e)',
+                    border: '1px solid var(--glass-border)',
+                    borderRadius: '8px',
+                    overflow: 'hidden',
+                    zIndex: 100,
+                    boxShadow: '0 8px 24px rgba(0,0,0,0.4)',
+                    marginTop: '4px',
+                  }}>
+                    {emailSuggestions.map((sug) => {
+                      const domain = sug.split('@')[1];
+                      const domainIcons = {
+                        'gmail.com': '🔴',
+                        'hotmail.com': '🔵',
+                        'outlook.com': '🔵',
+                        'yahoo.com': '🟣',
+                        'icloud.com': '⚪',
+                        'live.com': '🔵',
+                        'proton.me': '🟢',
+                        'me.com': '⚪',
+                      };
+                      return (
+                        <div
+                          key={sug}
+                          onMouseDown={() => {
+                            setForm((f) => ({ ...f, email: sug }));
+                            setEmailSuggestions([]);
+                          }}
+                          style={{
+                            padding: '0.65rem 1rem',
+                            cursor: 'pointer',
+                            fontSize: '0.88rem',
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '0.5rem',
+                            borderBottom: '1px solid rgba(255,255,255,0.04)',
+                            transition: 'background 0.15s',
+                          }}
+                          onMouseEnter={(e) => e.currentTarget.style.background = 'rgba(197,168,128,0.1)'}
+                          onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
+                        >
+                          <span>{domainIcons[domain] || '📧'}</span>
+                          <span style={{ color: 'var(--text-muted)' }}>{sug.split('@')[0]}</span>
+                          <span style={{ color: 'var(--accent-gold)', fontWeight: 600 }}>@{domain}</span>
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
               </div>
               <div className="form-group" style={{ marginTop: '1rem' }}>
-                <label className="form-label">ที่อยู่จัดส่ง *</label>
+                <label className="form-label">{t('shippingAddressLabel')}</label>
                 <textarea
                   className="form-input"
                   rows={3}
-                  placeholder="บ้านเลขที่, ถนน, แขวง, เขต, จังหวัด, รหัสไปรษณีย์"
+                  placeholder={t('addressPlaceholderCheckout')}
                   value={form.address}
                   onChange={(e) => setForm((f) => ({ ...f, address: e.target.value }))}
                   required
@@ -240,13 +289,13 @@ export default function Checkout() {
 
             {/* Payment Method */}
             <div style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid var(--glass-border)', borderRadius: '16px', padding: '1.8rem' }}>
-              <h3 style={{ fontSize: '1.1rem', marginBottom: '1.2rem', color: 'var(--accent-gold)' }}>วิธีชำระเงิน</h3>
+              <h3 style={{ fontSize: '1.1rem', marginBottom: '1.2rem', color: 'var(--accent-gold)' }}>{t('paymentMethodTitle')}</h3>
 
               <div style={{ display: 'flex', flexDirection: 'column', gap: '0.8rem', marginBottom: '1.5rem' }}>
                 {[
-                  { value: 'promptpay', label: 'PromptPay QR Code', desc: 'สแกน QR แล้วแนบสลิป' },
-                  { value: 'bank_transfer', label: 'โอนเงินผ่านธนาคาร', desc: 'โอนแล้วแนบสลิปยืนยัน' },
-                  { value: 'cod', label: 'ชำระเงินปลายทาง (COD)', desc: 'ชำระเงินเมื่อรับสินค้า' },
+                  { value: 'promptpay', label: t('paymentPromptPay'), desc: t('paymentPromptPayDesc') },
+                  { value: 'bank_transfer', label: t('paymentBank'), desc: t('paymentBankDesc') },
+                  { value: 'cod', label: t('paymentCOD'), desc: t('paymentCODDesc') },
                 ].map(({ value, label, desc }) => (
                   <label
                     key={value}
@@ -277,13 +326,13 @@ export default function Checkout() {
               {/* QR Code for PromptPay */}
               {form.payment === 'promptpay' && (
                 <div style={{ textAlign: 'center', marginBottom: '1.5rem', padding: '1.5rem', background: 'white', borderRadius: '12px', display: 'inline-block', width: '100%', boxSizing: 'border-box' }}>
-                  <div style={{ color: '#0c4a60', fontWeight: 'bold', fontSize: '1.1rem', marginBottom: '0.8rem' }}>PromptPay QR Code</div>
+                  <div style={{ color: '#0c4a60', fontWeight: 'bold', fontSize: '1.1rem', marginBottom: '0.8rem' }}>{t('paymentPromptPay')}</div>
                   
                   {loadingQR ? (
                     <div style={{ height: '160px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#666' }}>
                       <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem' }}>
                         <Icons.Loading style={{ color: '#0c4a60' }} />
-                        <span>กำลังสร้าง QR Code...</span>
+                        <span>{t('generatingQR')}</span>
                       </span>
                     </div>
                   ) : qrCode ? (
@@ -294,25 +343,81 @@ export default function Checkout() {
                     />
                   ) : (
                     <div style={{ height: '160px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#ff6b6b' }}>
-                      ❌ ไม่สามารถโหลด QR Code ได้
+                      {t('loadQRFail')}
                     </div>
                   )}
 
                   <div style={{ marginTop: '0.8rem', color: '#0c4a60', fontWeight: 700, fontSize: '1.2rem' }}>฿ {checkoutTotal.toLocaleString()}</div>
-                  <div style={{ color: '#666', fontSize: '0.8rem', marginTop: '0.3rem' }}>สแกน QR Code ด้านบนเพื่อชำระเงินและแนบสลิปด้านล่าง</div>
-                  <div style={{ color: '#ff922b', fontSize: '0.7rem', marginTop: '0.3rem', fontWeight: 'bold' }}>⚠️ นี่คือระบบจำลองสำหรับโครงงาน CSI204 เท่านั้น ห้ามสแกนเพื่อโอนเงินจริง</div>
+                  <div style={{ color: '#666', fontSize: '0.8rem', marginTop: '0.3rem' }}>{t('scanQRInstruction')}</div>
+                </div>
+              )}
+
+              {/* Bank Account Details */}
+              {form.payment === 'bank_transfer' && (
+                <div style={{ 
+                  padding: '1.2rem', 
+                  background: 'rgba(255,255,255,0.02)', 
+                  border: '1px solid var(--glass-border)', 
+                  borderRadius: '12px', 
+                  marginBottom: '1.5rem' 
+                }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                    <div style={{ 
+                      width: '48px', 
+                      height: '48px', 
+                      background: '#138c45', 
+                      borderRadius: '10px', 
+                      display: 'flex', 
+                      alignItems: 'center', 
+                      justifyContent: 'center',
+                      fontWeight: 'bold',
+                      color: 'white',
+                      fontSize: '0.8rem',
+                      fontFamily: "'Oswald', sans-serif",
+                      flexShrink: 0
+                    }}>
+                      K-BANK
+                    </div>
+                    <div>
+                      <div style={{ fontWeight: 600, color: 'var(--accent-gold)', fontSize: '0.95rem' }}>
+                        ธนาคารกสิกรไทย (Kasikornbank)
+                      </div>
+                      <div style={{ fontSize: '1.15rem', fontWeight: 'bold', letterSpacing: '1px', margin: '0.2rem 0', color: '#f5f5f7' }}>
+                        012-3-45678-9
+                      </div>
+                      <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>
+                        ชื่อบัญชี: บจก. วอทช์มาร์ท จำกัด (WatchMart Co., Ltd.)
+                      </div>
+                    </div>
+                  </div>
+                  <div style={{ 
+                    marginTop: '0.8rem', 
+                    paddingTop: '0.8rem', 
+                    borderTop: '1px dashed var(--glass-border)', 
+                    display: 'flex', 
+                    justifyContent: 'space-between', 
+                    alignItems: 'center' 
+                  }}>
+                    <span style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>ยอดเงินที่ต้องโอน:</span>
+                    <span style={{ fontWeight: 'bold', fontSize: '1.15rem', color: 'var(--accent-gold)' }}>
+                      ฿ {checkoutTotal.toLocaleString()}
+                    </span>
+                  </div>
                 </div>
               )}
 
               {/* Slip upload */}
               {(form.payment === 'promptpay' || form.payment === 'bank_transfer') && (
                 <div className="form-group">
-                  <label className="form-label">แนบสลิปการโอนเงิน (ไม่บังคับ — แนบภายหลังได้จากประวัติสั่งซื้อภายใน 24 ชม.)</label>
+                  <label className="form-label">
+                    {form.payment === 'bank_transfer' ? t('attachSlipRequired') : t('attachSlipOptional')}
+                  </label>
                   <input
                     type="file"
                     className="form-input"
                     accept="image/*"
                     onChange={handleSlip}
+                    required={form.payment === 'bank_transfer'}
                     style={{ padding: '0.5rem' }}
                   />
                   {slipBase64 && (
@@ -332,12 +437,12 @@ export default function Checkout() {
               {submitting ? (
                 <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem', justifyContent: 'center', width: '100%' }}>
                   <Icons.Loading />
-                  <span>กำลังดำเนินการ...</span>
+                  <span>{t('processingLabel')}</span>
                 </span>
               ) : (
                 <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem', justifyContent: 'center', width: '100%' }}>
                   <Icons.Check />
-                  <span>ยืนยันการสั่งซื้อ</span>
+                  <span>{t('confirmOrderBtn')}</span>
                 </span>
               )}
             </button>
@@ -346,19 +451,19 @@ export default function Checkout() {
           {/* RIGHT: Order Summary */}
           <div style={{ position: 'sticky', top: '100px' }}>
             <div style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid var(--glass-border)', borderRadius: '16px', padding: '1.8rem' }}>
-              <h3 style={{ fontSize: '1.1rem', marginBottom: '1.2rem', color: 'var(--accent-gold)' }}>สรุปคำสั่งซื้อ</h3>
+              <h3 style={{ fontSize: '1.1rem', marginBottom: '1.2rem', color: 'var(--accent-gold)' }}>{t('orderSummaryTitle')}</h3>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', marginBottom: '1.5rem' }}>
                 {checkoutItems.map((item) => (
                   <div key={item.id} style={{ display: 'flex', gap: '0.8rem', alignItems: 'center' }}>
                     {item.image ? (
-                      <img src={item.image} alt={item.name} style={{ width: '50px', height: '50px', objectFit: 'cover', borderRadius: '8px', flexShrink: 0 }} />
+                      <img src={item.image} alt={lang === 'en' && item.nameEn ? item.nameEn : item.name} style={{ width: '50px', height: '50px', objectFit: 'cover', borderRadius: '8px', flexShrink: 0 }} />
                     ) : (
                       <div style={{ width: '50px', height: '50px', background: 'rgba(197,168,128,0.1)', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                         <Icons.Watch style={{ width: '22px', height: '22px', color: 'var(--accent-gold)' }} />
                       </div>
                     )}
                     <div style={{ flex: 1, minWidth: 0 }}>
-                      <div style={{ fontSize: '0.85rem', fontWeight: 600, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{item.name}</div>
+                      <div style={{ fontSize: '0.85rem', fontWeight: 600, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{lang === 'en' && item.nameEn ? item.nameEn : item.name}</div>
                       <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>฿ {item.price.toLocaleString()} × {item.quantity}</div>
                     </div>
                     <div style={{ fontWeight: 700, color: 'var(--accent-gold)', fontSize: '0.9rem', flexShrink: 0 }}>
@@ -369,13 +474,13 @@ export default function Checkout() {
               </div>
               <div style={{ borderTop: '1px solid var(--glass-border)', paddingTop: '1rem' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem', color: 'var(--text-muted)', fontSize: '0.9rem' }}>
-                  <span>ราคาสินค้า</span><span>฿ {checkoutTotal.toLocaleString()}</span>
+                  <span>{t('productPriceTotalLabel')}</span><span>฿ {checkoutTotal.toLocaleString()}</span>
                 </div>
                 <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem', color: 'var(--text-muted)', fontSize: '0.9rem' }}>
-                  <span>ค่าจัดส่ง</span><span style={{ color: '#51cf66' }}>ฟรี</span>
+                  <span>{t('shippingFeeLabel')}</span><span style={{ color: '#51cf66' }}>{t('freeLabel')}</span>
                 </div>
                 <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '1.2rem', fontWeight: 700, marginTop: '0.8rem', paddingTop: '0.8rem', borderTop: '1px solid var(--glass-border)' }}>
-                  <span>ยอดรวม</span>
+                  <span>{t('grandTotalLabel')}</span>
                   <span style={{ color: 'var(--accent-gold)' }}>฿ {checkoutTotal.toLocaleString()}</span>
                 </div>
               </div>

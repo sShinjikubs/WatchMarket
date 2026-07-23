@@ -16,6 +16,7 @@ export interface Profile {
 export interface Product {
   id: string;
   name: string;
+  nameEn?: string;
   brand: string;
   category: string;
   price: number;

@@ -1,9 +1,11 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { api } from '../api';
+import { useLanguage } from '../App';
 
 export default function SystemLogger({ className }) {
   const [logs, setLogs] = useState([]);
   const listRef = useRef(null);
+  const { t } = useLanguage();
 
   const fetchLogs = async () => {
     try {
@@ -37,7 +39,7 @@ export default function SystemLogger({ className }) {
       <ul className="log-list" ref={listRef}>
         {logs.length === 0 && (
           <li className="log-entry" style={{ color: 'var(--text-muted)' }}>
-            No system logs found
+            {t('noSystemLogs')}
           </li>
         )}
         {logs.map((log, i) => (

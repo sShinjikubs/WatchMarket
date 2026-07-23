@@ -12,7 +12,7 @@ const HERO_SLIDES = [
   {
     title: "TAG HEUER CARRERA",
     subtitle: "X PORSCHE AUTOMATIC",
-    desc: "Luxury sport design reflecting racing history, a world-class concept in a premium chronograph dial.",
+    descKey: "heroDesc1",
     image: "/images/TAG Heuer/More/TAG Heuer Carrera Chronograph x Porsche Automatic, 44 mm, Steel Front.avif",
     bg: "linear-gradient(135deg, #181d2c 0%, #151515 100%)",
     accent: "var(--accent-gold)",
@@ -21,7 +21,7 @@ const HERO_SLIDES = [
   {
     title: "SEIKO PROSPEX",
     subtitle: "MONSTER CMU 60TH ANNIVERSARY",
-    desc: "Limited edition celebrating the 60th anniversary, crafted with strength using high-quality mechanics and stainless steel.",
+    descKey: "heroDesc2",
     image: "/images/SEIKO/SEIKO PROSPEX MONSTER CMU 60th Anniversary Limited Edition หน้า.webp",
     bg: "linear-gradient(135deg, #112233 0%, #0a111a 100%)",
     accent: "#ff6b6b",
@@ -30,7 +30,7 @@ const HERO_SLIDES = [
   {
     title: "LUMINOX NAVY SEAL",
     subtitle: "BEAR GRYLLS SURVIVAL",
-    desc: "The ultimate survivor watch, water-resistant to 200m, featuring tritium gas tubes providing illumination for up to 25 years.",
+    descKey: "heroDesc3",
     image: "/images/LUMINOX/Luminox นาฬิกาข้อมือ BEAR GRYLLS SURVIVAL 3720 SEA SERIES รุ่น XB.3729.NGU หน้า.webp",
     bg: "linear-gradient(135deg, #1a221f 0%, #111513 100%)",
     accent: "#4ade80",
@@ -86,7 +86,7 @@ function TransparentWatchImage({ src, alt, style, className }) {
 
 export default function Storefront() {
   const { user } = useAuth();
-  const { t } = useLanguage();
+  const { t, lang } = useLanguage();
   const navigate = useNavigate();
   const { addToCart } = useCart();
   const { toggleWishlist, isInWishlist } = useWishlist();
@@ -158,9 +158,9 @@ export default function Storefront() {
     if (product.stock <= 0) return;
     const ok = addToCart(product, 1);
     if (ok) {
-      showNotif(`Added "${product.name}" to cart`);
+      showNotif(t('addedToCartNotif').replace('{name}', product.name));
     } else {
-      showNotif(`Product "${product.name}" is out of stock!`, false);
+      showNotif(t('outOfStockNotif').replace('{name}', product.name), false);
     }
   };
 
@@ -179,7 +179,7 @@ export default function Storefront() {
       <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', margin: '0.3rem 0 0 0', lineHeight: 1 }}>
         <div style={{ display: 'inline-flex' }}>{stars}</div>
         <span style={{ color: 'var(--text-light)', fontSize: '0.78rem', fontWeight: 'bold' }}>{roundedRating}</span>
-        <span style={{ color: 'var(--text-muted)', fontSize: '0.72rem' }}>({count > 0 ? `${count} reviews` : '0 reviews'})</span>
+        <span style={{ color: 'var(--text-muted)', fontSize: '0.72rem' }}>({count > 0 ? `${count} ${t('reviews')}` : `0 ${t('reviews')}`})</span>
       </div>
     );
   };
@@ -279,7 +279,7 @@ export default function Storefront() {
               lineHeight: 1.5,
               margin: '0.4rem 0 0.8rem 0'
             }}>
-              {HERO_SLIDES[currentSlide].desc}
+              {t(HERO_SLIDES[currentSlide].descKey)}
             </p>
             <button 
               className="btn btn-primary" 
@@ -298,7 +298,7 @@ export default function Storefront() {
                 if (matched) navigate(`/product/${matched.id}`);
               }}
             >
-              View Details
+              {t('viewProductDetails')}
             </button>
           </div>
 
@@ -417,7 +417,7 @@ export default function Storefront() {
                   <Icons.Star style={{ color: 'var(--accent-gold)' }} />
                   <span>{t('recommended')}</span>
                 </h2>
-                <p style={{ color: 'var(--text-muted)', fontSize: '0.85rem', marginTop: '0.3rem' }}>Our most popular premium curated luxury watches</p>
+                <p style={{ color: 'var(--text-muted)', fontSize: '0.85rem', marginTop: '0.3rem' }}>{t('recommendedDesc')}</p>
               </div>
             </div>
             <div className="products-grid">
@@ -428,8 +428,8 @@ export default function Storefront() {
                       onClick={(e) => {
                         e.stopPropagation();
                         if (!user) {
-                           navigate('/register');
-                           return;
+                          navigate('/register');
+                          return;
                         }
                         toggleWishlist(p);
                       }}
@@ -476,12 +476,12 @@ export default function Storefront() {
                   </div>
                   <div className="product-card-details">
                     <span className="product-card-brand">{p.brand}</span>
-                    <h3 className="product-card-title">{p.name}</h3>
+                    <h3 className="product-card-title">{lang === 'en' && p.nameEn ? p.nameEn : p.name}</h3>
                     {renderRatingStars(p.rating, p.reviewCount)}
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '1rem' }}>
                       <span className="product-card-price">฿ {p.price.toLocaleString()}</span>
                       <span className="product-card-stock" style={{ color: p.stock === 0 ? '#ff6b6b' : p.stock <= 3 ? '#ff922b' : '#51cf66' }}>
-                        {p.stock === 0 ? 'Out of Stock' : `Stock: ${p.stock} units`}
+                        {p.stock === 0 ? t('outOfStock') : t('stockLeft').replace('{count}', p.stock)}
                       </span>
                     </div>
                     <button
@@ -490,7 +490,7 @@ export default function Storefront() {
                       disabled={p.stock === 0}
                       onClick={(e) => { e.stopPropagation(); handleAddToCart(p); }}
                     >
-                      {p.stock === 0 ? 'Out of Stock' : 'Add to Cart'}
+                      {p.stock === 0 ? t('tempOutOfStock') : t('addToCartNoEmoji')}
                     </button>
                   </div>
                 </div>
@@ -508,7 +508,7 @@ export default function Storefront() {
                   <Icons.Sparkle style={{ color: 'var(--accent-gold)' }} />
                   <span>{t('newArrivals')}</span>
                 </h2>
-                <p style={{ color: 'var(--text-muted)', fontSize: '0.85rem', marginTop: '0.3rem' }}>นาฬิกาดีไซน์ใหม่ล่าสุดที่อัปเดตลงระบบ</p>
+                <p style={{ color: 'var(--text-muted)', fontSize: '0.85rem', marginTop: '0.3rem' }}>{t('newArrivalsDesc')}</p>
               </div>
             </div>
             <div className="products-grid">
@@ -567,12 +567,12 @@ export default function Storefront() {
                   </div>
                   <div className="product-card-details">
                     <span className="product-card-brand">{p.brand}</span>
-                    <h3 className="product-card-title">{p.name}</h3>
+                    <h3 className="product-card-title">{lang === 'en' && p.nameEn ? p.nameEn : p.name}</h3>
                     {renderRatingStars(p.rating, p.reviewCount)}
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '1rem' }}>
                       <span className="product-card-price">฿ {p.price.toLocaleString()}</span>
                       <span className="product-card-stock" style={{ color: p.stock === 0 ? '#ff6b6b' : p.stock <= 3 ? '#ff922b' : '#51cf66' }}>
-                        {p.stock === 0 ? 'หมดสต็อก' : `สต็อก: ${p.stock} เรือน`}
+                        {p.stock === 0 ? t('outOfStock') : t('stockLeft').replace('{count}', p.stock)}
                       </span>
                     </div>
                     <button
@@ -581,7 +581,7 @@ export default function Storefront() {
                       disabled={p.stock === 0}
                       onClick={(e) => { e.stopPropagation(); handleAddToCart(p); }}
                     >
-                      {p.stock === 0 ? 'สินค้าหมดชั่วคราว' : 'ใส่ตะกร้าสินค้า'}
+                      {p.stock === 0 ? t('tempOutOfStock') : t('addToCartNoEmoji')}
                     </button>
                   </div>
                 </div>
@@ -599,7 +599,7 @@ export default function Storefront() {
                   <Icons.Tag style={{ color: 'var(--accent-gold)' }} />
                   <span>{t('promotions')}</span>
                 </h2>
-                <p style={{ color: 'var(--text-muted)', fontSize: '0.85rem', marginTop: '0.3rem' }}>โปรโมชั่นลดสูงสุดถึง 15% วันนี้เท่านั้น</p>
+                <p style={{ color: 'var(--text-muted)', fontSize: '0.85rem', marginTop: '0.3rem' }}>{t('promotionsDesc')}</p>
               </div>
             </div>
             <div className="products-grid">
@@ -658,7 +658,7 @@ export default function Storefront() {
                   </div>
                   <div className="product-card-details">
                     <span className="product-card-brand">{p.brand}</span>
-                    <h3 className="product-card-title">{p.name}</h3>
+                    <h3 className="product-card-title">{lang === 'en' && p.nameEn ? p.nameEn : p.name}</h3>
                     {renderRatingStars(p.rating, p.reviewCount)}
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '1rem' }}>
                       <div style={{ display: 'flex', flexDirection: 'column' }}>
@@ -670,7 +670,7 @@ export default function Storefront() {
                         </span>
                       </div>
                       <span className="product-card-stock" style={{ color: p.stock === 0 ? '#ff6b6b' : p.stock <= 3 ? '#ff922b' : '#51cf66' }}>
-                        {p.stock === 0 ? 'หมดสต็อก' : `สต็อก: ${p.stock} เรือน`}
+                        {p.stock === 0 ? t('outOfStock') : t('stockLeft').replace('{count}', p.stock)}
                       </span>
                     </div>
                     <button
@@ -679,7 +679,7 @@ export default function Storefront() {
                       disabled={p.stock === 0}
                       onClick={(e) => { e.stopPropagation(); handleAddToCart(p); }}
                     >
-                      {p.stock === 0 ? 'สินค้าหมดชั่วคราว' : 'ใส่ตะกร้าสินค้า'}
+                      {p.stock === 0 ? t('tempOutOfStock') : t('addToCartNoEmoji')}
                     </button>
                   </div>
                 </div>
@@ -691,9 +691,9 @@ export default function Storefront() {
         {/* Product Filters */}
         <section className="products-section">
           <div className="section-header">
-            <h2 className="section-title">{search ? `ผลการค้นหาสำหรับ "${search}"` : 'สินค้าทั้งหมด'}</h2>
+            <h2 className="section-title">{search ? t('searchResults').replace('{query}', search) : t('productsTitle')}</h2>
             <div className="filter-controls">
-              {[{ key: 'all', label: 'ทั้งหมด' }, { key: 'Luminox', label: 'LUMINOX' }, { key: 'Seiko', label: 'SEIKO' }, { key: 'TAG Heuer', label: 'TAG HEUER' }, { key: 'Rolex', label: 'ROLEX' }].map(({ key, label }) => (
+              {[{ key: 'all', label: t('all') }, { key: 'Luminox', label: 'LUMINOX' }, { key: 'Seiko', label: 'SEIKO' }, { key: 'TAG Heuer', label: 'TAG HEUER' }, { key: 'Rolex', label: 'ROLEX' }].map(({ key, label }) => (
                 <button
                   key={key}
                   className={`filter-btn ${filter === key ? 'active' : ''}`}
@@ -707,9 +707,14 @@ export default function Storefront() {
 
           <div className="products-grid" id="products-list">
             {filteredProducts.length === 0 ? (
-              <p style={{ gridColumn: '1/-1', textAlign: 'center', color: 'var(--text-muted)', padding: '3rem' }}>
-                ไม่พบสินค้าตรงตามเงื่อนไข
-              </p>
+              <div style={{ 
+                textAlign: 'center', 
+                color: 'var(--text-muted)', 
+                padding: '3rem 1rem',
+                fontSize: '1.1rem'
+              }}>
+                {t('noProductsFound')}
+              </div>
             ) : filteredProducts.map((p) => (
               <div key={p.id} className="product-card" onClick={() => navigate(`/product/${p.id}`)} style={{ cursor: 'pointer', position: 'relative' }}>
                 {(user?.role === 'user' || !user) && (
@@ -777,12 +782,12 @@ export default function Storefront() {
                 </div>
                 <div className="product-card-details">
                   <span className="product-card-brand">{p.brand}</span>
-                  <h3 className="product-card-title">{p.name}</h3>
+                  <h3 className="product-card-title">{lang === 'en' && p.nameEn ? p.nameEn : p.name}</h3>
                   {renderRatingStars(p.rating, p.reviewCount)}
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '1rem' }}>
                     <span className="product-card-price">฿ {p.price.toLocaleString()}</span>
                     <span className="product-card-stock" style={{ color: p.stock === 0 ? '#ff6b6b' : p.stock <= 3 ? '#ff922b' : '#51cf66' }}>
-                      {p.stock === 0 ? 'หมดสต็อก' : `สต็อก: ${p.stock} เรือน`}
+                      {p.stock === 0 ? t('outOfStock') : t('stockLeft').replace('{count}', p.stock)}
                     </span>
                   </div>
                   <button
@@ -791,7 +796,7 @@ export default function Storefront() {
                     disabled={p.stock === 0}
                     onClick={(e) => { e.stopPropagation(); handleAddToCart(p); }}
                   >
-                    {p.stock === 0 ? 'สินค้าหมดชั่วคราว' : 'ใส่ตะกร้าสินค้า'}
+                    {p.stock === 0 ? t('tempOutOfStock') : t('addToCartNoEmoji')}
                   </button>
                 </div>
               </div>

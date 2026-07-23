@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../App';
+import { useAuth, useLanguage } from '../App';
 import { api } from '../api';
 import Header from '../components/Header';
 import { Icons } from '../components/Icons';
 
 export default function MyOrders() {
   const { user } = useAuth();
+  const { t, lang } = useLanguage();
   const navigate = useNavigate();
   const [orders, setOrders] = useState([]);
   const [products, setProducts] = useState([]);
@@ -43,13 +44,13 @@ export default function MyOrders() {
   }, [user]);
 
   const cancelOrder = async (id) => {
-    if (!confirm(`ยกเลิกออเดอร์ "${id}" ใช่หรือไม่?`)) return;
+    if (!confirm(t('cancelOrderConfirm').replace('{id}', id))) return;
     const res = await api.cancelOrder(id);
     if (res.ok) {
-      showNotif('ยกเลิกสำเร็จ');
+      showNotif(t('cancelSuccess'));
       refreshData();
     } else {
-      showNotif('ยกเลิกไม่สำเร็จ', false);
+      showNotif(t('cancelFail'), false);
     }
   };
 
@@ -58,10 +59,10 @@ export default function MyOrders() {
       const d = new Date(dateStr);
       if (isNaN(d.getTime())) return null;
       const diffMs = (d.getTime() + 24 * 60 * 60 * 1000) - Date.now();
-      if (diffMs <= 0) return 'หมดเวลาชำระเงิน';
+      if (diffMs <= 0) return t('paymentExpired');
       const hours = Math.floor(diffMs / (3600 * 1000));
       const minutes = Math.floor((diffMs % (3600 * 1000)) / (60 * 1000));
-      return `ชำระเงินภายใน ${hours} ชม. ${minutes} นาที`;
+      return t('paymentRemaining').replace('{hours}', hours).replace('{minutes}', minutes);
     } catch (_) {
       return null;
     }
@@ -76,14 +77,14 @@ export default function MyOrders() {
       try {
         const res = await api.submitSlip(orderId, slipBase64);
         if (res.ok) {
-          showNotif('อัปโหลดสลิปสำเร็จ! รอผู้จัดการตรวจสอบ 🎉');
+          showNotif(t('slipUploadSuccess'));
           refreshData();
         } else {
           const d = await res.json();
-          showNotif(d.error || 'ไม่สามารถอัปโหลดสลิปได้', false);
+          showNotif(d.error || t('slipUploadFail'), false);
         }
       } catch (_) {
-        showNotif('เกิดข้อผิดพลาดกับเซิร์ฟเวอร์', false);
+        showNotif(t('serverErrorGeneric'), false);
       }
     };
     reader.readAsDataURL(file);
@@ -116,24 +117,24 @@ export default function MyOrders() {
       <main className="main-content" style={{ maxWidth: '950px', margin: '80px auto 0 auto', padding: '2.5rem 1.5rem' }}>
         {/* Breadcrumb */}
         <nav style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '2rem', fontSize: '0.9rem', color: 'var(--text-muted)' }}>
-          <button onClick={() => navigate('/')} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-muted)', padding: 0 }}>🏠 หน้าหลัก</button>
+          <button onClick={() => navigate('/')} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-muted)', padding: 0 }}>{t('homeBreadcrumb')}</button>
           <span>›</span>
-          <span style={{ color: 'var(--accent-gold)' }}>ประวัติใบสั่งซื้อของฉัน</span>
+          <span style={{ color: 'var(--accent-gold)' }}>{t('myOrders')}</span>
         </nav>
 
         <h1 style={{ fontSize: '2rem', fontWeight: 700, display: 'inline-flex', alignItems: 'center', gap: '0.6rem', marginBottom: '0.5rem', color: '#f5f5f7' }}>
           <Icons.Book style={{ color: 'var(--accent-gold)' }} />
-          <span>ประวัติใบสั่งซื้อของฉัน</span>
+          <span>{t('myOrders')}</span>
         </h1>
         <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', marginBottom: '2.5rem' }}>
-          คุณสามารถแนบหลักฐานชำระเงินและตรวจสอบสถานะพัสดุสินค้าที่สั่งซื้อทั้งหมดได้ที่นี่
+          {t('myOrdersSubtitle')}
         </p>
 
         <div id="customer-orders-list" style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
           {sortedMyOrders.length === 0 ? (
             <div className="glass-card" style={{ padding: '4rem 2rem', textAlign: 'center', color: 'var(--text-muted)', borderRadius: '16px' }}>
               <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>📭</div>
-              <span>ไม่มีรายการคำสั่งซื้อในประวัติของคุณขณะนี้</span>
+              <span>{t('noOrdersHistory')}</span>
             </div>
           ) : sortedMyOrders.map((ord) => (
             <div key={ord.id} className="order-card" style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid var(--glass-border)', padding: '1.8rem', borderRadius: '16px' }}>
@@ -169,16 +170,16 @@ export default function MyOrders() {
                     ord.status === 'pending_payment' ? '1px solid #ffa94d55' :
                     ord.status === 'pending_review' ? '1px solid #60a5fa55' : undefined
                 }}>
-                  {ord.status === 'pending_payment' ? 'รอชำระเงิน' :
-                   ord.status === 'pending_review' ? 'รอตรวจสลิป' :
-                   ord.status === 'confirmed' ? 'ยืนยันแล้ว' :
-                   ord.status === 'paid' ? 'ชำระเงินแล้ว' :
-                   ord.status === 'shipped' ? 'จัดส่งแล้ว' : 'ยกเลิก'}
+                  {ord.status === 'pending_payment' ? t('statusPendingPayment') :
+                   ord.status === 'pending_review' ? t('statusPendingReview') :
+                   ord.status === 'confirmed' ? t('statusConfirmed') :
+                   ord.status === 'paid' ? t('statusPaid') :
+                   ord.status === 'shipped' ? t('statusShipped') : t('statusCancelled')}
                 </span>
               </div>
 
               <div style={{ marginTop: '1.2rem', display: 'flex', flexDirection: 'column', gap: '0.8rem' }}>
-                <strong style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>รายการสินค้า:</strong>
+                <strong style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>{t('itemsListLabel')}</strong>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
                   {ord.items.map((item) => {
                     const img = getProductImage(item.id);
@@ -186,7 +187,7 @@ export default function MyOrders() {
                       <div key={item.id} style={{ display: 'flex', alignItems: 'center', gap: '1rem', background: 'rgba(255,255,255,0.01)', border: '1px solid rgba(255,255,255,0.03)', padding: '0.8rem', borderRadius: '10px' }}>
                         <div style={{ width: '50px', height: '50px', borderRadius: '6px', overflow: 'hidden', background: 'rgba(255,255,255,0.03)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                           {img ? (
-                            <img src={img} alt={item.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                            <img src={img} alt={lang === 'en' && item.nameEn ? item.nameEn : item.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                           ) : (
                             <Icons.Watch style={{ width: '24px', height: '24px', color: 'rgba(255,255,255,0.2)' }} />
                           )}
@@ -198,33 +199,70 @@ export default function MyOrders() {
                             onMouseLeave={(e) => e.target.style.color = '#f5f5f7'}
                             style={{ background: 'none', border: 'none', color: '#f5f5f7', fontWeight: 600, fontSize: '0.95rem', cursor: 'pointer', padding: 0, textAlign: 'left', display: 'block', transition: 'color 0.2s' }}
                           >
-                            {item.name}
+                            {lang === 'en' && item.nameEn ? item.nameEn : item.name}
                           </button>
-                          <span style={{ color: 'var(--text-muted)', fontSize: '0.8rem' }}>฿ {item.price?.toLocaleString()} x {item.quantity} เรือน</span>
+                          <span style={{ color: 'var(--text-muted)', fontSize: '0.8rem' }}>{t('itemPriceQty').replace('{price}', item.price?.toLocaleString() || '0').replace('{qty}', item.quantity)}</span>
                         </div>
                       </div>
                     );
                   })}
                 </div>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '0.4rem', borderTop: '1px solid rgba(255,255,255,0.03)', paddingTop: '0.8rem' }}>
-                  <strong style={{ color: 'var(--text-muted)' }}>ราคารวมทั้งหมด:</strong>
+                  <strong style={{ color: 'var(--text-muted)' }}>{t('totalPriceLabel')}</strong>
                   <span style={{ color: 'var(--accent-gold)', fontWeight: 700, fontSize: '1.25rem' }}>฿ {ord.total?.toLocaleString()}</span>
                 </div>
               </div>
 
               <div style={{ fontSize: '0.88rem', color: 'var(--text-muted)', marginTop: '1rem', display: 'flex', flexWrap: 'wrap', gap: '1.5rem', borderTop: '1px solid rgba(255,255,255,0.04)', paddingTop: '0.8rem' }}>
-                <span>📍 <strong>ที่อยู่จัดส่ง:</strong> {ord.address}</span>
-                <span>💳 <strong>วิธีชำระเงิน:</strong> {ord.payment?.toUpperCase()}</span>
+                <span>📍 <strong>{t('shippingAddress')}:</strong> {ord.address}</span>
+                <span>💳 <strong>{t('paymentMethod')}:</strong> {ord.payment?.toUpperCase()}</span>
               </div>
 
               {ord.status === 'pending_payment' && (
                 <div style={{ marginTop: '1.2rem', padding: '1.2rem', background: 'rgba(255,165,0,0.03)', borderRadius: '12px', border: '1px solid rgba(255,165,0,0.15)' }}>
                   <div style={{ fontSize: '0.88rem', color: '#ffa94d', fontWeight: 'bold', marginBottom: '0.8rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <span>💵 {getRemainingTimeText(ord.date)}</span>
-                    <span>กรุณาโอนเงินและแนบหลักฐานสลิป</span>
+                    <span>{t('pleaseTransfer')}</span>
                   </div>
-                  {getRemainingTimeText(ord.date) !== 'หมดเวลาชำระเงิน' ? (
+                  {getRemainingTimeText(ord.date) !== t('paymentExpired') ? (
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', marginTop: '0.5rem' }}>
+                      {ord.payment === 'bank_transfer' && (
+                        <div style={{ 
+                          padding: '1rem', 
+                          background: 'rgba(255,255,255,0.02)', 
+                          border: '1px solid var(--glass-border)', 
+                          borderRadius: '10px', 
+                          marginBottom: '0.8rem' 
+                        }}>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '0.8rem' }}>
+                            <div style={{ 
+                              width: '40px', 
+                              height: '40px', 
+                              background: '#138c45', 
+                              borderRadius: '8px', 
+                              display: 'flex', 
+                              alignItems: 'center', 
+                              justifyContent: 'center',
+                              fontWeight: 'bold',
+                              color: 'white',
+                              fontSize: '0.7rem',
+                              fontFamily: "'Oswald', sans-serif",
+                              flexShrink: 0
+                            }}>
+                              K-BANK
+                            </div>
+                            <div style={{ fontSize: '0.82rem' }}>
+                              <div style={{ fontWeight: 600, color: 'var(--accent-gold)' }}>ธนาคารกสิกรไทย (Kasikornbank)</div>
+                              <div style={{ fontWeight: 'bold', letterSpacing: '1px', margin: '0.1rem 0', color: '#f5f5f7' }}>
+                                012-3-45678-9
+                              </div>
+                              <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
+                                ชื่อบัญชี: บจก. วอทช์มาร์ท จำกัด
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      )}
                       <input
                         type="file"
                         accept="image/*"
@@ -232,11 +270,11 @@ export default function MyOrders() {
                         onChange={(e) => handleUploadSlip(ord.id, e)}
                       />
                       <small style={{ color: 'var(--text-muted)', fontSize: '0.78rem', marginTop: '0.3rem' }}>
-                        * แนะนำให้โอนผ่านบัญชีของร้าน และนำภาพสลิปที่ชัดเจนมาแนบตรงนี้
+                        {t('slipUploadTip')}
                       </small>
                     </div>
                   ) : (
-                    <div style={{ color: '#ff6b6b', fontSize: '0.85rem', fontWeight: 'bold' }}>❌ ออเดอร์นี้หมดเวลาชำระเงินแล้ว (เกิน 24 ชม.)</div>
+                    <div style={{ color: '#ff6b6b', fontSize: '0.85rem', fontWeight: 'bold' }}>{t('orderExpired')}</div>
                   )}
                 </div>
               )}
@@ -247,7 +285,7 @@ export default function MyOrders() {
                   style={{ marginTop: '1.2rem', padding: '0.45rem 1.2rem', fontSize: '0.85rem', fontWeight: 600 }} 
                   onClick={() => cancelOrder(ord.id)}
                 >
-                  ยกเลิกออเดอร์
+                  {t('cancelOrderBtn')}
                 </button>
               )}
             </div>
