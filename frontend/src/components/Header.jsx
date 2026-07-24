@@ -506,8 +506,8 @@ export default function Header({ showCart, cartCount: cartCountProp, onCartClick
 
       {/* 2. MAIN HEADER BAR */}
       <div className="header-main-bar" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0.8rem 5%', gap: '2rem', width: '100%', boxSizing: 'border-box' }}>
-        {/* Hamburger & Logo Link */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.8rem', flexShrink: 0 }}>
+        {/* Hamburger & Logo Link & Brand Logos */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', flexShrink: 0 }}>
           <button 
             onClick={() => setShowDrawer(true)} 
             style={{
@@ -528,13 +528,59 @@ export default function Header({ showCart, cartCount: cartCountProp, onCartClick
           >
             ☰
           </button>
-          <Link to="/" style={{ display: 'flex', alignItems: 'center', textDecoration: 'none' }}>
+          <Link to="/" style={{ display: 'flex', alignItems: 'center', textDecoration: 'none', marginRight: '0.5rem' }}>
             <img src="/images/logo.jpg" alt="WatchMart Logo" style={{ height: '46px', borderRadius: '8px', border: '1px solid var(--glass-border)', objectFit: 'contain' }} />
           </Link>
+
+          {/* Brand Logos */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '1.4rem', borderLeft: '1px solid var(--glass-border)', paddingLeft: '1.4rem' }}>
+            {[
+              { name: 'Rolex', logo: '/images/logo-brand-rolex-watch-png-favpng-9veuB0MyxY8scxpj8WkwBbQL3.jpg', style: { borderRadius: '4px' } },
+              { name: 'SEIKO', logo: '/images/seiko-logo-png_seeklogo-124537.png', style: theme === 'dark' ? { filter: 'invert(1)' } : {} },
+              { name: 'LUMINOX', logo: '/images/luminox-logo-png_seeklogo-86279.png', style: {} },
+              { name: 'TAG Heuer', logo: '/images/Tag Heuer.webp', style: {} }
+            ].map((b) => (
+              <button
+                key={b.name}
+                onClick={() => {
+                  if (location.pathname === '/') {
+                    setSearchParams({ search: b.name });
+                  } else {
+                    navigate(`/?search=${b.name}`);
+                  }
+                }}
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  padding: 0,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  cursor: 'pointer',
+                  transition: 'transform 0.2s ease',
+                  height: '45px',
+                  width: '75px',
+                }}
+                className="hover-scale"
+                title={b.name}
+              >
+                <img 
+                  src={b.logo} 
+                  alt={b.name} 
+                  style={{ 
+                    height: '100%',
+                    width: '100%',
+                    objectFit: 'contain',
+                    ...b.style
+                  }} 
+                />
+              </button>
+            ))}
+          </div>
         </div>
 
-        {/* Center: Search Bar & Keywords */}
-        <div style={{ flex: 1, maxWidth: '650px', display: 'flex', flexDirection: 'column', gap: '0.35rem' }}>
+        {/* Center: Search Bar */}
+        <div style={{ flex: 1, maxWidth: '650px', display: 'flex', flexDirection: 'column' }}>
           <form onSubmit={handleSearchSubmit} style={{ display: 'flex', width: '100%', position: 'relative' }}>
             <input
               name="search"
@@ -576,25 +622,6 @@ export default function Header({ showCart, cartCount: cartCountProp, onCartClick
               <Icons.Search style={{ width: '15px', height: '15px' }} />
             </button>
           </form>
-          {/* Small Keywords Tag Row - SEIKO and LUMINOX only (Classic/Sport deleted) */}
-          <div style={{ display: 'flex', gap: '0.8rem', fontSize: '0.72rem', color: 'var(--text-muted)' }}>
-            {['SEIKO', 'LUMINOX', 'TAG HEUER'].map((kw) => (
-              <span
-                key={kw}
-                onClick={() => {
-                  if (location.pathname === '/') {
-                    setSearchParams({ search: kw });
-                  } else {
-                    navigate(`/?search=${kw}`);
-                  }
-                }}
-                style={{ cursor: 'pointer', transition: 'color 0.2s' }}
-                className="hover-gold-text"
-              >
-                {kw}
-              </span>
-            ))}
-          </div>
         </div>
 
         {/* Right side navigation & Actions */}
