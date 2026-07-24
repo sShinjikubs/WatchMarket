@@ -142,6 +142,69 @@ graph TB
 ## 4. โครงสร้างฐานข้อมูล (Database Schema Design)
 เราเลือกใช้ **PostgreSQL** เป็นฐานข้อมูลหลักสำหรับการทำธุรกรรม เพื่อรักษาเสถียรภาพความถูกต้องของข้อมูล (ACID Properties)
 
+### 4.0 แผนภาพความสัมพันธ์ฐานข้อมูล (ER Diagram)
+
+```mermaid
+erDiagram
+    users ||--o| profiles : "has profile"
+    users ||--o{ orders : "places"
+    users ||--o{ reviews : "writes"
+    products ||--o{ reviews : "has review"
+
+    users {
+        varchar username PK
+        varchar password
+        varchar role
+        timestamp created_at
+    }
+
+    profiles {
+        varchar username PK
+        varchar firstname
+        varchar lastname
+        varchar email
+        varchar phone
+        text address
+        text avatar
+    }
+
+    products {
+        varchar id PK
+        varchar name
+        varchar brand
+        varchar category
+        numeric price
+        int stock
+        varchar color
+        varchar stroke_color
+        boolean is_gold_face
+        varchar image
+        varchar image_back
+    }
+
+    orders {
+        varchar id PK
+        varchar user_id FK
+        jsonb items
+        numeric total
+        varchar email
+        text address
+        varchar payment
+        varchar status
+        varchar date
+        text slip
+    }
+
+    reviews {
+        serial id PK
+        varchar product_id FK
+        varchar username FK
+        int rating
+        text comment
+        varchar date
+    }
+```
+
 ### 4.1 ตาราง Users
 ```sql
 CREATE TABLE users (

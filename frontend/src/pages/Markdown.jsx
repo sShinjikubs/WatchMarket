@@ -1,6 +1,67 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useLanguage } from '../App';
 import Header from '../components/Header';
+import mermaid from 'mermaid';
+
+mermaid.initialize({
+  startOnLoad: false,
+  theme: 'dark',
+  securityLevel: 'loose',
+  themeVariables: {
+    background: '#1e1e2e',
+    primaryColor: '#ff79c6',
+    primaryTextColor: '#f8f8f2',
+    lineColor: '#6272a4',
+  }
+});
+
+function Mermaid({ chart }) {
+  const ref = useRef(null);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    if (ref.current) {
+      ref.current.innerHTML = '';
+      setError(null);
+      const uniqueId = 'mermaid-' + Math.floor(Math.random() * 1000000);
+      mermaid.render(uniqueId, chart)
+        .then(({ svg }) => {
+          if (ref.current) {
+            ref.current.innerHTML = svg;
+          }
+        })
+        .catch((err) => {
+          console.error(err);
+          setError(err);
+        });
+    }
+  }, [chart]);
+
+  if (error) {
+    return (
+      <div className="mermaid-error" style={{ color: '#ff5555', padding: '1rem', background: 'rgba(255, 85, 85, 0.1)', borderRadius: '8px', margin: '1rem 0' }}>
+        <strong>Error rendering diagram:</strong>
+        <pre style={{ marginTop: '0.5rem', whiteSpace: 'pre-wrap', fontSize: '0.85rem' }}>{error.message || String(error)}</pre>
+      </div>
+    );
+  }
+
+  return (
+    <div 
+      className="mermaid-diagram" 
+      ref={ref} 
+      style={{ 
+        display: 'flex', 
+        justifyContent: 'center', 
+        margin: '1.5rem 0', 
+        background: 'rgba(255,255,255,0.03)', 
+        padding: '1.5rem', 
+        borderRadius: '12px', 
+        overflowX: 'auto' 
+      }} 
+    />
+  );
+}
 
 export default function MarkdownViewer() {
   const { t } = useLanguage();
@@ -37,6 +98,23 @@ export default function MarkdownViewer() {
       .replace(/^- (.+)$/gm, '<li>$1</li>')
       .replace(/\n/g, '<br>');
 
+  const parseMarkdownWithCodeBlocks = (md) => {
+    if (!md) return [];
+    const parts = md.split(/```/g);
+    return parts.map((part, index) => {
+      if (index % 2 === 0) {
+        return { type: 'markdown', content: part };
+      } else {
+        const match = part.match(/^([a-zA-Z0-9_\-+]+)?\r?\n([\s\S]*)$/);
+        const lang = match ? match[1] : '';
+        const code = match ? match[2] : part;
+        return { type: 'code', lang: (lang || '').trim().toLowerCase(), content: code.trim() };
+      }
+    });
+  };
+
+  const parsedParts = parseMarkdownWithCodeBlocks(content);
+
   return (
     <div className="page-wrapper">
       <Header />
@@ -47,13 +125,45 @@ export default function MarkdownViewer() {
             <button className={`btn ${fileName === 'analysis_design.md' ? 'btn-primary' : 'btn-secondary'}`} onClick={() => loadDoc('analysis_design.md')}>
               {t('analysisDesignDocBtn')}
             </button>
+            <button className={`btn ${fileName === 'workshop4_assessment.md' ? 'btn-primary' : 'btn-secondary'}`} onClick={() => loadDoc('workshop4_assessment.md')}>
+              📄 Workshop #4
+            </button>
             <button className={`btn ${fileName === 'README.md' ? 'btn-primary' : 'btn-secondary'}`} onClick={() => loadDoc('README.md')}>
               {t('readmeDocBtn')}
             </button>
           </div>
         </div>
         <div className="glass-card markdown-viewer">
-          <div dangerouslySetInnerHTML={{ __html: renderMarkdown(content) }} />
+          {parsedParts.map((part, idx) => {
+            if (part.type === 'markdown') {
+              return (
+                <div 
+                  key={idx} 
+                  dangerouslySetInnerHTML={{ __html: renderMarkdown(part.content) }} 
+                />
+              );
+            } else if (part.type === 'code' && part.lang.toLowerCase() === 'mermaid') {
+              return (
+                <Mermaid key={idx} chart={part.content} />
+              );
+            } else {
+              return (
+                <pre 
+                  key={idx} 
+                  style={{ 
+                    background: 'rgba(0,0,0,0.3)', 
+                    padding: '1rem', 
+                    borderRadius: '8px', 
+                    overflowX: 'auto', 
+                    margin: '1rem 0',
+                    fontFamily: 'monospace'
+                  }}
+                >
+                  <code>{part.content}</code>
+                </pre>
+              );
+            }
+          })}
         </div>
       </main>
     </div>

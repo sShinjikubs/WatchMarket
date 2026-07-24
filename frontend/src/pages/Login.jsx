@@ -103,6 +103,34 @@ export default function Login() {
             <button type="submit" className="login-btn-full" disabled={loading}>
               {loading ? 'Logging in...' : 'Log in'}
             </button>
+
+            <button 
+              type="button" 
+              className="login-btn-guest" 
+              onClick={() => navigate('/')}
+              style={{
+                width: '100%',
+                padding: '1rem',
+                backgroundColor: 'transparent',
+                color: 'var(--accent-gold, #c5a880)',
+                border: '1px solid var(--accent-gold, #c5a880)',
+                fontWeight: '600',
+                textTransform: 'uppercase',
+                letterSpacing: '2px',
+                fontFamily: "'Oswald', sans-serif",
+                cursor: 'pointer',
+                transition: 'all 0.3s ease',
+                marginTop: '0.8rem'
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.backgroundColor = 'rgba(197, 168, 128, 0.1)';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.backgroundColor = 'transparent';
+              }}
+            >
+              เข้าโดยไม่ต้องเข้าสู่ระบบ
+            </button>
           </form>
 
           <div className="login-form-footer">
