@@ -535,10 +535,10 @@ export default function Header({ showCart, cartCount: cartCountProp, onCartClick
           {/* Brand Logos */}
           <div style={{ display: 'flex', alignItems: 'center', gap: '1.4rem', borderLeft: '1px solid var(--glass-border)', paddingLeft: '1.4rem' }}>
             {[
-              { name: 'Rolex', logo: '/images/logo-brand-rolex-watch-png-favpng-9veuB0MyxY8scxpj8WkwBbQL3.jpg', style: { borderRadius: '4px' } },
+              { name: 'Rolex', logo: '/images/brands/Logo_da_Rolex.png', style: { borderRadius: '4px' } },
               { name: 'SEIKO', logo: '/images/seiko-logo-png_seeklogo-124537.png', style: theme === 'dark' ? { filter: 'invert(1)' } : {} },
-              { name: 'LUMINOX', logo: '/images/luminox-logo-png_seeklogo-86279.png', style: {} },
-              { name: 'TAG Heuer', logo: '/images/Tag Heuer.webp', style: {} },
+              { name: 'LUMINOX', logo: '/images/brands/luminox-logo-png_seeklogo-86279.png', style: {} },
+              { name: 'TAG Heuer', logo: '/images/brands/tag-heuer-logo-png_seeklogo-481352.png', style: {} },
               { name: 'G-SHOCK', isText: true, style: { fontWeight: '900', fontSize: '0.8rem', letterSpacing: '0.5px', color: 'var(--text-light)', fontFamily: 'Impact, sans-serif' } }
             ].map((b) => (
               <button
