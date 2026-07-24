@@ -462,6 +462,116 @@
       "stock": 2,
       "image": "/images/Rolex/Rolex Sky-Dweller Oyster, 42 มม., เอเวอร์โรสโกลด์.png",
       "imageBack": "/images/Rolex/Rolex Sky-Dweller Oyster, 42 มม., เอเวอร์โรสโกลด์.png"
+    },
+    {
+      "id": "41",
+      "name": "CASIO G-SHOCK GBX-100NS-1DR ของแท้ ประกันศูนย์ CMG",
+      "nameEn": "CASIO G-SHOCK GBX-100NS-1DR CMG Warranty",
+      "brand": "G-SHOCK",
+      "category": "sport",
+      "price": 6500,
+      "stock": 10,
+      "image": "/images/G-SHOCK/CASIO G-SHOCK GBX-100NS-1DR ของแท้ ประกันศูนย์ CMG หน้า.webp",
+      "imageBack": "/images/G-SHOCK/CASIO G-SHOCK GBX-100NS-1DR ของแท้ ประกันศูนย์ CMG หลัง.webp"
+    },
+    {
+      "id": "42",
+      "name": "CASIO G-SHOCK GST-B400D-1ADR (บลูทูธ,ทัชโซล่า)",
+      "nameEn": "CASIO G-SHOCK GST-B400D-1ADR (Bluetooth, Tough Solar)",
+      "brand": "G-SHOCK",
+      "category": "elegant",
+      "price": 12900,
+      "stock": 5,
+      "image": "/images/G-SHOCK/CASIO G-SHOCK GST-B400D-1ADR (บลูทูธ,ทัชโซล่า) ของแท้ ประกันศูนย์ CMG หน้า.webp",
+      "imageBack": "/images/G-SHOCK/CASIO G-SHOCK GST-B400D-1ADR (บลูทูธ,ทัชโซล่า) ของแท้ ประกันศูนย์ CMG หลัง.webp"
+    },
+    {
+      "id": "43",
+      "name": "CASIO G-SHOCK GA-110EVA30-7A EVANGELION",
+      "nameEn": "CASIO G-SHOCK GA-110EVA30-7A EVANGELION Limited Edition",
+      "brand": "G-SHOCK",
+      "category": "sport",
+      "price": 8900,
+      "stock": 3,
+      "image": "/images/G-SHOCK/CASIO นาฬิกาข้อมือ G-SHOCK GA-110EVA30-7A EVANGELION ของแท้ประกันศูนย์ 1ปี หน้า.webp",
+      "imageBack": "/images/G-SHOCK/CASIO นาฬิกาข้อมือ G-SHOCK GA-110EVA30-7A EVANGELION ของแท้ประกันศูนย์ 1ปี หลัง.png"
+    },
+    {
+      "id": "44",
+      "name": "CASIO G-SHOCK MID-TIER รุ่น GM-2100-1ADR สีเงิน",
+      "nameEn": "CASIO G-SHOCK MID-TIER GM-2100-1ADR Silver",
+      "brand": "G-SHOCK",
+      "category": "classic",
+      "price": 7900,
+      "stock": 8,
+      "image": "/images/G-SHOCK/CASIO นาฬิกาข้อมือผู้ชาย G-SHOCK MID-TIER รุ่น GM-2100-1ADR วัสดุเรซิ่น สีเงิน หน้า.webp",
+      "imageBack": "/images/G-SHOCK/CASIO นาฬิกาข้อมือผู้ชาย G-SHOCK MID-TIER รุ่น GM-2100-1ADR วัสดุเรซิ่น สีเงิน หลัง.webp"
+    },
+    {
+      "id": "45",
+      "name": "GA-010-2A อะนาล็อก-ดิจิตอลมาตรฐาน ซีรีส์ GA-010 G-SHOCK",
+      "nameEn": "G-SHOCK Standard Analog-Digital GA-010 Series GA-010-2A",
+      "brand": "G-SHOCK",
+      "category": "sport",
+      "price": 4500,
+      "stock": 12,
+      "image": "/images/G-SHOCK/GA-010-2A  อะนาล็อก-ดิจิตอลมาตรฐาน  ซีรีส์ GA-010  G-SHOCK  นาฬิกา  CASIO หน้า.png",
+      "imageBack": "/images/G-SHOCK/GA-010-2A  อะนาล็อก-ดิจิตอลมาตรฐาน  ซีรีส์ GA-010  G-SHOCK  นาฬิกา  CASIO หลัง.png"
+    },
+    {
+      "id": "46",
+      "name": "GA-2100FL-1A อะนาล็อก-ดิจิตอลมาตรฐาน ซีรีส์ 2100 G-SHOCK",
+      "nameEn": "G-SHOCK Standard Analog-Digital 2100 Series GA-2100FL-1A",
+      "brand": "G-SHOCK",
+      "category": "classic",
+      "price": 5200,
+      "stock": 6,
+      "image": "/images/G-SHOCK/GA-2100FL-1A  อะนาล็อก-ดิจิตอลมาตรฐาน  ซีรีส์ 2100  G-SHOCK  นาฬิกา  CASIO หน้า.png",
+      "imageBack": "/images/G-SHOCK/GA-2100FL-1A  อะนาล็อก-ดิจิตอลมาตรฐาน  ซีรีส์ 2100  G-SHOCK  นาฬิกา  CASIO หลัง.png"
+    },
+    {
+      "id": "47",
+      "name": "GA-2100FL-8A อะนาล็อก-ดิจิตอลมาตรฐาน ซีรีส์ 2100 G-SHOCK",
+      "nameEn": "G-SHOCK Standard Analog-Digital 2100 Series GA-2100FL-8A",
+      "brand": "G-SHOCK",
+      "category": "sport",
+      "price": 5200,
+      "stock": 7,
+      "image": "/images/G-SHOCK/GA-2100FL-8A  อะนาล็อก-ดิจิตอลมาตรฐาน  ซีรีส์ 2100  G-SHOCK  นาฬิกา  CASIO หน้า.png",
+      "imageBack": "/images/G-SHOCK/GA-2100FL-8A  อะนาล็อก-ดิจิตอลมาตรฐาน  ซีรีส์ 2100  G-SHOCK  นาฬิกา  CASIO หลัง.png"
+    },
+    {
+      "id": "48",
+      "name": "GA-B2100MF-1A อะนาล็อก-ดิจิตอลมาตรฐาน ซีรีส์ 2100 G-SHOCK",
+      "nameEn": "G-SHOCK Standard Analog-Digital 2100 Series GA-B2100MF-1A",
+      "brand": "G-SHOCK",
+      "category": "sport",
+      "price": 6900,
+      "stock": 9,
+      "image": "/images/G-SHOCK/GA-B2100MF-1A  อะนาล็อก-ดิจิตอลมาตรฐาน  ซีรีส์ 2100  G-SHOCK  นาฬิกา  CASIO หน้า.png",
+      "imageBack": "/images/G-SHOCK/GA-B2100MF-1A  อะนาล็อก-ดิจิตอลมาตรฐาน  ซีรีส์ 2100  G-SHOCK  นาฬิกา  CASIO หลัง.png"
+    },
+    {
+      "id": "49",
+      "name": "GM-B2100AD-2A FULL METAL ซีรีส์ 2100 G-SHOCK",
+      "nameEn": "G-SHOCK Full Metal 2100 Series GM-B2100AD-2A Blue Dial",
+      "brand": "G-SHOCK",
+      "category": "elegant",
+      "price": 22900,
+      "stock": 4,
+      "image": "/images/G-SHOCK/GM-B2100AD-2A  FULL METAL  ซีรีส์ 2100  G-SHOCK  นาฬิกา  CASIO หน้า.png",
+      "imageBack": "/images/G-SHOCK/GM-B2100AD-2A  FULL METAL  ซีรีส์ 2100  G-SHOCK  นาฬิกา  CASIO หลัง.png"
+    },
+    {
+      "id": "50",
+      "name": "CASIO G-SHOCK DW-6900U-1DR [FLASH SALE]",
+      "nameEn": "CASIO G-SHOCK DW-6900U-1DR Classic Digital CMG Warranty",
+      "brand": "G-SHOCK",
+      "category": "sport",
+      "price": 3200,
+      "stock": 15,
+      "image": "/images/G-SHOCK/{[FLASH SALE]} CASIO G-SHOCK DW-6900U-1DR ของแท้ ประกันศูนย์ CMG หน้า.png",
+      "imageBack": "/images/G-SHOCK/{[FLASH SALE]} CASIO G-SHOCK DW-6900U-1DR ของแท้ ประกันศูนย์ CMG หลัง.webp"
     }
   ],
   "orders": [],
