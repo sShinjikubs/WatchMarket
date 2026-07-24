@@ -693,7 +693,14 @@ export default function Storefront() {
           <div className="section-header">
             <h2 className="section-title">{search ? t('searchResults').replace('{query}', search) : t('productsTitle')}</h2>
             <div className="filter-controls">
-              {[{ key: 'all', label: t('all') }, { key: 'Luminox', label: 'LUMINOX' }, { key: 'Seiko', label: 'SEIKO' }, { key: 'TAG Heuer', label: 'TAG HEUER' }, { key: 'Rolex', label: 'ROLEX' }].map(({ key, label }) => (
+              {[
+                { key: 'all', label: t('all') },
+                { key: 'Luminox', label: 'LUMINOX' },
+                { key: 'Seiko', label: 'SEIKO' },
+                { key: 'TAG Heuer', label: 'TAG HEUER' },
+                { key: 'Rolex', label: 'ROLEX' },
+                { key: 'G-SHOCK', label: 'G-SHOCK' }
+              ].map(({ key, label }) => (
                 <button
                   key={key}
                   className={`filter-btn ${filter === key ? 'active' : ''}`}

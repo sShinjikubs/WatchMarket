@@ -538,7 +538,8 @@ export default function Header({ showCart, cartCount: cartCountProp, onCartClick
               { name: 'Rolex', logo: '/images/logo-brand-rolex-watch-png-favpng-9veuB0MyxY8scxpj8WkwBbQL3.jpg', style: { borderRadius: '4px' } },
               { name: 'SEIKO', logo: '/images/seiko-logo-png_seeklogo-124537.png', style: theme === 'dark' ? { filter: 'invert(1)' } : {} },
               { name: 'LUMINOX', logo: '/images/luminox-logo-png_seeklogo-86279.png', style: {} },
-              { name: 'TAG Heuer', logo: '/images/Tag Heuer.webp', style: {} }
+              { name: 'TAG Heuer', logo: '/images/Tag Heuer.webp', style: {} },
+              { name: 'G-SHOCK', isText: true, style: { fontWeight: '900', fontSize: '0.8rem', letterSpacing: '0.5px', color: 'var(--text-light)', fontFamily: 'Impact, sans-serif' } }
             ].map((b) => (
               <button
                 key={b.name}
@@ -564,16 +565,20 @@ export default function Header({ showCart, cartCount: cartCountProp, onCartClick
                 className="hover-scale"
                 title={b.name}
               >
-                <img 
-                  src={b.logo} 
-                  alt={b.name} 
-                  style={{ 
-                    height: '100%',
-                    width: '100%',
-                    objectFit: 'contain',
-                    ...b.style
-                  }} 
-                />
+                {b.isText ? (
+                  <span style={b.style}>{b.name}</span>
+                ) : (
+                  <img 
+                    src={b.logo} 
+                    alt={b.name} 
+                    style={{ 
+                      height: '100%',
+                      width: '100%',
+                      objectFit: 'contain',
+                      ...b.style
+                    }} 
+                  />
+                )}
               </button>
             ))}
           </div>
